@@ -1,0 +1,104 @@
+<html>
+<head>
+<style>
+#itemCatalogue img{
+    width:130px;
+}
+#itemCatalogue div{
+    width:150px;
+    margin-top: 50px;
+    border: solid black 2px;
+}
+#itemCatalogue h4{
+    text-align: center;
+}
+#itemCatalogue p{
+    text-align: center;
+}
+
+</style>
+</head>
+<body>
+<h1> Welcome to the web shop</h1>
+<div id= "itemCatalogue">
+</div>
+
+<div id="shoppingCart">
+</div>
+
+</body>
+<script>
+
+var shoppingCart = [];
+
+var items = [
+{id: 1001, title: "apple", description: "Tastes better in Eden", price: 26.90, image: "banana.jpg"},
+{id: 1002, title: "cat", description: "Purr purr kitty", price: 13.20, image: "cat.jpg"},
+{id: 1003, title: "flower",description: "Smell of your soul", price: 12.90, image: "flower.jpg"}
+];
+
+var itemCatalogueDiv = document.getElementById("itemCatalogue");
+
+
+itemCatalogueDiv.addEventListener("click", e =>{
+   if(e.target.tagName === "BUTTON"){
+     e.target.disabled = true;
+     shoppingCart[e.target.dataset.id] = {quantity: 1};
+     renderShoppingCart();
+   }
+   
+}); 
+
+
+var shoppingCartDiv = document.getElementById("shoppingCart");
+
+function renderShoppingCart(){
+  shoppingCartDiv.innerHTML = "";
+  for(const item in shoppingCart){
+    const product = items.find(i => i.id == item);
+
+    const itemDiv = document.createElement("div");
+    itemDiv.innerHTML = product.title;
+    shoppingCartDiv.appendChild(itemDiv); 
+  }
+
+  let total = 0;
+  for(const item in shoppingCart){
+    const product = items.find(i => i.id == item);
+    const {quantity} = shoppingCart[item];
+    total += product.price * quantity
+  }
+
+  const priceDiv = document.createElement("div");
+  priceDiv.innerHTML = "Total pris = " + total.toFixed(2);
+  shoppingCartDiv.appendChild(priceDiv);
+}
+
+
+
+
+for(item of items){
+  
+  var itemDiv = document.createElement("div");
+
+  itemDiv.dataset.id = item.id;
+  var itemHeader = document.createElement("h4");
+  itemHeader.innerHTML = item.title;
+  itemDiv.appendChild(itemHeader);
+  var itemDescription = document.createElement("p");
+  itemDescription.innerHTML = item.description;
+  itemDiv.appendChild(itemDescription);
+  var itemImage = document.createElement("img");
+  itemImage.setAttribute("src", item.image);
+  itemDiv.appendChild(itemImage);
+  var itemButton = document.createElement("button");
+  itemButton.dataset.id = item.id;
+  itemButton.innerHTML = "Buy";
+
+  itemDiv.appendChild(itemButton);
+  itemCatalogueDiv.appendChild(itemDiv);
+
+}
+
+</script>
+</html>
