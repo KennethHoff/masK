@@ -1,2 +1,2 @@
 # <html>masK
-## A subsidary of 'Sjakk'
+## A subsidary of Sjakk©
