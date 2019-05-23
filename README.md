@@ -1,2 +1,2 @@
-# MasK
+# masK
 ## A subsidary of 'Sjakk'
