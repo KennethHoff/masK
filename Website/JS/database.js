@@ -1,8 +1,18 @@
-let currentIndexForAssignment = 0;
+let currentIndexForIDGenerator = 0;
 
 // TODO: Currently all arrays share the same ID generator (which is good).
 // This makes it somewhat difficult to get a specific element of a type. (Let's say the 2nd created user).
 // I haven't gotten to utilizing these elements, so it's possible that this is not relevant, or that I'm not thinking straight...
+
+
+/* What is this?
+- Boards ("To Do", "Finished", "Under Review" etc..)
+- Tasks ("Create this changelog", "Create Pull Request", "Finish Coding for the day" etc..)
+- Users ("Kenneth Hoff", "Kristoffer Opdahl" etc...)
+- Roles ("Senior Game Designer", "Front-End" etc...)
+ */ 
+
+
 
 let boards = [
     // {
@@ -65,6 +75,7 @@ function CreateNewTask(_name, _description, _deadlineDate) {
         users: [],
         // if deadline is undefined, set it to null, otherwise set it to the input
         deadlineDate: (_deadlineDate == undefined ? null : _deadlineDate),
+        // Sets it to the current date as of creation
         creationDate: new Date(),
         completionDate: null
     }
@@ -143,7 +154,7 @@ function AddRoleToUser(_roleInt, _userInt) {
 }
 
 function IndexGenerator() {
-    var tempIndex = currentIndexForAssignment++;
+    var tempIndex = currentIndexForIDGenerator++;
     return tempIndex;
 }
 
