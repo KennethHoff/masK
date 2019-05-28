@@ -1,11 +1,28 @@
 <html>
     <head>
         <title>masK</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
         <link rel="stylesheet" type="text/css" href="..\CSS\index.css">
     </head>
     <body>
-        <h1 id = "h1_Title"><span style="font-size: 1em;"></span>MAS</span><span style="font-size: 3em;">K</span></h1>
+        <div id = "incubatorContainer">
+            <ul class='custom-menu'>
+                <li data-action = "newTask">New Task</li>
+            </ul>
+            <div class="note" id="one">
+                <h1>H1</h1>
+                <p>Para1</p>
+                <p>Para2</p>
+            </div>
+            <div class="note" id="two">
+                <h1>H1</h1>
+                <p>Para1</p>
+                <p>Para2</p>
+            </div>
+        </div>
     </body>
-
+        
+    <script src = "..\JS\node_modules\jquery\dist\jquery.js"></script>
     <script src="..\JS\database.js"></script>
+    <script src="..\JS\Incubator.js"></script>
 </html>
