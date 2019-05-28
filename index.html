@@ -3,6 +3,29 @@
 <head>
     <title>Homepage</title>
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <link href="fullcalendar/core/main.css" rel="stylesheet" />
+    <link href="fullcalendar/daygrid/main.css" rel="stylesheet" />
+    <link href="fullcalendar/list/main.css" rel="stylesheet" />
+
+
+    <script src="fullcalendar/core/main.js"></script>
+    <script src="fullcalendar/daygrid/main.js"></script>
+    <script src="fullcalendar/interaction/main.js"></script>
+    <script src="fullcalendar/list/main.js"></script>
+
+    <script>
+        // document.addEventListener("DOMContentLoaded", function(){
+        //     var calendarEl = document.getElementById("calendar");
+
+        //     var calendar = new FullCalendar.Calendar(calendarEl, {
+        //         plugins: ["dayGrid", "interaction", "list"],
+        //         defaultView: 'dayGridMonth',
+        //         selectable: true,
+        //         editable: true
+        //     });
+        //     calendar.render();
+        // });
+    </script>
 </head>
 <body>
             <!-- <header id="headTag">
@@ -14,8 +37,9 @@
                 </div>
             </header> -->
 <main id="mainTag">
+
     <div id="sidebar">
-        <ul class="navigation">
+        <!-- <ul class="navigation">
 
             <li><a href="#">Home</a></li>
             <li><a href="#">About</a></li>
@@ -26,31 +50,31 @@
                     <li class="subMenu haveSubMenu"><a href="#">Andreas</a>
                         <ul class="dropdown" id="drpdown1">
                             <li class="subMenu menu">
-                                <iframe src="https://calendar.google.com/calendar/embed?height=400&amp;wkst=1&amp;bgcolor=%23039BE5&amp;ctz=Europe%2FStockholm&amp;src=MXE5NDFpOGRsNjFmbm9idTRxb2hmbmk3bmtAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&amp;color=%23AD1457&amp;showPrint=0&amp;showTitle=1&amp;title=KanBan%20oppgaver" style="border-width:0" width="600" height="400" frameborder="0" scrolling="no"></iframe>
+                                <div class="cal" id="calendar"></div>
                         </li>
                         </ul>
                     </li>
                     <li class="subMenu haveSubMenu"><a href="#">Kenneth</a>
                         <ul class="dropdown" id="drpdown1">
-                            <li class="subMenu menu"><a href="#">Cal</a></li>
+                            <li class="subMenu menu"><div class="cal" id="calendar"></div></li>
                         </ul>
                     </li>
 
                     <li class="subMenu haveSubMenu"><a href="#">Kristian</a>
                         <ul class="dropdown" id="drpdown1">
-                            <li class="subMenu menu"><a href="#">Cal</a></li>
+                            <li class="subMenu menu"><div class="cal" id="calendar"></div></li>
                          </ul>
                     </li>
 
                     <li class="subMenu haveSubMenu"><a href="#">Marcin</a>
                         <ul class="dropdown" id="drpdown2">
-                            <li class="subMenu menu"><a href="#">Cal</a></li>
+                            <li class="subMenu menu"><div class="cal" id="calendar"></div></li>
                         </ul>
                     </li>
 
                     <li class="subMenu haveSubMenu"><a href="#">Kristoffer</a>
                         <ul class="dropdown" id="drpdown3">
-                            <li class="subMenu menu"><a href="#">Cal</a></li>
+                            <li class="subMenu menu"><div class="cal" id="calendar"></div></li>
                         </ul>
                     </li>
 
@@ -58,8 +82,8 @@
 
             </li>
 
-            <li><a href="#">Gallery</a></li>
-        </ul>
+            <li><a href="#">Gallery</a></li> -->
+        <!-- </ul> --> 
         <button id="contact"><a href="#">Contact</a></button>
     </div>
 </main>
