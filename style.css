@@ -1,0 +1,204 @@
+/*Fix up on some stuff here including classes and stuff
+that way it will look cleaner, even tho the nested li uls work fine
+Dont use to much time on this, but try to fix it a bit and check.
+Then implement the JS calender if it that works.
+*/
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: sans-serif;
+
+}
+#mainTag{
+    position: absolute;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    background-color: grey;
+
+}
+#sidebar{
+    position: fixed;
+    width: 6em;
+    height: 100%;
+    background-color: #272828;
+}
+/* #sidebar ul li{
+    color: rgba(230, 230, 230, 0.9);
+    list-style: none;
+    padding: 15px;
+    text-align: center;
+} */
+ul{
+    list-style-type: none;
+}
+/*General Menu Styling*/
+.navigation{
+    margin: 0 auto;
+}
+li{
+    list-style: none;
+}
+li a{
+    text-decoration: none;
+    text-align: center;
+    font-size: 15px;
+    font-family: sans-serif;
+    font-weight: 500;
+    margin: 5px;
+}
+.dropdown{
+    position: absolute; 
+    width: 150px;
+    top: 65px; 
+    opacity: 0;
+    visibility: hidden;
+    transition: ease-out .35s;
+    transition: ease-out .35s;
+    transition: ease-out .35s;
+    left: 150px;
+}
+#drpdown{
+    left: 165px;
+}
+#drpdown1{
+    left: 165px;
+}
+#drpdown2{
+    left: 165px;
+}
+#drpdown3{
+    left: 165px;
+}
+.navigation li{
+    float: left;
+    padding: 5px;
+    margin-top: 10px;
+    background: rgb(65, 64, 64);
+    border-left: 1px dotted #fff;
+}
+.navigation li:first-child{
+    border: none;
+}
+.navigation a{ 
+    display: block;
+    padding: 12px 5px;
+    color: #fff;
+    font-family: sans-serif;
+}
+/*Changes the color of the background of Li elements when hovered on.*/
+.navigation li:hover{
+    background: #525151;
+    transition: ease-in .35s;
+    transition: ease-in .35s;
+    transition: ease-in .35s;
+}
+/* .navigation li:hover a{
+    color: rgb(129, 129, 129);
+    transition: ease-in .35s;
+    transition: ease-in .35s;
+    transition: ease-in .35s;
+} */
+
+    /*First Level*/
+    /*!important overrides any other declartion*/
+.subMenu {
+    left: -45px;
+    position: relative;
+    top: 0px;
+    width: 175px;
+    border-left: none !important; 
+    border-bottom: 1px dotted #fff !important;
+}
+/*last-child represents the last element among a group of sibling elements
+So in this case the last subMenu li. So the border wont display on the last element.*/
+.subMenu:last-child{
+    border: none !important;
+}
+/*To make the first level hover visible*/
+.haveSubMenu:hover .dropdown{
+    opacity: 1;
+    visibility: visible; 
+    transition: ease-in .35s;
+    transition: ease-in .35s;
+    transition: ease-in .35s;
+}
+/*To make the 2end level hover visible, this takes the first
+members then li and the ul with the haveSubMenu and dropdown to be visible. 
+So you can see the a tag in the dropdown.*/
+.haveSubMenu .haveSubMenu:hover .dropdown{
+    opacity: 1;
+    visibility: visible; 
+    transition: ease-in .35s;
+    transition: ease-in .35s;
+    transition: ease-in .35s;
+}
+/*This makes the text in the li´s inside members white*/
+.navigation li:hover ul a{
+    color: white;
+}
+/* This makes the text inside the a tag in the li and ul have a white color.*/
+.navigation li:hover ul li ul li a{
+    color: white;
+}
+/* .navigation li ul li:hover{
+    background: #fff;
+    transition: ease-in-out .35s;
+    transition: ease-in-out .35s;
+    transition: ease-in-out .35s;
+}
+.navigation li ul li ul li:hover{
+    background: #fff;
+    transition: ease-in-out .35s;
+    transition: ease-in-out .35s;
+    transition: ease-in-out .35s;
+} */
+
+/*check if u can get the classes to work here
+if classes wont work its ok, this will be replaced
+with some js things.*/
+/*This makes ure that text inside the a tag on the first level of the dropdown turns
+dark ish when you hover over and its a white background. That way its not all white*/
+.navigation li ul li:hover a{
+    color: rgb(14, 13, 13);
+    transition: ease-in-out .35s;
+    transition: ease-in-out .35s;
+    transition: ease-in-out .35s;
+}
+/*This makes sure that the text inside the a tag in 2end level dropdown turns
+grey ish dark when you hover over and its a white background. That way its not all white
+*/
+.navigation .menu:hover a{
+    color: rgb(22, 22, 22);
+    transition: ease-in-out .35s;
+    transition: ease-in-out .35s;
+    transition: ease-in-out .35s;
+}
+
+/*Second Level*/
+.haveSubMenu .haveSubMenu .dropdown .subMenu{
+    left: 25px;
+    position: relative;
+    width: 165px;
+    top: 0px;
+}
+.haveSubMenu .haveSubMenu .dropdown{
+    position: absolute;
+    width: 150px;
+    left: 120px;
+    top: 0px;
+    opacity: 0;
+    visibility: hidden;
+    transition: ease-out .35s;
+    transition: ease-out .35s;
+    transition: ease-out .35s;
+}
+#contact{
+    position: absolute;
+    background-color: grey;
+    padding: 15px;
+    bottom: 0px;
+    margin: 15px;
+    right: 0px;
+    border-radius: 40%;
+}
