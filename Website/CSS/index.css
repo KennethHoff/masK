@@ -2,6 +2,9 @@ body {
     background-color: #FF0;
 }
 
+.noteHeaders {
+    font-weight: 600; /* bold text */
+}
 
 /* Incubator */
 

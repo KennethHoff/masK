@@ -1,6 +1,7 @@
 var container = document.querySelector("#incubatorContainer");
 var activeItem = null;
 var currentZIndex = 0;
+var incubatorBoard = CreateIncubatorBoard();
 
 // Touch events
 container.addEventListener("touchstart", DragStart);
@@ -12,6 +13,7 @@ container.addEventListener("mousedown", DragStart);
 container.addEventListener("mouseup", DragEnd);
 container.addEventListener("mousemove", Drag);
 
+// Not a super-fan of this implementation, as it's an ever-increasing index, but it works
 function GetNextZIndex() {
     currentZIndex++;
     return currentZIndex;
@@ -114,7 +116,7 @@ function GetPosition(event, containerString) {
         left: event.pageX - position.left,
         top: event.pageY - position.top
     }
-    return vector2Position;
+    return vector2Offset;
 }
 
 function IsLeftButton(evt) {
@@ -128,11 +130,13 @@ function IsLeftButton(evt) {
 
 function CreateNewNoteOnPage(task, event) {
     var newDiv = document.createElement("div");
+    newDiv.setAttribute("task", task);
     container.appendChild(newDiv);
     newDiv.setAttribute("class", "note");
-    newDiv.setAttribute("id", task.id);
-    newDiv.innerHTML = "<h1>" + task.name + "</h1>";
-    // newDiv.innerHTML = "<p" + 
+    newDiv.setAttribute("id", "note"  + task.id);
+    var titleString = "<p class = noteHeaders id = " + "note" + task.id +   "Header>" + task.name + "</p>";
+    var descriptionString = "<p>" + task.description + "</p>"
+    newDiv.innerHTML = titleString + "\n" + descriptionString;
 
     // Setting the position
     var pos = GetPosition(event, container);
@@ -161,17 +165,15 @@ $(container).bind("contextmenu", function (event) {
     });
 });
 
-
 // If the document is clicked somewhere
 $(document).bind("mousedown", function (event) {
     
-    // If the clicked element is the menu, return
+        // If the clicked element is the menu, return
     if ($(event.target).parents(".custom-menu").length > 0) return;
         
         // Hide the menu
     $(".custom-menu").hide(100);
 });
-
 
 // If the menu element(li under 'custom-menu' is clicked
 $(".custom-menu li").click(function(event){
@@ -182,10 +184,39 @@ $(".custom-menu li").click(function(event){
         // A case for each action.
         case "newTask":
             var newTask = CreateAndPushTask(new Date().toString());
+            AddTaskIDToBoardViaBoardID(newTask.id, incubatorBoard.id);
             CreateNewNoteOnPage(newTask, event)
             break;
+        case "deleteTask":
+            var task = event.target
     }
   
     // Hide it AFTER the action was triggered
     $(".custom-menu").hide(100);
 }); 
+
+function LimitedRandom(min,max) // min and max included
+{
+    return Math.floor( Math.random() * (max-min+1)+min );
+}
+
+function checkNumberOfIntegersNeededForRandom(min, max, checkNum) {
+    var iterations = 0;
+    if (checkNum >= max) return "Number you are looking for is higher than the possible value";
+    while (LimitedRandom(min, max) !== checkNum) {
+        iterations++
+    }
+    return "It took: " + iterations.toLocaleString('en') + " iterations to get " + checkNum.toLocaleString('en') + " with the min of " + min.toLocaleString('en') + " and the max of " + max.toLocaleString('en') + ".";
+}
+
+function CreateIncubatorBoard() {
+    return CreateAndPushBoard("Incubator");
+}
+
+function GetTaskFromNote(note) {
+    var task = note.task;
+}
+
+function DeleteNote() {
+    
+}

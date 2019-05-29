@@ -71,9 +71,13 @@ function CreateAndPushBoard(_name) {
 
     let newBoard = CreateNewBoard(_name)
     boards.push(newBoard);
+    return newBoard;
 }
 
 function CreateNewTask(_name, _description, _deadlineDate) {
+    var maxNameLength = 48;alert
+    // if (_name.length >= maxNameLength) window.alert("Name length >= " + maxNameLength);
+    _name = _name.slice(0, maxNameLength);
     let newTask = {
         id: IDGenerator(),
         name: _name,
@@ -197,9 +201,9 @@ function GetRoleFromId(id) {
 }
 
 
+// var id = IDGenerator();
 function IDGenerator() {
-    var tempIndex = currentIndexForIDGenerator++;
-    return tempIndex;
+    return currentIndexForIDGenerator++;
 }
 
 function Test() {
