@@ -94,6 +94,7 @@ function CreateAndPushTask(_name, _description, _deadlineDate) {
     let newTask = CreateNewTask(_name, _description, _deadlineDate)
 
     tasks.push(newTask);
+    return newTask;
 }
 
 function CreateNewUser(_name) {
