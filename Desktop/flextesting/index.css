@@ -1,0 +1,129 @@
+body{
+    background-color: rgb(124, 161, 149);
+    min-width: 1420px;
+    max-width: 3000px;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+
+.container{
+    display: flex; 
+    flex-direction: row;
+}
+
+.columnContainer{
+    flex-shrink: 0;
+    width:250px;
+    min-height: 200px;
+    margin:10px;    
+}
+
+.cardContainer{  /*change name into section */
+    display:  inline-block;
+    width: 240px;
+    min-height: 200px;
+    background-color: rgb(196, 118, 90);
+    text-align: left;
+    border-radius: 8px;
+}
+
+.cardContainer p{
+    display: inline-block;
+    font-size: 20px;
+    height: 50px;
+    max-width: 100px;
+    margin-top:10px;
+    margin-left: 15px;
+    overflow-wrap: break-word;
+}
+
+.textArea{
+    display: inline-block;
+    width:100px;
+    margin-left: 18px;
+    margin-top:6px;
+    resize: none;
+}
+
+.textAreaHide{
+    display: none;
+}
+
+.addCardButton{
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 35px;
+}
+
+.addCardButton2{
+    display: inline-block;
+    width:40px;
+    margin-left: 10px;
+}
+
+.addCardButtonHide{
+    display: none;
+}
+
+.cardInhold{
+    display: block;
+}
+
+.cardCreated{
+    display: block;
+    max-width:160px;
+    height:100px;
+    background-color: aliceblue;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+.cardCreated p{
+    width: 180px;
+    border:2px solid black;
+    overflow-wrap: break-word;
+    white-space: normal;
+  
+    }
+
+.addNewList{
+    display: inline-block;
+    width:250px;
+    height: 40px;
+    background-color: blueviolet;   
+    text-align: left;
+    border-radius: 3px;
+}
+
+.addNewList p{
+    margin-left: 10px;
+    margin-bottom: 20px;
+}
+
+
+
+.addNewListInput{
+    display: none;
+    width: 250px;
+    height: 80px;
+    background-color: blue;
+    border-radius: 3px;
+}
+
+.addNewListInput input{
+    display: inline-block;
+    width:230px;
+    height: 32px;
+    margin-top:3px;
+    margin-left: 6px;
+    border-radius: 3px;
+}
+
+.addNewListInput button{
+    display: block;
+    width:85px;
+    height: 30px;
+    margin-top:3px;
+    margin-left:6px;
+    border-radius: 3px;
+}
