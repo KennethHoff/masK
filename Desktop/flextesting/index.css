@@ -21,16 +21,16 @@ body{
 .cardContainer{  /*change name into section */
     display:  inline-block;
     width: 240px;
-    min-height: 200px;
+    min-height: 83px;
     background-color: rgb(196, 118, 90);
     text-align: left;
-    border-radius: 8px;
+    border-radius: 5px;
 }
 
 .cardContainer p{
     display: inline-block;
     font-size: 20px;
-    height: 50px;
+    height: 10px;
     max-width: 100px;
     margin-top:10px;
     margin-left: 15px;
@@ -43,6 +43,8 @@ body{
     margin-left: 18px;
     margin-top:6px;
     resize: none;
+    border-radius: 3px;
+    border: none;
 }
 
 .textAreaHide{
@@ -52,13 +54,12 @@ body{
 .addCardButton{
     display: block;
     margin-top: 10px;
-    margin-bottom: 35px;
+    margin-bottom: 15px;
 }
 
 .addCardButton2{
     display: inline-block;
     width:40px;
-    margin-left: 10px;
 }
 
 .addCardButtonHide{
@@ -66,28 +67,32 @@ body{
 }
 
 .cardInhold{
-    display: block;
+    display: block;  
 }
 
 .cardCreated{
     display: block;
-    max-width:160px;
-    height:100px;
+    max-width:200px;
+    min-height:100px;
     background-color: aliceblue;
-    margin-bottom: 10px;
-    margin-left: 10px;
+    border-radius: 5px;
+    margin-bottom: 12px;
+    margin-left: 19px;
+    padding-bottom: 10px;
+    box-shadow: 0px 2px #a3644d;
 }
 
 .cardCreated p{
-    width: 180px;
-    border:2px solid black;
+    font-size: 16px;
+    max-width: 170px;
     overflow-wrap: break-word;
     white-space: normal;
-  
     }
 
-.addNewList{
-    display: inline-block;
+.addNewListButton{
+    display:inline-block;
+    border: none;
+    font-size: 14px;
     width:250px;
     height: 40px;
     background-color: blueviolet;   
@@ -95,10 +100,7 @@ body{
     border-radius: 3px;
 }
 
-.addNewList p{
-    margin-left: 10px;
-    margin-bottom: 20px;
-}
+
 
 
 
@@ -116,7 +118,8 @@ body{
     height: 32px;
     margin-top:3px;
     margin-left: 6px;
-    border-radius: 3px;
+    border-radius: 2px;
+    font-size: 14px;
 }
 
 .addNewListInput button{

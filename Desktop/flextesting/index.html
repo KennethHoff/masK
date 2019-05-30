@@ -5,20 +5,29 @@
     <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
+    <!--
+        container inholds columns that are task lists. user can chose the name 
+        of the list/column.
+        every column has also button to add new cards
+        every column has cards container that keeps all the saved cards
+        inside this specific column. 
+        with creating new list, the button to create another list moves to the
+        right and is waiting to be used again.
+
+
+    -->
+
+
+
     <div id="container" class="container">
-        <div id="0" class="columnContainer">
-            <div id="3000" class="addNewList">
-                <p>+ Add new list</p>
+        <div id="0columnContainer" class="columnContainer">
+            <button id="0addNewListButton" class="addNewListButton">
+                 Add new list
+            </button>
+            <div id="0addNewListInput" class="addNewListInput">
+                <input id="0valueAcceptList" type="text" placeholder="Enter list title">
+                <button id="0buttonAcceptList" type="button">Add List</button>
             </div>
-            <div id="3500" class="addNewListInput">
-                <input id="3500value" type="text" placeholder="Enter list title">
-                <button id="3500button" type="button">Add List</button>
-            </div>
-            <!-- <div id="1000" class="cardContainer">
-                <p>Mozambik</p>
-                <button>+add new card</button>
-            </div> -->
-          
         </div>
        
    
