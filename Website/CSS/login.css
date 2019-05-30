@@ -5,7 +5,7 @@
 }
 
 body {
-  background:url(masKlogo.png);
+  background:url(../imgs/masKlogo.png);
   font-family: 'Titillium Web', sans-serif;
   background-size: 730px;
 }
@@ -60,12 +60,12 @@ button:hover {
 }
 
 #tabGroup li button:hover {
-  background: #179b77;
+  background: #e9692c;
   color: #ffffff;
 }
 
 #tabGroup .active button {
-  background: #1ab188;
+  background: #ed9121;
   color: #ffffff;
 }
 
@@ -79,7 +79,7 @@ button:hover {
 
 h1 {
   text-align: center;
-  color: #1ab188;
+  color: #e9692c;
   font-weight: 300;
   margin: 0 0 40px;
 } 
@@ -100,7 +100,7 @@ input {
 
 input:focus{
   outline: 0;
-  border-color: #179b77;
+  border-color: #e9692c;
 }
 
 .fieldWrap {
@@ -133,13 +133,13 @@ input:focus{
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: .1em;
-  background: #1ab188;
+  background: #ed9121;
   color: #ffffff;
   transition: all 0.5s ease;
 }
 
 .button:hover, .button:focus {
-  background: #179b77;
+  background: #e9692c;
 }
 
 .button{
@@ -148,5 +148,6 @@ input:focus{
 }
 
 ::placeholder{
-    color: black;
+    color: #202424;
+    text-shadow: -0.1px -0.1px #000, 0.1px -0.1px #000, -0.1px 0.1px #000, 0.1px 0.1px #000;
 }
