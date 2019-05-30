@@ -101,12 +101,38 @@ function CreateAndPushTask(_name, _description, _deadlineDate) {
     return newTask;
 }
 
+function UpdateTask(task, newName, newDescription, newDeadline) {
+    task.name = newName;
+    task.description = newDescription;
+    task.deadlineDate = newDeadline;
+}
+
+function DeleteTaskFromTaskID(taskID, reason) {
+        // if the reason parameter is not given, then set the reason to be "No Reason Given"
+    if (reason === undefined) reason = "No reason given";
+
+        // If the taskID 
+    var task = GetTaskFromID(taskID);
+    if (task === false) return;
+
+        // Check what the index of the given task is (within the tasks array)
+    var index = tasks.indexOf(task);
+        // If the task does not exist within the array (Which means the indexOf function returns -1)
+    if (index === -1) {
+        // send a message that the task does not exist and return out of the function.
+        console.warn("Cannot delete Task: It does not exist");
+        return;
+    }
+    tasks.splice(index, 1);
+}
+
 function CreateNewUser(_name) {
     let newUser = {
         id: IDGenerator(),
         name: _name,
         roles: [],
     }
+    console.log("New user created: " + newUser.name);
     return newUser;
 }
 function CreateAndPushUser(_name, _role) {
