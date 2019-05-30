@@ -1,79 +1,117 @@
+// What my comments mean:
+
+// [???] Means it is temporary and/or needs to be rewritten (.. or I forgot to remove it :>)
+
 let currentIndexForIDGenerator = 0;
 
-// TODO: Currently all arrays share the same ID generator (which is good).
-// This makes it somewhat difficult to get a specific element of a type. (Let's say the 2nd created user).
-// I haven't gotten to utilizing these elements, so it's possible that this is not relevant, or that I'm not thinking straight...
+///
+LoadFromCookies();
 
-
-/* What is this?
-- Boards ("To Do", "Finished", "Under Review" etc..)
-- Tasks ("Create this changelog", "Create Pull Request", "Finish Coding for the day" etc..)
-- Users ("Kenneth Hoff", "Kristoffer Opdahl" etc...)
-- Roles ("Senior Game Designer", "Front-End" etc...)
- */ 
-
-
+/**
+ * Array for all boards ("Incubator", "To Do" etc..)
+ * @param {string} id random ID - never change it
+ * @param {string} name What you see at the top of the board
+ * @param {task[]} tasks All tasks assigned to this board
+ */
 
 let boards = [
     // {
-    //     id: 0,
+    //     id: (random),
     //     name: "Test Board",
     //     tasks: []
     // }
-]
+];
 
+/**
+ * Array (of objects) for all tasks ("Finish the exam", "Write this documentation", etc..)
+ * Object includes:
+ * @param {string} id random ID - never change it
+ * @param {string} name What you see on the notes
+ * @param {string} description Longer description - what you see when you click on a note
+ * @param {user[]} users All users assigned to this task
+ * @param {Date} creationDate When this task was created. Automatically set when you create it - never change it
+ * @param {Date} completionDate When this task was completed
+ */
 let tasks = [
     // {
-    //     id: 1,
+    //     id: (random),
     //     name: "Test Task",
     //     description: "Description",
-    //     status: "done",
     //     users: [],
     //     creationDate: "1970-01-01",
     //     deadlineDate: "1970-01-01",
     //     completionDate: "1970-01-01"
     // }
-]
-
+];
+/**
+ * Array for all users ("Kenneth Hoff", "Andreas S Saxvik", etc..)
+ * @param {string} id random ID - never change it
+ * @param {string} name What you see
+ * @param {boolean} visibleInSidebar Whether or not this is displayed in the sidebar
+ * @param {role[]} roles All roles assigned to this user
+ */
 let users = [
     // {
-    //     id: 5,
+    //     id: (random),
     //     name: "Test Name",
-    //     visibleInDropdown,
+    //     visibleInSidebar,
     //     roles: [],
     // }
-]
-
-// foreach (user in users) {
-//     if (user.visibleInDropdown) {
-//     //Add To Dropdown
-//     }
-// }
-
+];
+/**
+ * Array for all roles ("Front-End", "Database Engineer", etc..)
+ * @param {string} id random ID - never change it
+ * @param {string} name What you see
+ */
 let roles = [
     // {
-    //     id: 1,
+    //     id: (random),
     //     name: "Test Role",
     // }
-]
+];
 
-
+/**
+ * Creates a new Board and returns it. Will not push to an array.
+ * @param {string} _name What the name of the board will be
+ */
 function CreateNewBoard(_name) {
     let newBoard = {
         id: IDGenerator(),
         name: _name,
         tasks: []
-    }
+    };
     return newBoard;
 }
+
+/**
+ * Creates a new board, pushes it to the array(and saves Cookies), and returns the board.
+ * @param {string} _name What the name of the board will be
+ */
 function CreateAndPushBoard(_name) {
     if (_name == undefined) return null;
-
     let newBoard = CreateNewBoard(_name)
-    boards.push(newBoard);
+    PushGenericElementToGenericArray(boards, newBoard);
     return newBoard;
 }
+/**
+ * Updates the value of an existing board
+ * @param {board} board A board object
+ * @param {string} _name The new name of the board
+ */
+function UpdateBoard(board, _name) {
+    board.name = name;
+}
 
+function DeleteBoard(board, reason) {
+    RemoveGenericElementFromGenericArray(boards, board, reason);
+}
+
+/**
+ * Creates a new task and returns it. Will not push to an array.
+ * @param {string} _name What the name of the task will be
+ * @param {string} _description What the description of the task will be
+ * @param {Date} _deadlineDate What the deadline of the task will be
+ */
 function CreateNewTask(_name, _description, _deadlineDate) {
     var maxNameLength = 48;alert
     // if (_name.length >= maxNameLength) window.alert("Name length >= " + maxNameLength);
@@ -92,40 +130,46 @@ function CreateNewTask(_name, _description, _deadlineDate) {
     }
     return newTask;
 }
+/**
+ * Creates a new task, pushes it to the array(and saves Cookies), and returns the task.
+ * @param {string} _name What the name of the task will be
+ * @param {string} _description What the description of the task will be
+ * @param {Date} _deadlineDate What the deadline of the task will be
+ */
 function CreateAndPushTask(_name, _description, _deadlineDate) {
     if (_name == undefined) return null;
     
     let newTask = CreateNewTask(_name, _description, _deadlineDate)
 
-    tasks.push(newTask);
+    PushGenericElementToGenericArray(tasks, newTask);
     return newTask;
 }
-
+/**
+ * Updates the values of an existing task
+ * @param {task} task A task object
+ * @param {string} [newName] [Optional] The new name of the task
+ * @param {string} [newDescription] [Optional] The new description of the task
+ * @param {Date} [newDeadline] [Optional] The new deadline of the task
+ */
 function UpdateTask(task, newName, newDescription, newDeadline) {
     task.name = newName;
     task.description = newDescription;
     task.deadlineDate = newDeadline;
 }
 
-function DeleteTaskFromTaskID(taskID, reason) {
-        // if the reason parameter is not given, then set the reason to be "No Reason Given"
-    if (reason === undefined) reason = "No reason given";
-
-        // If the taskID 
-    var task = GetTaskFromID(taskID);
-    if (task === false) return;
-
-        // Check what the index of the given task is (within the tasks array)
-    var index = tasks.indexOf(task);
-        // If the task does not exist within the array (Which means the indexOf function returns -1)
-    if (index === -1) {
-        // send a message that the task does not exist and return out of the function.
-        console.warn("Cannot delete Task: It does not exist");
-        return;
-    }
-    tasks.splice(index, 1);
+/**
+ * Deletes a task from the tasks array, given an ID
+ * @param {int} taskID The ID of the task you want to delete
+ * @param {string} [reason] [Optional] The reason you wanted to delete it
+ */
+function DeleteTask(task, reason) {
+    RemoveGenericElementFromGenericArray(tasks, task, reason);
 }
 
+/**
+ * Creates a new user and returns it. Will not push it to an array.
+ * @param {string} _name What the name of the user will be
+ */
 function CreateNewUser(_name) {
     let newUser = {
         id: IDGenerator(),
@@ -135,6 +179,10 @@ function CreateNewUser(_name) {
     console.log("New user created: " + newUser.name);
     return newUser;
 }
+/**
+ * Creates a new user, pushes it to the array(and saves Cookies), and returns the user.
+ * @param {string} _name What the name of the user will be
+ */
 function CreateAndPushUser(_name, _role) {
     if (_name == undefined) return null;
 
@@ -212,20 +260,80 @@ function AddRoleIDToUserViaUserID(roleID, userID) {
     AddRoleIDToUser(role, user);
 }
 
+    // Input any array and any element and the element will be pushed into the array, as well as save *all* cookies.
+    // Not very performant, but it's _fine_ for now
+
+/**
+ * @param {array} arr An array object (Array.IsArray())
+ * @param {int} ele the ID of the element (arr[?].id)
+ * @param {string} [reason] an optional variable to show the reason it was deleted
+ */
+function PushGenericElementToGenericArray(arr, ele) {
+    arr.push(ele);
+    SaveAllToCookies();
+}
+/**
+ * @param {[]} arr An array object (Array.IsArray())
+ * @param {object} ele the element (arr[?])
+ * @param {string} [reason] an optional variable to show the reason it was deleted
+ */
+function RemoveGenericElementFromGenericArray(arr, ele, reason) {
+
+    // if the reason parameter is not given, then set the reason to be "No Reason Given"
+    // [???] Currently not being used
+    if (reason === undefined) reason = "No reason given";
+
+    // Check where in the array(ie. the index) the element is
+    var index = arr.findIndex(ele);
+
+    // If the task does not exist within the array (Which means the indexOf function returns -1)
+    if (index === -1) {
+        // send a message that the task does not exist and return out of the function.
+        console.warn("Cannot delete Element: It does not exist");
+        return;
+    }
+    arr.splice(index, 1);
+    SaveAllToCookies();
+}
+function CheckIfArrayAlreadyIncludesName(array, name) {
+    return array.find(function(e) {return e.name == name});
+}
+
+/**
+ * 
+ * @param {array} arr An array object (Array.IsArray());
+ * @param {int} id the ID of the element (arr[?].id)
+ */
+function GetGenericArrayElementFromID(arr, id) {
+    return array.find(function (e) { return e.id == id });
+}
 
 function GetBoardFromID(id) {
-    return boards.find(function(e) { return e.id == id});
+    return GetGenericArrayElementFromID(boards, id);
 }
 function GetTaskFromID(id) {
-    return tasks.find(function(e) { return e.id == id});
+    return GetGenericArrayElementFromID(tasks, id);
 }
 function GetUserFromID(id) {
-    return users.find(function(e) { return e.id == id});
+    return GetGenericArrayElementFromID(users, id);
 }
 function GetRoleFromId(id) {
-    return roles.find(function(e) { return e.id == id});
+    return GetGenericArrayElementFromID(roles, id);
 }
 
+// Save all to cookies that will delete itself after 7 days. (You're welcome, sensor ;) )
+function SaveAllToCookies() {
+    Cookies.set("Boards", boards, {expires: 7});
+    Cookies.set("Tasks",  tasks , {expires: 7});
+    Cookies.set("Users",  users , {expires: 7});
+    Cookies.set("Roles",  roles , {expires: 7});
+}
+
+
+// Loads all cookies related to this website
+function LoadFromCookies() {
+    Cookies.get();
+}
 
 // var id = IDGenerator();
 function IDGenerator() {

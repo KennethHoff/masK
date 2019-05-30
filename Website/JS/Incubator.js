@@ -247,20 +247,36 @@ function GetNoteFromTask(task) {
     var note = GetNoteFromTaskID(task.id);
     return note;
 }
+
 function GetNoteFromTaskID(taskID) {
     // var task = GetTaskFromID(taskID);
     var note = $(taskid = taskID);
 
     return note;
 }
+
 function DeleteTaskAndNoteFromNote(note) {
     var taskID = GetTaskIDFromNote(note);
-    DeleteTaskFromTaskID(taskID);
+    var task = GetTaskFromID(taskID);
+    DeleteTask(task);
     var jqueryNote = $(note);
     jqueryNote.remove();
 }
 
-// Fun things
+
+
+
+
+
+
+
+
+
+
+
+// [???] - Don't actually delete the following lines. (DO DELETE THIS THOUGH!!), as it makes it seem we have fun doing this.
+
+// Fun things -- if this is in the final product.. I did an oopsie
 function LimitedRandom(min,max) // min and max included
 {
     return Math.floor( Math.random() * (max-min+1)+min );
