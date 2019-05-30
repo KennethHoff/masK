@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="../CSS/login.css">
+  <link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+</head>
+<body>
+    <div id="container"> 
+        
+        <!--Sign up and Login button-->
+        <ul id="tabGroup">
+            <li id="signUp" class="tab active"><button id="signupBtn">Sign Up</button></li>
+            <li id="logIn" class="tab"><button id="loginBtn">Login</button></li>
+        </ul>
+        
+        
+        <div class="tabContent">
+            <div id="signup">   
+                <h1>Sign Up for Free</h1>
+                    
+                    <div class="topRow">
+                        <div class="fieldWrap">
+                            <input type="text" id="firstname" name="firstname" placeholder="First Name: *">
+                        </div>
+        
+                        <div class="fieldWrap">
+                            <input type="text" id="lastname" name="lastname" placeholder="Last Name: *" > 
+                        </div>
+                    </div>
+                    
+                    <div class="fieldWrap">
+                        <input type="email" id="email" name="email" placeholder="Email Address: *"/>
+                    </div>
+          
+                    <div class="fieldWrap">
+                        <input type="password" name="password" placeholder="Password: *"/>
+                    </div>
+                    
+                    <button type="submit" class="button">Get Started</button>
+                
+            
+            </div> <!--- Signup ---> 
+            
+            
+            <div id="login">
+                <h1>Welcome Back!</h1>
+            
+                <div class="fieldWrap">
+                    <input type="text" id="username" name="username" placeholder="Username: *">
+                </div>
+                <div class="fieldWrap">
+                    <input type="password" name="password" placeholder="Password: *">
+                </div>
+                
+                <button class="button">Log In</button>
+        
+            </div> <!--- Login --->
+        </div> <!--- TabContent --->   
+    </div> <!--- Container --->
+    <script src="../JS/login.js"></script>
+</body>
