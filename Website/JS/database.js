@@ -93,6 +93,10 @@ let roles = [
 ];
 
 
+/* --- Object Manipulation START --- */
+
+/* --------- BOARD START -------- */
+
 /**
  * Creates a new Board and returns it. Will not push to an array.
  * @param {string} _name What the name of the board will be
@@ -139,6 +143,8 @@ function DeleteBoard(board, reason) {
 
 
 
+/* --------- BOARD END -------- */
+/* --------- TASK START -------- */
 
 
 
@@ -210,6 +216,8 @@ function DeleteTask(task, reason) {
 }
 
 
+/* --------- TASK END -------- */
+/* --------- USER START -------- */
 
 
 
@@ -259,6 +267,11 @@ function DeleteUser(user, reason) {
 }
 
 
+/* --------- USER END -------- */
+/* --------- ROLE START -------- */
+
+
+
 /**
  * Creates a new role and returns it. Will not push it to an array.
  * @param {string} _name What the name of the role will be
@@ -297,6 +310,15 @@ function DeleteRole(role, reason) {
     RemoveGenericElementFromGenericArray(roles, role, reason);
 }
 
+/* --------- USER END -------- */
+
+/* --- Object Manipulation END --- */
+
+/* Array manipulation START */
+
+
+/* --------- TASK START -------- */
+
 /**
  * Adds a given task (in the form of its ID) to a board
  * @param {Number} taskID the ID of a task
@@ -323,6 +345,9 @@ function AddTaskIDToBoardViaBoardID(taskID, boardID) {
     AddTaskIDToBoard(taskID, board);
 }
 
+/* --------- TASK END -------- */
+/* --------- USER START -------- */
+
 /**
  * Adds a given user (in the form of its ID) to a task 
  * @param {Number} userID the ID of a user
@@ -348,6 +373,9 @@ function AddUserIDToTaskViaTaskID(userID, taskID) {
     var task = GetTaskFromID(taskID);
     AddUserIDToTask(userID, task);
 }
+
+/* --------- USER END -------- */
+/* --------- ROLE START -------- */
 
 /**
  * Adds a given role (in the form of its ID) to a user
@@ -377,10 +405,10 @@ function AddRoleIDToUserViaUserID(roleID, userID) {
     AddRoleIDToUser(role, user);
 }
 
-    // Input any array and any element and the element will be pushed into the array, as well as save *all* cookies.
-    // Not very performant, but it's _fine_ for now
+
 
 /**
+ * Input any array and any element and the element will be pushed into the array
  * @param {array} arr An array object (Array.IsArray())
  * @param {Number} ele the ID of the element (arr[?].id)
  * @param {string} [reason] [Optional] The reason it was deleted
@@ -433,6 +461,7 @@ function GetGenericArrayElementFromID(arr, id) {
     return arr.find(function (e) { return e.id == id });
 }
 
+
 /**
  * @param {Number} id the ID of the board
  * @returns {board} The board element
@@ -462,6 +491,12 @@ function GetRoleFromId(id) {
     return GetGenericArrayElementFromID(roles, id);
 }
 
+
+
+/* --- Array Manipulation END --- */
+
+
+/* ------- Cookies START ------- */
 /**
  * Save all to cookies that will delete itself after 7 days. (You're welcome, sensor ;) )
  */
@@ -492,12 +527,21 @@ function LoadFromCookies() {
     var tempIndex = Cookies.getJSON("currentIndexForIDGenerator");
     currentIndexForIDGenerator = (tempIndex >= 0 ? tempIndex : 0);
 }
-/**
- * Gives you the next ID, then increments the value
- */
-function IDGenerator() {
-    return currentIndexForIDGenerator++;
-}
+
+
+
+
+// Just before the page unloads, save all information to cookies.
+$(window).on("beforeunload", function () {
+    SaveAllToCookies();
+});
+
+
+LoadFromCookies();
+
+
+/* ------- Cookies END ------- */
+
 
 function Test() {
     CreateAndPushBoard("Dette er et Board");
@@ -510,11 +554,10 @@ function Test() {
     AddRoleIDToUserViaUserID( roles[0].id, users[0].id);
 }
 
-LoadFromCookies();
 
 /**
- * Just before the page unloads, save all information to cookies.
+ * Gives you the next ID, then increments the value
  */
-$(window).on("beforeunload", function () {
-    SaveAllToCookies();
-});
+function IDGenerator() {
+    return currentIndexForIDGenerator++;
+}

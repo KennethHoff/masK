@@ -1,9 +1,17 @@
+
 var container = document.querySelector("#incubatorContainer");
+var trashCan = document.querySelector("#trashCan");
+var trashCanJQPosition = GetJQueryPosition(trashCan);
     // which item you are dragging
 var activeDragNote = null;
 var activeRightClickNote = null;
 var currentZIndex = 0;
 var incubatorBoard = CreateIncubatorBoard();
+
+// Related to deleting a note
+
+var aboveTrashCan = false;
+var noteToDelete = null;
 
 // Touch events
 container.addEventListener("touchstart", DragStart);
@@ -66,8 +74,13 @@ function DragEnd(e) {
         var task = GetTaskFromNote(activeDragNote);
         var position = GetNotePosition(activeDragNote, container);
         StorePositionDataInTask(task, position.left, position.top);
+
+        if (aboveTrashCan) {
+            noteToDelete = activeDragNote;
+        }
+
+        activeDragNote = null;
     }
-    activeDragNote = null;
 }
 
 function Drag(e) {
@@ -93,6 +106,20 @@ function Drag(e) {
     activeDragNote.xOffset = activeDragNote.currentX;
     activeDragNote.yOffset = activeDragNote.currentY;
     SetTranslate(activeDragNote.currentX, activeDragNote.currentY, activeDragNote);
+
+    aboveTrashCan = AboveTrashCan(e)
+    if (aboveTrashCan) {
+        AnimateNotePreDeletion(activeDragNote);
+    }
+    else {
+        $(activeDragNote).stop();
+    }
+}
+
+function ResetNoteStyling(note) {
+    $(note).css( {
+
+    })
 }
 
 function SetZIndex(item, index) {
@@ -120,8 +147,7 @@ function GetPosition(event, containerString) {
 
 function GetNotePosition(note) {
 
-    var jqueryNote = $(note);
-    var matrix = jqueryNote.css('transform');
+    var matrix = $(note).css('transform');
     var newMatrix = decodeMatrix(matrix)
 
     var newPos = {
@@ -228,7 +254,7 @@ function PlaceAllNotesOnPage() {
 // Context Menu
 
 // Trigger action when the contexmenu is about to be shown
-$(container).bind("contextmenu", function (event) {
+$(container).on("contextmenu", function (event) {
     
     // Avoid the real one
     event.preventDefault();
@@ -244,7 +270,7 @@ $(container).bind("contextmenu", function (event) {
 });
 
 // If the document is clicked somewhere
-$(document).bind("mousedown", function (event) {
+$(document).on("mousedown", function (event) {
     
         // If the clicked element is the menu, return
         
@@ -313,8 +339,7 @@ function GetTaskIDFromNote(note) {
     // note.dataset.taskID did not work
 
 
-    var jqueryNote = $(note);
-    var taskIDString = jqueryNote.attr("taskid");
+    var taskIDString = $(note).attr("taskid");
     var taskID = parseInt(taskIDString);
     return taskID;
 }
@@ -340,19 +365,50 @@ function GetNoteFromTaskID(taskID) {
 function DeleteTaskAndNoteFromNote(note) {
     var task = GetTaskFromNote(note);
     DeleteTask(task);
-    var jqueryNote = $(note);
-    jqueryNote.remove();
+    $(note).remove();
+}
+
+function AboveTrashCan(e) {
+    var mousePos = [[e.pageX], [e.pageY]];
+
+
+    return comparePositions(mousePos[0], trashCanJQPosition[0]) && comparePositions(mousePos[1], trashCanJQPosition[1]);
+}
+
+function GetJQueryPosition(element) {
+    var jqEle = $(element);
+
+    var pos = jqEle.position();
+    var width = jqEle.width();
+    var height = jqEle.height();
+    return [[pos.left, pos.left + width], [pos.top, pos.top + height]];
 }
 
 
+function comparePositions(pos1, pos2) {
+    var r1 = (pos1[0] < pos2[0] ? pos1 : pos2);
+    var r2 = (pos1[0] < pos2[0] ? pos2 : pos1);
+    var intersecting = (r1[1] > r2[0]) || (r1[0] === r2[0]);
+    return intersecting;
+}
 
+function AnimateNotePreDeletion(noteEle) {
+    var jqTrashCan = $(trashCan);
+    var middleOfTrashCan = jqTrashCan.position();
+    var xPos = middleOfTrashCan.left - (jqTrashCan.width / 2)
+    var yPos = middleOfTrashCan.top - (jqTrashCan.height / 2)
+    $(noteEle).animate({
+        transform: "translate3d(" + xPos + "px, " + yPos + "px, 0)",
+        opacity: 0.25
 
+    }, 500, function () {
+        if (noteToDelete != null) {
+            DeleteTaskAndNoteFromNote(noteToDelete);
+        }
+        noteToDelete = null;
 
-
-
-
-
-
+    });
+}
 
 
 // [???] - Don't actually delete the following lines. (DO DELETE THIS THOUGH!!), as it makes it seem we have fun doing this.
