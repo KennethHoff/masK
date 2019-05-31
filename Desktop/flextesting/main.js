@@ -1,6 +1,17 @@
 // //////////////// lists database///////////////not in use yet
 var arrayOfLists=[];
 
+/////////////////////////////////////////////
+////////////////////////////////////////////
+// things to fix 
+//                  dont let an empty card exist
+//                  when clicking aside the input put back to previous status
+//                  enter button to work on both inputs
+
+
+
+
+
 
 // this is container that holds everything. it will be used to target id of objects
 //on the site
@@ -12,7 +23,7 @@ var containerCatalogue = document.getElementById("container");
 //container it fetches id of anything.
 containerCatalogue.addEventListener("click",e =>{
     
-
+console.log(e.target);
     //if we click on an object that has addNewListButton in id then new input
     //is implemented. 
     //function createInput() make that button Add new list changes so the 
@@ -40,6 +51,34 @@ containerCatalogue.addEventListener("click",e =>{
     }
 
 });
+
+containerCatalogue.addEventListener("dragstart", e =>{
+    console.log(e.target);
+    e.dataTransfer.setData("text", e.target.id);
+});
+
+containerCatalogue.addEventListener("dragover", e =>{
+    e.dataTransfer.dropEffect = "move";
+    e.preventDefault();
+});
+
+containerCatalogue.addEventListener("drop", e =>{
+    if(e.target.id.includes("cardInhold")){
+    var data = e.dataTransfer.getData("text");
+    var target = e.target;
+
+    target.appendChild(document.getElementById(data));
+    
+    }
+    else{
+        e.preventDefault();
+    }
+    
+});
+
+
+
+
 
 //in this function button Add new list is changed into input field by changing style.display
 //add new list becomes invisible, input field becomes visible
@@ -115,22 +154,6 @@ function createCardContainer(id,itemDiv){
     addNewColumn();
 }
 
-// this function open textarea for new card. here user can write whatever
-//he/she wants that will appear as a card inside a column
-function createNewCard (id){
-    //containerID turns id of objects into a number so its easier to navigate
-    //as every column has specific number starting from 0 and all objects inside this columns have
-    //id that starts with the same number
-    var containerID = parseInt(id);
-    var button1 = document.getElementById(containerID+"button2");
-    var button2 = document.getElementById(containerID+"implement");
-    var textArea = document.getElementById(containerID+"textArea");
-    button1.style.display = "inline-block";
-    button2.style.display ="none"
-    textArea.classList.add("textArea");
-    textArea.classList.remove("textAreaHide");  
-}
-
 //this function creates another column next to the column that was created
 //by the user. this function calls also for function addNewButton() that creates
 //Add new list button of another column     
@@ -166,7 +189,21 @@ function addNewButton(id,nextColumnDiv){
     addNewListInputDiv.appendChild(createInputButton);
 }
 
-
+// this function open textarea for new card. here user can write whatever
+//he/she wants that will appear as a card inside a column
+function createNewCard (id){
+    //containerID turns id of objects into a number so its easier to navigate
+    //as every column has specific number starting from 0 and all objects inside this columns have
+    //id that starts with the same number
+    var containerID = parseInt(id);
+    var button1 = document.getElementById(containerID+"button2");
+    var button2 = document.getElementById(containerID+"implement");
+    var textArea = document.getElementById(containerID+"textArea");
+    button1.style.display = "inline-block";
+    button2.style.display ="none"
+    textArea.classList.add("textArea");
+    textArea.classList.remove("textAreaHide");  
+}
 
 // this function accepts value from the card input and adds newly created card
 //as a block to cardInhold container.
@@ -181,25 +218,80 @@ function addNewCard(id){
     document.getElementById(containerID+"textArea").classList.remove("textArea");
     var cardInhold = document.getElementById(containerID+"cardInhold");
     var itemDiv = document.createElement("div");
+    itemDiv.classList.add("cardCreated");
     cardInhold.appendChild(itemDiv);
     var itemP = document.createElement("p");
     itemP.textContent = value;
     itemDiv.appendChild(itemP);
-    itemDiv.classList.add("cardCreated");
+    itemDiv.id = idCardsGenerator();
+    itemDiv.setAttribute("draggable", true);
+    //cardInhold.setAttribute("ondrop", drop(event));
+    //itemDiv.setAttribute("ondragstart", drag(event));
+    //cardInhold.setAttribute("ondragover", allowDrop(event));
     document.getElementById(containerID+"implement").style.display = 'block';
     document.getElementById(containerID+"textArea").value =""
-
+    
 }
 
 
-// //////////////////// Generate ID Section //////////////////
+// //////////////////// Generate ID for the columns Section //////////////////
 var startNumberID = 1;
 
-//function that generates ID number iterating startNumberID;
+//function that generates ID number for columns iterating startNumberID;
 function idGenerator(){
     var numberID = startNumberID++;
    return numberID;
 }
+
+// //////////////////// Generate ID for the cards Section //////////////////
+var startNumberIDforCards = 1;
+function idCardsGenerator(){
+    var numberID = startNumberIDforCards++;
+   return numberID;
+}
+
+
+// function allowDrop(ev){
+//     ev.preventDefault();
+// }
+
+// function drag(ev){
+//     ev.dataTransfer.setData("srcId", ev.target.id);
+// }
+
+// function drop(ev){
+//     ev.preventDefault();
+//     var srcId = ev.dataTransfer.getData("srcId");
+//     ev.target.appendChild(document.getElementById(srcId));
+// }
+
+// function startDraggable(){
+// // drag and drop beauties
+// var dropTarget = document.querySelector(".cardContainer");
+// var draggable = document.querySelector(".cardCreated");
+
+// for (var i=0; i < draggable.length; i++){
+//     draggable[i].addEventListener("dragstart", function(ev){
+//         ev.dataTransfer.setData("srcId", ev.target.id);
+//     }); 
+// }
+// dropTarget.addEventListener("dragover", function(ev){
+//     ev.preventDefault();
+// });
+
+// dropTarget.addEventListener("drop", function(ev){
+//     ev.preventDefault();
+//     var target = ev.target;
+//     var srcId = ev.dataTransfer.getData("srcId");
+
+//     target.appendChild(document.getElementById("srcId"));
+// })
+// }
+
+
+
+
+
 
 // function that pushes generated ID number to arrayOfLists database
 //not used yet
