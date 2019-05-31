@@ -1,3 +1,4 @@
+// TODO: Make it so the style is returned upon 'unhovering' the trash can
 
 var container = document.querySelector("#incubatorContainer");
 var trashCan = document.querySelector("#trashCan");
@@ -393,6 +394,7 @@ function comparePositions(pos1, pos2) {
 }
 
 function AnimateNotePreDeletion(noteEle) {
+    var animationDuration = 200 ;
     var jqTrashCan = $(trashCan);
     var middleOfTrashCan = jqTrashCan.position();
     var xPos = middleOfTrashCan.left - (jqTrashCan.width / 2)
@@ -401,34 +403,13 @@ function AnimateNotePreDeletion(noteEle) {
         transform: "translate3d(" + xPos + "px, " + yPos + "px, 0)",
         opacity: 0.25
 
-    }, 500, function () {
+    }, animationDuration, function () {
         if (noteToDelete != null) {
             DeleteTaskAndNoteFromNote(noteToDelete);
         }
         noteToDelete = null;
-
     });
 }
-
-
-// [???] - Don't actually delete the following lines. (DO DELETE THIS THOUGH!!), as it makes it seem we have fun doing this.
-
-// Fun things -- if this is in the final product.. I did an oopsie
-function LimitedRandom(min,max) // min and max included
-{
-    return Math.floor( Math.random() * (max-min+1)+min );
-}
-
-function NumberOfIntegersNeededForRandom(min, max, checkNum) {
-    var iterations = 0;
-    if (checkNum >= max) return "Number you are looking for is higher than the possible value";
-    while (LimitedRandom(min, max) !== checkNum) {
-        iterations++
-    }
-    return "It took: " + iterations.toLocaleString('en') + " iterations to get " + checkNum.toLocaleString('en') + " with the min of " + min.toLocaleString('en') + " and the max of " + max.toLocaleString('en') + ".";
-}
-
-// PlaceAllNotesOnPage();
 
 
 // https://stackoverflow.com/questions/12783650/convert-matrix-array
@@ -447,3 +428,21 @@ function decodeMatrix(matrixValue) {
 }
 
 PlaceAllNotesOnPage();
+
+
+// [???] - Don't actually delete the following lines. (DO DELETE THIS THOUGH!!), as it makes it seem we have fun doing this.
+
+// Fun things -- if this is in the final product.. I did an oopsie
+function LimitedRandom(min,max) // min and max included
+{
+    return Math.floor( Math.random() * (max-min+1)+min );
+}
+
+function NumberOfIntegersNeededForRandom(min, max, checkNum) {
+    var iterations = 0;
+    if (checkNum >= max) return "Number you are looking for is higher than the possible value";
+    while (LimitedRandom(min, max) !== checkNum) {
+        iterations++
+    }
+    return "It took: " + iterations.toLocaleString('en') + " iterations to get " + checkNum.toLocaleString('en') + " with the min of " + min.toLocaleString('en') + " and the max of " + max.toLocaleString('en') + ".";
+}
