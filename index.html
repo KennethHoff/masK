@@ -3,98 +3,27 @@
 <head>
     <title>Homepage</title>
     <link rel="stylesheet" type="text/css" href="style.css" />
-    <link href="fullcalendar/core/main.css" rel="stylesheet" />
-    <link href="fullcalendar/daygrid/main.css" rel="stylesheet" />
-    <link href="fullcalendar/list/main.css" rel="stylesheet" />
-
-
-    <script src="fullcalendar/core/main.js"></script>
-    <script src="fullcalendar/daygrid/main.js"></script>
-    <script src="fullcalendar/interaction/main.js"></script>
-    <script src="fullcalendar/list/main.js"></script>
-
-    <script>
-        // document.addEventListener("DOMContentLoaded", function(){
-        //     var calendarEl = document.getElementById("calendar");
-
-        //     var calendar = new FullCalendar.Calendar(calendarEl, {
-        //         plugins: ["dayGrid", "interaction", "list"],
-        //         defaultView: 'dayGridMonth',
-        //         selectable: true,
-        //         editable: true
-        //     });
-        //     calendar.render();
-        // });
-    </script>
 </head>
 <body>
-            <!-- <header id="headTag">
-                <div id="navbar">
-                    <div id="logo"></div>
-                    <div id="contact"></div>
-                    <div id="about us"></div>
-                    <div id="blog"></div>
-                </div>
-            </header> -->
+    <!-- --------------------MAIN CONTAINER------------------------- -->
 <main id="mainTag">
+    <!-- ----------------------LOGO-------------------------- -->
+<!-- The logo that takes you home.  -->
+    <div id="logo">
+        <a href="#" id="home"><img src="images/masKlogo.png"></a>
+    </div>
+<!-- --------------------------SIDEBAR------------------------ -->
 
+<!-- The sidebar div only have the button element here, the rest is created through
+DOM manipulation in JS so the sidebar works as a navigator and holds ul and li and a tags
+that takes you to others sites. -->
     <div id="sidebar">
-        <!-- <ul class="navigation">
 
-            <li><a href="#">Home</a></li>
-            <li><a href="#">About</a></li>
-
-            <li class="haveSubMenu"><a href="#">Members</a>
-
-                <ul class="dropdown">
-                    <li class="subMenu haveSubMenu"><a href="#">Andreas</a>
-                        <ul class="dropdown" id="drpdown1">
-                            <li class="subMenu menu">
-                                <div class="cal" id="calendar"></div>
-                        </li>
-                        </ul>
-                    </li>
-                    <li class="subMenu haveSubMenu"><a href="#">Kenneth</a>
-                        <ul class="dropdown" id="drpdown1">
-                            <li class="subMenu menu"><div class="cal" id="calendar"></div></li>
-                        </ul>
-                    </li>
-
-                    <li class="subMenu haveSubMenu"><a href="#">Kristian</a>
-                        <ul class="dropdown" id="drpdown1">
-                            <li class="subMenu menu"><div class="cal" id="calendar"></div></li>
-                         </ul>
-                    </li>
-
-                    <li class="subMenu haveSubMenu"><a href="#">Marcin</a>
-                        <ul class="dropdown" id="drpdown2">
-                            <li class="subMenu menu"><div class="cal" id="calendar"></div></li>
-                        </ul>
-                    </li>
-
-                    <li class="subMenu haveSubMenu"><a href="#">Kristoffer</a>
-                        <ul class="dropdown" id="drpdown3">
-                            <li class="subMenu menu"><div class="cal" id="calendar"></div></li>
-                        </ul>
-                    </li>
-
-                </ul>
-
-            </li>
-
-            <li><a href="#">Gallery</a></li> -->
-        <!-- </ul> --> 
+        <!-- This button is the contact button -->
         <button id="contact"><a href="#">Contact</a></button>
     </div>
+
 </main>
-
-
-            <!-- <footer id="footerTag">
-                <div id="copyright">
-                    <p id="copyrightText">Sjakk 2019 - 2019</p>
-                </div>
-                
-            </footer> -->
         <script src="script.js"></script>
     </body>
 </html>
