@@ -1,24 +1,42 @@
-// What my comments mean:
+// What my comments mean / other information relevant to my code:
+
+// I will sometimes (Only in the documentation) use {board}, or {task} etc.. 
+// I know these are not actually valid types (Because I know javascript doesn't really "do types" that way.
+// I do it because I feel it's more readable this way)
+
+// I use a "_" before a parameter if the 'name' of the parameter is the same as an attribute I set. This is mostly for readability purposes.
+// Example: function CreateUser(_name) [...] user.name = _name;
 
 // [???] Means it is temporary and/or needs to be rewritten (.. or I forgot to remove it :>)
 
+// Some 'less than ideal' things:
+// When you delete something (eg. Task) it will not be removed from its respective 'parent' array (eg. Board). so:
+// Create Task > Add Task.id to Board "tasks" array > Delete Task > board "tasks" array still has the .id value.
+// This is an incredibly minor thing, so I don't think I will bother working on it.
+
+/**
+ * 
+ */
 let currentIndexForIDGenerator = 0;
 
 ///
-LoadFromCookies();
 
 /**
  * Array for all boards ("Incubator", "To Do" etc..)
  * @param {string} id random ID - never change it
  * @param {string} name What you see at the top of the board
  * @param {task[]} tasks All tasks assigned to this board
+ * @param {Number} pageOrder Which order the board is relative to other boards (Lower comes earliest) [For things like the Main Page]
+ * @param {{left: number, top: number}} boardPosition  Where on the board it is placed (Coordinates) [For things like the Incubator]
  */
 
 let boards = [
     // {
     //     id: (random),
     //     name: "Test Board",
-    //     tasks: []
+    //     tasks: [],
+    //     pageOrder: Number
+    //     boardPosition: {x: Number, y: Number}
     // }
 ];
 
@@ -31,6 +49,8 @@ let boards = [
  * @param {user[]} users All users assigned to this task
  * @param {Date} creationDate When this task was created. Automatically set when you create it - never change it
  * @param {Date} completionDate When this task was completed
+ * @param {Number} boardOrder // Where, relative to other tasks, it sits on the board [If the board supports it - main page mostly] (if same number (which should never happen), be based on ID)
+ * @param {{x: Number, y: Number}} boardPosition // Where on the board it sits [If the board supports it - incubator mostly]
  */
 let tasks = [
     // {
@@ -40,7 +60,9 @@ let tasks = [
     //     users: [],
     //     creationDate: "1970-01-01",
     //     deadlineDate: "1970-01-01",
-    //     completionDate: "1970-01-01"
+    //     completionDate: "1970-01-01",
+    //     boardOrder: Number,
+    //     boardPosition: {x: Number, y: Number}
     // }
 ];
 /**
@@ -70,15 +92,20 @@ let roles = [
     // }
 ];
 
+
 /**
  * Creates a new Board and returns it. Will not push to an array.
  * @param {string} _name What the name of the board will be
+ * @returns {board} returns the board object (id, name, tasks[])
  */
-function CreateNewBoard(_name) {
+function CreateBoard(_name) {
+    if (_name == undefined) return null;
     let newBoard = {
         id: IDGenerator(),
         name: _name,
-        tasks: []
+        tasks: [],
+        pageOrder: 0,
+        boardPosition: {x: 0, y: 0}
     };
     return newBoard;
 }
@@ -86,10 +113,10 @@ function CreateNewBoard(_name) {
 /**
  * Creates a new board, pushes it to the array(and saves Cookies), and returns the board.
  * @param {string} _name What the name of the board will be
+ * @returns {board} returns the board object (id, name, tasks[])
  */
 function CreateAndPushBoard(_name) {
-    if (_name == undefined) return null;
-    let newBoard = CreateNewBoard(_name)
+    let newBoard = CreateBoard(_name)
     PushGenericElementToGenericArray(boards, newBoard);
     return newBoard;
 }
@@ -101,19 +128,31 @@ function CreateAndPushBoard(_name) {
 function UpdateBoard(board, _name) {
     board.name = name;
 }
-
+/**
+ * Deletes the board from the boards array.
+ * @param {board} board 
+ * @param {string} [reason] [Optional] The reason it was deleted.
+ */
 function DeleteBoard(board, reason) {
     RemoveGenericElementFromGenericArray(boards, board, reason);
 }
+
+
+
+
+
+
 
 /**
  * Creates a new task and returns it. Will not push to an array.
  * @param {string} _name What the name of the task will be
  * @param {string} _description What the description of the task will be
  * @param {Date} _deadlineDate What the deadline of the task will be
+ * @returns {task} returns the task object (id, name, description, user[], deadlineDate, creationDate, completionDate)
  */
-function CreateNewTask(_name, _description, _deadlineDate) {
-    var maxNameLength = 48;alert
+function CreateTask(_name, _description, _deadlineDate) {
+    if (_name == undefined) return null;
+    var maxNameLength = 48;
     // if (_name.length >= maxNameLength) window.alert("Name length >= " + maxNameLength);
     _name = _name.slice(0, maxNameLength);
     let newTask = {
@@ -126,7 +165,12 @@ function CreateNewTask(_name, _description, _deadlineDate) {
         deadlineDate: (_deadlineDate == undefined ? null : _deadlineDate),
         // Sets it to the current date as of creation
         creationDate: new Date(),
-        completionDate: null
+        completionDate: null,
+        // Where, relative to other tasks, it sits on the board [If the board supports it - main page mostly] (if same number (which should never happen), be based on ID)
+        boardOrder: 0,
+        // Where on the board it sits [If the board supports it - incubator mostly]
+        boardPosition: {left: 0, top: 0}
+
     }
     return newTask;
 }
@@ -135,12 +179,11 @@ function CreateNewTask(_name, _description, _deadlineDate) {
  * @param {string} _name What the name of the task will be
  * @param {string} _description What the description of the task will be
  * @param {Date} _deadlineDate What the deadline of the task will be
+ * @returns {task} returns the task object (id, name, description, user[], deadlineDate, creationDate, completionDate)
  */
 function CreateAndPushTask(_name, _description, _deadlineDate) {
-    if (_name == undefined) return null;
     
-    let newTask = CreateNewTask(_name, _description, _deadlineDate)
-
+    let newTask = CreateTask(_name, _description, _deadlineDate)
     PushGenericElementToGenericArray(tasks, newTask);
     return newTask;
 }
@@ -159,18 +202,24 @@ function UpdateTask(task, newName, newDescription, newDeadline) {
 
 /**
  * Deletes a task from the tasks array, given an ID
- * @param {int} taskID The ID of the task you want to delete
- * @param {string} [reason] [Optional] The reason you wanted to delete it
+ * @param {task} task The task you want to delete
+ * @param {string} [reason] [Optional] The reason it was deleted
  */
 function DeleteTask(task, reason) {
     RemoveGenericElementFromGenericArray(tasks, task, reason);
 }
 
+
+
+
+
 /**
  * Creates a new user and returns it. Will not push it to an array.
  * @param {string} _name What the name of the user will be
+ * @returns {user} returns the user object (id, name, role[])
  */
-function CreateNewUser(_name) {
+function CreateUser(_name) {
+    if (_name == undefined) return null;
     let newUser = {
         id: IDGenerator(),
         name: _name,
@@ -182,15 +231,41 @@ function CreateNewUser(_name) {
 /**
  * Creates a new user, pushes it to the array(and saves Cookies), and returns the user.
  * @param {string} _name What the name of the user will be
+ * @returns {user} returns the user object (id, name, role[])
  */
 function CreateAndPushUser(_name, _role) {
-    if (_name == undefined) return null;
 
-    let newUser = CreateNewUser(_name, _role);
-    users.push(newUser);
+    let newUser = CreateUser(_name, _role);
+    PushGenericElementToGenericArray(users, newUser);
+    return newUser;
+}
+/**
+ * Update the values of an existing user
+ * @param {user} user The user you want to update
+ * @param {string} newName The new name of the user
+ */
+function UpdateUser(user, newName) {
+    user.name = newName;
 }
 
-function CreateNewRole(_name) {
+/**
+ * 
+ * @param {user} user Which user to delete
+ * @param {string} user.name name of the user
+ * @param {string} [reason] the reason it was deleted
+ */
+function DeleteUser(user, reason) {
+    RemoveGenericElementFromGenericArray(users, user, reason);
+}
+
+
+/**
+ * Creates a new role and returns it. Will not push it to an array.
+ * @param {string} _name What the name of the role will be
+ * @returns {role} returns the role object (id, name)
+ */
+function CreateRole(_name) {
+    if (_name == undefined) return null;
     let newRole = {
         id: IDGenerator(),
         name: _name
@@ -198,62 +273,104 @@ function CreateNewRole(_name) {
     return newRole;
 }
 
+/**
+ * Creates a new role, pushes it to an array (and saves Cookies), and returns the role.
+ * @param {string} _name What the name of the role will be
+ * @returns {role} returns the role object (id, name)
+ */
 function CreateAndPushRole(_name) {
-    if (_name == undefined) return null;
 
-    let newRole = CreateNewRole(_name);
-    roles.push(newRole);
+    let newRole = CreateRole(_name);
+    PushGenericElementToGenericArray(roles, newRole);
+    return newRole;
+}
+/**
+ * 
+ * @param {role} role The role you want to update
+ * @param {string} _name The new name of the role
+ */
+function UpdateRole(role, _name) {
+    role.name = _name;
 }
 
-function AddTaskIDToBoard(task, board) {
+function DeleteRole(role, reason) {
+    RemoveGenericElementFromGenericArray(roles, role, reason);
+}
+
+/**
+ * Adds a given task (in the form of its ID) to a board
+ * @param {Number} taskID the ID of a task
+ * @param {board} board Which board you want the task to be pushed into
+ */
+function AddTaskIDToBoard(taskID, board) {
         // If input is invalid, leave the function
     if (board == null || board == undefined) return null;
-    if (task == null  || task == undefined)  return null;
-    var id = task.id;
-        // If task already exists inside board, leave the function
-    if (board.tasks.includes(id)) return null;
+
+    // If task already exists inside board, leave the function
+    if (board.tasks.includes(taskID)) return null;
     
         // If it passed every error check, then it can be pushed into the array.
-    board.tasks.push(id);
-}
-function AddTaskIDToBoardViaBoardID(taskID, boardID) {
-    var task  = GetTaskFromID(taskID);
-    var board = GetBoardFromID(boardID);
-    AddTaskIDToBoard(task, board);
+    board.tasks.push(taskID);
 }
 
-function AddUserIDToTask(user, task) {
+/**
+ * Gets the board from the given boardID and pushes the taskID to that board
+ * @param {Number} taskID the ID of a task
+ * @param {Number} boardID the ID of the board you want the task to be pushed into
+ */
+function AddTaskIDToBoardViaBoardID(taskID, boardID) {
+    var board = GetBoardFromID(boardID);
+    AddTaskIDToBoard(taskID, board);
+}
+
+/**
+ * Adds a given user (in the form of its ID) to a task 
+ * @param {Number} userID the ID of a user
+ * @param {task} task Which task you want the user to be pushed into
+ */
+function AddUserIDToTask(userID, task) {
 
         // If input is invalid, leave the function
-    if (user == null || user == undefined) return null;
     if (task == null || task == undefined) return null;
-    var id = user.id;
-
         // If user already exists inside task, leave the function
-    if (task.users.includes(id)) return null;
+    if (task.users.includes(userID)) return null;
 
         // If it passed every error check, then it can be pushed into the array.
-    task.users.push(id);
-}
-function AddUserIDToTaskViaTaskID(userID, taskID) {
-    var user = GetUserFromID(userID);
-    var task = GetTaskFromID(taskID);
-    AddUserIDToTask(user, task);
+    task.users.push(userID);
 }
 
-function AddRoleIDToUser(role, user) {
+/**
+ * Gets the task from the given taskID and pushes the userID to that task
+ * @param {Number} userID the ID of a user
+ * @param {Number} taskID the ID of the task you want the user to be pushed into
+ */
+function AddUserIDToTaskViaTaskID(userID, taskID) {
+    var task = GetTaskFromID(taskID);
+    AddUserIDToTask(userID, task);
+}
+
+/**
+ * Adds a given role (in the form of its ID) to a user
+ * @param {Number} roleID the ID of a role
+ * @param {user} user which user you want the role to be pushed into
+ */
+function AddRoleIDToUser(roleID, user) {
 
         // If input is invalid, leave the function
-    if (role == null || role == undefined) return null;
     if (user == null || user == undefined) return null;
-    var id = role.id;
 
         // If role already exists inside user, leave the function
-    if (user.roles.includes(id)) return null;
+    if (user.roles.includes(roleID)) return null;
 
         // If it passed every error check, then it can be pushed into the array.
-    user.roles.push(id);
+    user.roles.push(roleID);
 }
+
+/**
+ * Gets the user from the given userID and pushes the roleID to that task
+ * @param {Number} roleID the ID of a role
+ * @param {Number} userID the ID the user you want the role to be pushed into
+ */
 function AddRoleIDToUserViaUserID(roleID, userID) {
     var role = GetRoleFromId(roleID);
     var user = GetUserFromID(userID);
@@ -265,12 +382,12 @@ function AddRoleIDToUserViaUserID(roleID, userID) {
 
 /**
  * @param {array} arr An array object (Array.IsArray())
- * @param {int} ele the ID of the element (arr[?].id)
- * @param {string} [reason] an optional variable to show the reason it was deleted
+ * @param {Number} ele the ID of the element (arr[?].id)
+ * @param {string} [reason] [Optional] The reason it was deleted
  */
 function PushGenericElementToGenericArray(arr, ele) {
+    if (arr.includes(ele)) return;
     arr.push(ele);
-    SaveAllToCookies();
 }
 /**
  * @param {[]} arr An array object (Array.IsArray())
@@ -284,7 +401,9 @@ function RemoveGenericElementFromGenericArray(arr, ele, reason) {
     if (reason === undefined) reason = "No reason given";
 
     // Check where in the array(ie. the index) the element is
-    var index = arr.findIndex(ele);
+    var index = arr.findIndex( function(e) {
+        return e.id === ele.id
+    });
 
     // If the task does not exist within the array (Which means the indexOf function returns -1)
     if (index === -1) {
@@ -293,49 +412,89 @@ function RemoveGenericElementFromGenericArray(arr, ele, reason) {
         return;
     }
     arr.splice(index, 1);
-    SaveAllToCookies();
 }
-function CheckIfArrayAlreadyIncludesName(array, name) {
+
+/**
+ * Checks an array to see if the given name already exists within. 
+ * @param {[]} array The array you want to check
+ * @param {string} name The name you want to see if exists within that array
+ * @returns {boolean} true if it exists. False if not
+ */
+function CheckIfArrayAlreadyHasName(array, name) {
     return array.find(function(e) {return e.name == name});
 }
 
 /**
  * 
  * @param {array} arr An array object (Array.IsArray());
- * @param {int} id the ID of the element (arr[?].id)
+ * @param {Number} id the ID of the element (arr[?].id)
  */
 function GetGenericArrayElementFromID(arr, id) {
-    return array.find(function (e) { return e.id == id });
+    return arr.find(function (e) { return e.id == id });
 }
 
+/**
+ * @param {Number} id the ID of the board
+ * @returns {board} The board element
+ */
 function GetBoardFromID(id) {
     return GetGenericArrayElementFromID(boards, id);
 }
+/**
+ * @param {Number} id the ID of the task
+ * @returns {task} The task element
+ */
 function GetTaskFromID(id) {
     return GetGenericArrayElementFromID(tasks, id);
 }
+/**
+ * @param {Number} id the ID of the user
+ * @returns {user} The user element
+ */
 function GetUserFromID(id) {
     return GetGenericArrayElementFromID(users, id);
 }
+/**
+ * @param {Number} id the ID of the role
+ * @returns {role} The role element
+ */
 function GetRoleFromId(id) {
     return GetGenericArrayElementFromID(roles, id);
 }
 
-// Save all to cookies that will delete itself after 7 days. (You're welcome, sensor ;) )
+/**
+ * Save all to cookies that will delete itself after 7 days. (You're welcome, sensor ;) )
+ */
 function SaveAllToCookies() {
     Cookies.set("Boards", boards, {expires: 7});
     Cookies.set("Tasks",  tasks , {expires: 7});
     Cookies.set("Users",  users , {expires: 7});
     Cookies.set("Roles",  roles , {expires: 7});
+    Cookies.set("currentIndexForIDGenerator", currentIndexForIDGenerator, {expires: 7});
 }
 
 
-// Loads all cookies related to this website
+
+/**
+ * Loads all cookies related to this website, and parse them as JSON.Parse would (ie. turn them back into Arrays)
+ */
 function LoadFromCookies() {
-    Cookies.get();
-}
+    // console.log(Cookies.get("Boards"));
+    var tempBoards = Cookies.getJSON("Boards");
+    var tempTasks = Cookies.getJSON("Tasks");
+    var tempUsers = Cookies.getJSON("Users");
+    var tempRoles = Cookies.getJSON("Roles");
+    boards = (tempBoards === undefined ? [] : tempBoards );
+    tasks = (tempTasks === undefined ? [] : tempTasks);
+    users = (tempUsers === undefined ? [] : tempUsers);
+    roles = (tempRoles === undefined ? [] : tempRoles);
 
-// var id = IDGenerator();
+    var tempIndex = Cookies.getJSON("currentIndexForIDGenerator");
+    currentIndexForIDGenerator = (tempIndex >= 0 ? tempIndex : 0);
+}
+/**
+ * Gives you the next ID, then increments the value
+ */
 function IDGenerator() {
     return currentIndexForIDGenerator++;
 }
@@ -350,3 +509,12 @@ function Test() {
     AddUserIDToTaskViaTaskID( users[0].id, tasks[0].id);
     AddRoleIDToUserViaUserID( roles[0].id, users[0].id);
 }
+
+LoadFromCookies();
+
+/**
+ * Just before the page unloads, save all information to cookies.
+ */
+$(window).on("beforeunload", function () {
+    SaveAllToCookies();
+});

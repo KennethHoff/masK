@@ -1,7 +1,7 @@
 var container = document.querySelector("#incubatorContainer");
     // which item you are dragging
-var activeDragItem = null;
-var activeRightClickItem = null;
+var activeDragNote = null;
+var activeRightClickNote = null;
 var currentZIndex = 0;
 var incubatorBoard = CreateIncubatorBoard();
 
@@ -15,7 +15,9 @@ container.addEventListener("mousedown", DragStart);
 container.addEventListener("mouseup", DragEnd);
 container.addEventListener("mousemove", Drag);
 
-// Not a super-fan of this implementation, as it's an ever-increasing index, but it works
+/**
+ * Not a super-fan of this implementation, as it's an ever-increasing index, but it works
+ */
 function GetNextZIndex() {
     currentZIndex++;
     return currentZIndex;
@@ -26,25 +28,25 @@ function DragStart(e) {
         // Only allow dragging with left-click
     if (!IsLeftButton(e)) return;
     
-    activeDragItem = GetNoteDiv(e.target);
-    if (activeDragItem == null) return;
+    activeDragNote = GetNoteDiv(e.target);
+    if (activeDragNote == null) return;
     
-    if (!activeDragItem.xOffset) {
-        activeDragItem.xOffset = 0;
+    if (!activeDragNote.xOffset) {
+        activeDragNote.xOffset = 0;
     }
-    if (!activeDragItem.yOffset) {
-        activeDragItem.yOffset = 0;
+    if (!activeDragNote.yOffset) {
+        activeDragNote.yOffset = 0;
     }
     if (e.type === "touchStart") {
-        activeDragItem.initialX = e.touches[0].clientX - activeDragItem.xOffset;
-        activeDragItem.initialY = e.touches[0].clientY - activeDragItem.yOffset;
+        activeDragNote.initialX = e.touches[0].clientX - activeDragNote.xOffset;
+        activeDragNote.initialY = e.touches[0].clientY - activeDragNote.yOffset;
     } 
     else {
-        activeDragItem.initialX = e.clientX - activeDragItem.xOffset;
-        activeDragItem.initialY = e.clientY - activeDragItem.yOffset;
+        activeDragNote.initialX = e.clientX - activeDragNote.xOffset;
+        activeDragNote.initialY = e.clientY - activeDragNote.yOffset;
     }
     
-    SetZIndex(activeDragItem, GetNextZIndex());
+    SetZIndex(activeDragNote, GetNextZIndex());
 }
 
 function CheckAndSetPlacementStats(item) {
@@ -56,40 +58,41 @@ function CheckAndSetPlacementStats(item) {
     }
 }
 
-function DragEnd() {
-    if (activeDragItem !== null) {
-        activeDragItem.initialX = activeDragItem.currentX;
-        activeDragItem.initialY = activeDragItem.currentY;
+function DragEnd(e) {
+    if (activeDragNote !== null) {
+        activeDragNote.initialX = activeDragNote.currentX;
+        activeDragNote.initialY = activeDragNote.currentY;
 
-        // Whenever you stop dragging a note, it will be go back to the default
-        // SetZIndex(activeItem, 0);
+        var task = GetTaskFromNote(activeDragNote);
+        var position = GetNotePosition(activeDragNote, container);
+        StorePositionDataInTask(task, position.left, position.top);
     }
-    activeDragItem = null;
+    activeDragNote = null;
 }
 
 function Drag(e) {
     // If you're "dragging" (ie. moving the mouse) and you're not holding a note, return.
-    if (activeDragItem == null) return;
+    if (activeDragNote == null) return;
     e.preventDefault();
     // If you're touching the screen with your fingers.
     if (e.type === "touchMove") {
         // Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
-        activeDragItem.currentX = e.touches[0].clientX - activeDragItem.initialX;
-        activeDragItem.currentY = e.touches[0].clientY - activeDragItem.initialY;
+        activeDragNote.currentX = e.touches[0].clientX - activeDragNote.initialX;
+        activeDragNote.currentY = e.touches[0].clientY - activeDragNote.initialY;
     }
     // Otherwise.. (Which should only be if you are clicking with the mouse)
     else {
         // Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
-        activeDragItem.currentX = e.clientX - activeDragItem.initialX;
-        activeDragItem.currentY = e.clientY - activeDragItem.initialY;
+        activeDragNote.currentX = e.clientX - activeDragNote.initialX;
+        activeDragNote.currentY = e.clientY - activeDragNote.initialY;
     }
 
     // Whenever you hold a note, it will be on the top
     // Set the new offSet to be where it currently sits.
     // This is used to accurately place the div where you want it.
-    activeDragItem.xOffset = activeDragItem.currentX;
-    activeDragItem.yOffset = activeDragItem.currentY;
-    SetTranslate(activeDragItem.currentX, activeDragItem.currentY, activeDragItem);
+    activeDragNote.xOffset = activeDragNote.currentX;
+    activeDragNote.yOffset = activeDragNote.currentY;
+    SetTranslate(activeDragNote.currentX, activeDragNote.currentY, activeDragNote);
 }
 
 function SetZIndex(item, index) {
@@ -106,13 +109,28 @@ function GetPosition(event, containerString) {
     // TODO: Add touch support
 
     var offset = $(containerString).offset();
-    var position = $(containerString).position();
 
     var vector2Offset = {
         left: event.pageX - offset.left,
         top: event.pageY - offset.top
     }
     return vector2Offset;
+}
+
+
+function GetNotePosition(note) {
+
+    var jqueryNote = $(note);
+    var matrix = jqueryNote.css('transform');
+    var newMatrix = decodeMatrix(matrix)
+
+    var newPos = {
+        left: newMatrix[4],
+        top: newMatrix[5]
+    }
+
+    
+    return newPos;
 }
 
 function IsLeftButton(evt) {
@@ -125,25 +143,61 @@ function IsLeftButton(evt) {
     return button == 1;
 }
 
-function CreateNewNoteOnPage(task, event) {
+function CreateNewNoteOnPageWithEvent(task, event) {
+    var pos = GetPosition(event, container);
+    var newPos = CreateNewNoteOnPage(task, pos);
+
+    // Storing the position on the Task (Should only be called on: Initial creation, and on "DragEnd");
+    StorePositionDataInTask(task, newPos.left, newPos.top);
+}
+
+function CreateNewNoteOnPage(task, pos) {
     var newDiv = document.createElement("div");
     newDiv.setAttribute("taskID", task.id);
     container.appendChild(newDiv);
     newDiv.setAttribute("class", "note");
-    newDiv.setAttribute("id", "note"  + task.id);
-    var titleString = "<p class = noteHeaders id = " + "note" + task.id +   "Header>" + task.name + "</p>";
+    newDiv.setAttribute("id", "note" + task.id);
+    var titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
     var descriptionString = "<p>" + task.description + "</p>"
     newDiv.innerHTML = titleString + "\n" + descriptionString;
 
     // Setting the position
-    var pos = GetPosition(event, container);
+
     var left = pos.left - ($(newDiv).width() / 2);
     var top = pos.top - ($(newDiv).height() / 2);
     SetTranslate(left, top, newDiv);
     newDiv.xOffset = left;
     newDiv.yOffset = top;
+    
+    return {left: left, top: top};
 }
 
+function CreateNewNoteOnPageNew(task, pos) {
+    var newDiv = document.createElement("div");
+    newDiv.setAttribute("taskID", task.id);
+    container.appendChild(newDiv);
+    newDiv.setAttribute("class", "note");
+    newDiv.setAttribute("id", "note" + task.id);
+    var titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
+    var descriptionString = "<p>" + task.description + "</p>"
+    newDiv.innerHTML = titleString + "\n" + descriptionString;
+
+    SetTranslate(pos.left, pos.top, newDiv);
+    newDiv.xOffset = pos.left;
+    newDiv.yOffset = pos.top;
+    return pos;
+}
+
+function StorePositionDataInTask(task, left, top) {
+    task.boardPosition.left = left;
+    task.boardPosition.top = top;
+}
+
+/**
+ * This is used to get the parent 'note' element from a given DOM element (For example a <p>)
+ * @param {Element} inputElement gets the parent div element from a given DOM Element
+ * @returns parent div element with the class 'note'
+ */
 function GetNoteDiv(inputElement) {
     var noteDiv = null;
 
@@ -155,6 +209,21 @@ function GetNoteDiv(inputElement) {
     }
     return noteDiv;
 }
+
+
+function PlaceAllNotesOnPage() {
+
+    incubatorBoard.tasks.forEach(noteID => {
+        var task = GetTaskFromID(noteID);
+        if (task === undefined) return;
+        // CreateNewNoteOnPage(task, task.boardPosition);
+        CreateNewNoteOnPageNew(task, task.boardPosition);
+    });
+}
+
+
+
+
 
 // Context Menu
 
@@ -184,8 +253,8 @@ $(document).bind("mousedown", function (event) {
         
         // Hide the menu
     $(".custom-menu").hide(100);
-    if (activeRightClickItem !== null) {
-        activeRightClickItem = null;
+    if (activeRightClickNote !== null) {
+        activeRightClickNote = null;
     }
 });
 
@@ -204,10 +273,11 @@ $(".custom-menu li").click(function(event){
                 // Add said task(specifically its id) to the incubator Board)
             AddTaskIDToBoardViaBoardID(newTask.id, incubatorBoard.id);
                 // Ccreate a new note on the page with the newly created task as the information (Also bring in the event call in order to know where, on the screen, to place it) 
-            CreateNewNoteOnPage(newTask, event)
+            CreateNewNoteOnPageWithEvent(newTask, event)
             break;
         case "deleteTask":
-            DeleteTaskAndNoteFromNote(activeRightClickItem);
+            DeleteTaskAndNoteFromNote(activeRightClickNote);
+            // PlaceAllNotesOnPage();
             break;
     }
   
@@ -224,11 +294,17 @@ document.addEventListener("mousedown", function(event) {
     if (className !== "note" ) {
         return;
     }
-    activeRightClickItem = note;
+    activeRightClickNote = note;
 })
 
 function CreateIncubatorBoard() {
-    return CreateAndPushBoard("Incubator");
+    var incubatorNameString = "Incubator";
+
+    var tempBoardIndex = boards.findIndex( function(e) {
+        return e.name == incubatorNameString;
+    });
+    return ( tempBoardIndex === -1 ? CreateAndPushBoard(incubatorNameString) : GetBoardFromID(tempBoardIndex));
+
 }
 
 function GetTaskIDFromNote(note) {
@@ -241,6 +317,12 @@ function GetTaskIDFromNote(note) {
     var taskIDString = jqueryNote.attr("taskid");
     var taskID = parseInt(taskIDString);
     return taskID;
+}
+
+function GetTaskFromNote(note) {
+    var taskID = GetTaskIDFromNote(note);
+    var task = GetTaskFromID(taskID);
+    return task;
 }
 
 function GetNoteFromTask(task) {
@@ -256,8 +338,7 @@ function GetNoteFromTaskID(taskID) {
 }
 
 function DeleteTaskAndNoteFromNote(note) {
-    var taskID = GetTaskIDFromNote(note);
-    var task = GetTaskFromID(taskID);
+    var task = GetTaskFromNote(note);
     DeleteTask(task);
     var jqueryNote = $(note);
     jqueryNote.remove();
@@ -282,7 +363,7 @@ function LimitedRandom(min,max) // min and max included
     return Math.floor( Math.random() * (max-min+1)+min );
 }
 
-function checkNumberOfIntegersNeededForRandom(min, max, checkNum) {
+function NumberOfIntegersNeededForRandom(min, max, checkNum) {
     var iterations = 0;
     if (checkNum >= max) return "Number you are looking for is higher than the possible value";
     while (LimitedRandom(min, max) !== checkNum) {
@@ -290,3 +371,23 @@ function checkNumberOfIntegersNeededForRandom(min, max, checkNum) {
     }
     return "It took: " + iterations.toLocaleString('en') + " iterations to get " + checkNum.toLocaleString('en') + " with the min of " + min.toLocaleString('en') + " and the max of " + max.toLocaleString('en') + ".";
 }
+
+// PlaceAllNotesOnPage();
+
+
+// https://stackoverflow.com/questions/12783650/convert-matrix-array
+function decodeMatrix(matrixValue) {
+    var values = matrixValue.split('(')[1];
+    values = values.split(')')[0];
+    values = values.split(',');
+    var a = values[0];
+    var b = values[1];
+    var c = values[2];
+    var d = values[3];
+    var scale = Math.sqrt(a * a + b * b);
+    var sin = b / scale;
+    var angle = Math.round(Math.asin(sin) * (180 / Math.PI));
+    return values;
+}
+
+PlaceAllNotesOnPage();
