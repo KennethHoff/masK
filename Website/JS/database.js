@@ -14,15 +14,14 @@
 // Create Task > Add Task.id to Board "tasks" array > Delete Task > board "tasks" array still has the .id value.
 // This is an incredibly minor thing, so I don't think I will bother working on it.
 
-/**
- * 
- */
+// in the JSDoc I almost exclusively use @param, and that is mostly because I'm new to it and don't know the various syntax.
+// Also, the documentation for JSDoc was unavailable at the time.
+// The URL was changed from usejsdoc.org => jsdoc.app, but no redirecting was available, and the change was very recent)
+
 let currentIndexForIDGenerator = 0;
 
-///
-
 /**
- * Array for all boards ("Incubator", "To Do" etc..)
+ * @description Array for all boards ("Incubator", "To Do" etc..)
  * @param {string} id random ID - never change it
  * @param {string} name What you see at the top of the board
  * @param {task[]} tasks All tasks assigned to this board

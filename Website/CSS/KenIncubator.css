@@ -16,6 +16,8 @@
 }
 
 #trashCan {
+    top: 100px;
+    left: 500px;
     position: absolute;
     width: 200px;
     height: auto;

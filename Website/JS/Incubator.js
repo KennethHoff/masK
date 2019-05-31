@@ -1,4 +1,13 @@
-// TODO: Make it so the style is returned upon 'unhovering' the trash can
+// What my comments mean / other information relevant to my code:
+
+// This JavaScript document is badly documented compared to my other scripts (specifically database.js), there are a few reasons for this:
+// Database.js is as close to an "API" as we get, and those need the best documentation, as they are literally used by other developers, instead of "just" as a way to grade our assignment
+
+// After a couple of days of development I opted into learning, and utilizing jquery.
+// Already I feel somewhat competent in the basics, but it means that some things are a little weird.
+// For example, in some functions, I input JS Dom Elements, but then convert those into jquery afterwards. instead of simply inserting the jquery dom element from the start
+// I was planning on fixing all of those issues, but If there are some left, I'm sorry. There were simply more pressing issues that needed to be addressed beforehand.
+
 
 var container = document.querySelector("#incubatorContainer");
 var trashCan = document.querySelector("#trashCan");
@@ -10,6 +19,8 @@ var currentZIndex = 0;
 var incubatorBoard = CreateIncubatorBoard();
 
 // Related to deleting a note
+
+var requireWaitingUntilAnimationIsComplete = true;
 
 var aboveTrashCan = false;
 var noteToDelete = null;
@@ -40,33 +51,27 @@ function DragStart(e) {
     activeDragNote = GetNoteDiv(e.target);
     if (activeDragNote == null) return;
     
-    if (!activeDragNote.xOffset) {
-        activeDragNote.xOffset = 0;
-    }
-    if (!activeDragNote.yOffset) {
-        activeDragNote.yOffset = 0;
-    }
-    if (e.type === "touchStart") {
-        activeDragNote.initialX = e.touches[0].clientX - activeDragNote.xOffset;
-        activeDragNote.initialY = e.touches[0].clientY - activeDragNote.yOffset;
-    } 
-    else {
-        activeDragNote.initialX = e.clientX - activeDragNote.xOffset;
-        activeDragNote.initialY = e.clientY - activeDragNote.yOffset;
-    }
+    SetNoteDefaultPositionValues(activeDragNote, e);
     
     SetZIndex(activeDragNote, GetNextZIndex());
 }
 
-function CheckAndSetPlacementStats(item) {
-    if (!item.xOffset) {
-        item.xOffset = 0;
+function SetNoteDefaultPositionValues(note, e) {
+    if (!note.xOffset) {
+        note.xOffset = 0;
     }
-    if (!item.yOffset) {
-        item.yOffset = 0;
+    if (!note.yOffset) {
+        note.yOffset = 0;
+    }
+    if (e.type === "touchStart") {
+        note.initialX = e.touches[0].clientX - note.xOffset;
+        note.initialY = e.touches[0].clientY - note.yOffset;
+    }
+    else {
+        note.initialX = e.clientX - note.xOffset;
+        note.initialY = e.clientY - note.yOffset;
     }
 }
-
 function DragEnd(e) {
     if (activeDragNote !== null) {
         activeDragNote.initialX = activeDragNote.currentX;
@@ -78,6 +83,8 @@ function DragEnd(e) {
 
         if (aboveTrashCan) {
             noteToDelete = activeDragNote;
+            if (noteToDelete.readyToBeDeleted) DeleteTaskAndNoteFromNote(noteToDelete);
+            else if (requireWaitingUntilAnimationIsComplete) ResetNoteStyling(noteToDelete);
         }
 
         activeDragNote = null;
@@ -89,38 +96,53 @@ function Drag(e) {
     if (activeDragNote == null) return;
     e.preventDefault();
     // If you're touching the screen with your fingers.
-    if (e.type === "touchMove") {
-        // Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
-        activeDragNote.currentX = e.touches[0].clientX - activeDragNote.initialX;
-        activeDragNote.currentY = e.touches[0].clientY - activeDragNote.initialY;
-    }
-    // Otherwise.. (Which should only be if you are clicking with the mouse)
-    else {
-        // Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
-        activeDragNote.currentX = e.clientX - activeDragNote.initialX;
-        activeDragNote.currentY = e.clientY - activeDragNote.initialY;
-    }
+    SetNotePosition(activeDragNote, e);
 
-    // Whenever you hold a note, it will be on the top
-    // Set the new offSet to be where it currently sits.
-    // This is used to accurately place the div where you want it.
-    activeDragNote.xOffset = activeDragNote.currentX;
-    activeDragNote.yOffset = activeDragNote.currentY;
-    SetTranslate(activeDragNote.currentX, activeDragNote.currentY, activeDragNote);
-
-    aboveTrashCan = AboveTrashCan(e)
+    aboveTrashCan = CheckIfAboveTrashCan(e)
     if (aboveTrashCan) {
         AnimateNotePreDeletion(activeDragNote);
     }
     else {
-        $(activeDragNote).stop();
+        ResetNoteStyling(activeDragNote, e);
     }
 }
+function SetNotePosition(note, e) {
+    if (e.type === "touchMove") {
+        // Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
+        note.currentX = e.touches[0].clientX - note.initialX;
+        note.currentY = e.touches[0].clientY - note.initialY;
+    }
+    // Otherwise.. (Which should only be if you are clicking with the mouse)
+    else {
+        // Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
+        note.currentX = e.clientX - note.initialX;
+        note.currentY = e.clientY - note.initialY;
+    }
+    // Whenever you hold a note, it will be on the top
+    // Set the new offSet to be where it currently sits.
+    // This is used to accurately place the div where you want it.
+    note.xOffset = note.currentX;
+    note.yOffset = note.currentY;
+    SetTranslate(note.currentX, note.currentY, note);
+}
 
-function ResetNoteStyling(note) {
-    $(note).css( {
+/**
+ * If you move the note into the trash can, but then change your mind, I want the styling to return to what it was prior.
+ * @param {note} note DOM element for the note Div
+ * @param {event} e Event from the eventhandler
+ */
+function ResetNoteStyling(note, e) {
+    note.currentlyAnimating = false;
+    var currentXPos = note.currentX;
+    var currentYPos = note.currentY;
+    var oldStyle = $(note).attr("oldStyle");
+    $(note).removeAttr("oldStyle");
+    $(note).attr("style", oldStyle);
+    $(note).stop();
+    SetTranslate(note.currentX, note.currentY, note);
+    note.readyToBeDeleted = false;
 
-    })
+    // SetNotePosition(note, e);
 }
 
 function SetZIndex(item, index) {
@@ -161,6 +183,7 @@ function GetNotePosition(note) {
 }
 
 function IsLeftButton(evt) {
+
     // Might not work on other browsers (Does work in Chrome), 
     // as some browsers have left = 1 (which imo is the better way of doing it), while others have left = 0)
     // I could, with jquery, use 'event.which' to check, 
@@ -302,10 +325,6 @@ $(".custom-menu li").click(function(event){
                 // Ccreate a new note on the page with the newly created task as the information (Also bring in the event call in order to know where, on the screen, to place it) 
             CreateNewNoteOnPageWithEvent(newTask, event)
             break;
-        case "deleteTask":
-            DeleteTaskAndNoteFromNote(activeRightClickNote);
-            // PlaceAllNotesOnPage();
-            break;
     }
   
     // Hide it AFTER the action was triggered
@@ -369,11 +388,9 @@ function DeleteTaskAndNoteFromNote(note) {
     $(note).remove();
 }
 
-function AboveTrashCan(e) {
-    var mousePos = [[e.pageX], [e.pageY]];
-
-
-    return comparePositions(mousePos[0], trashCanJQPosition[0]) && comparePositions(mousePos[1], trashCanJQPosition[1]);
+function CheckIfAboveTrashCan(e) {
+    // Only returns true if both are true (true + true = true | true + false = false (vice versa) | false + false = false)
+    return comparePositions([e.pageX], trashCanJQPosition[0]) && comparePositions([e.pageY], trashCanJQPosition[1]);
 }
 
 function GetJQueryPosition(element) {
@@ -394,23 +411,25 @@ function comparePositions(pos1, pos2) {
 }
 
 function AnimateNotePreDeletion(noteEle) {
-    var animationDuration = 200 ;
-    var jqTrashCan = $(trashCan);
-    var middleOfTrashCan = jqTrashCan.position();
-    var xPos = middleOfTrashCan.left - (jqTrashCan.width / 2)
-    var yPos = middleOfTrashCan.top - (jqTrashCan.height / 2)
+    if (noteEle.currentlyAnimating) return;
+    noteEle.currentlyAnimating = true;
+    $(noteEle).attr("oldStyle", $(noteEle).attr("style"));
+    var animationDuration = 750;
+    // var jqTrashCan = $(trashCan);
+    // var middleOfTrashCan = jqTrashCan.position();
+    // var xPos = middleOfTrashCan.left - (jqTrashCan.width / 2);
+    // var yPos = middleOfTrashCan.top - (jqTrashCan.height / 2);
     $(noteEle).animate({
-        transform: "translate3d(" + xPos + "px, " + yPos + "px, 0)",
         opacity: 0.25
-
     }, animationDuration, function () {
         if (noteToDelete != null) {
-            DeleteTaskAndNoteFromNote(noteToDelete);
+            if (!requireWaitingUntilAnimationIsComplete) DeleteTaskAndNoteFromNote(noteToDelete);
         }
         noteToDelete = null;
+        if (activeDragNote === null) return;
+        activeDragNote.readyToBeDeleted = true;
     });
 }
-
 
 // https://stackoverflow.com/questions/12783650/convert-matrix-array
 function decodeMatrix(matrixValue) {
