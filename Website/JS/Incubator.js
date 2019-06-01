@@ -1,23 +1,50 @@
 // What my comments mean / other information relevant to my code:
 
+
 // This JavaScript document is badly documented compared to my other scripts (specifically database.js), there are a few reasons for this:
 // Database.js is as close to an "API" as we get, and those need the best documentation, as they are literally used by other developers, instead of "just" as a way to grade our assignment
+
 
 // After a couple of days of development I opted into learning, and utilizing jquery.
 // Already I feel somewhat competent in the basics, but it means that some things are a little weird.
 // For example, in some functions, I input JS Dom Elements, but then convert those into jquery afterwards. instead of simply inserting the jquery dom element from the start
-// I was planning on fixing all of those issues, but If there are some left, I'm sorry. There were simply more pressing issues that needed to be addressed beforehand.
+// I was planning on fixing all of those inconsistencies, but If there are some left, I'm sorry. There were simply more pressing issues that needed to be addressed beforehand.
+// All that said, I don't think you should ever go "all-in" on any library / framework, as it has the possibility of reducing performance for no real gain.
+// Only use it when it's actually somewhat beneficial (saves time mostly, as performance is not a super-important factor with this project
+
+
+// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..var..* (like for example "letiables" instead of "variables") that was because I changed all my 'var' into 'let' halfway into the project.
+
+
+// Some 'less than ideal' things:
 
 // Minor quirk: If you hover over the note while it is inside the trashCan, the :hover CSS selector will activate. This is unintended.
 
-let container = document.querySelector("#incubatorContainer");
-let trashCan = document.querySelector("#trashCan");
-let trashCanJQPosition = GetJQueryPosition(trashCan);
+
+// Archaic variables (pre-jquery)
+// This was mostly in order to be able to utilize the event.which jquery extension that has better cross-compatability with browsers for button clicks
+
+// let container = document.querySelector("#incubatorContainer");
+
+// // Touch events
+// container.addEventListener("touchstart", DragStart);
+// container.addEventListener("touchend", DragEnd);
+// container.addEventListener("touchmove", Drag);
+
+// // Mouse events
+// container.addEventListener("mousedown", DragStart);
+// container.addEventListener("mouseup", DragEnd);
+// container.addEventListener("mousemove", Drag);
+
+const incubatorBoard = CreateIncubatorBoard();
+
+const container = $("#incubatorContainer");
+const trashCan = $("#trashCan");
+
     // which item you are dragging
 let activeDragNote = null;
 let activeRightClickNote = null;
 let currentZIndex = 0;
-let incubatorBoard = CreateIncubatorBoard();
 
 // Related to deleting a note
 
@@ -27,14 +54,26 @@ let aboveTrashCan = false;
 let noteToDelete = null;
 
 // Touch events
-container.addEventListener("touchstart", DragStart);
-container.addEventListener("touchend", DragEnd);
-container.addEventListener("touchmove", Drag);
+container.on("touchstart", DragStart);
+container.on("touchend", DragEnd);
+container.on("touchmove", Drag);
 
 // Mouse events
-container.addEventListener("mousedown", DragStart);
-container.addEventListener("mouseup", DragEnd);
-container.addEventListener("mousemove", Drag);
+container.on("mousedown", DragStart);
+container.on("mouseup", DragEnd);
+container.on("mousemove", Drag);
+
+$(".note").on("mouseenter", NoteMouseEnter).on("mouseleave", NoteMouseLeave)
+
+function NoteMouseEnter(e) {
+    console.log("LOL");
+    e.target.css("cursor", "pointer");
+    e.target.css("border-width", "20px");
+}
+
+function NoteMouseLeave(e) {
+
+}
 
 /**
  * Not a super-fan of this implementation, as it's an ever-increasing index, but it works
@@ -94,7 +133,7 @@ function DragEnd(e) {
 
 function Drag(e) {
     // If you're "dragging" (ie. moving the mouse) and you're not holding a note, return.
-    if (activeDragNote == null) return;
+    if (activeDragNote == null) return;  
     e.preventDefault();
     // If you're touching the screen with your fingers.
 
@@ -109,23 +148,37 @@ function Drag(e) {
         ResetNoteStyling(activeDragNote, e);
     }
 }
+/**
+ * Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
+ */
 function GetNotePosWithEvent(note, e) {
     let currentX, currentY;
+
     if (e.type === "touchMove") {
-        // Set the current position letiables (not the actual positions) to be the difference between where you clicked and where you started dragging
-        currentX = e.touches[0].clientX - note.initialX;
-        currentY = e.touches[0].clientY - note.initialY;
+        GetNotePos(note, e.touches[0].pageX, e.touches[0].pageY);
     }
     // Otherwise.. (Which should only be if you are clicking with the mouse)
     else {
-        // Set the current position letiables (not the actual positions) to be the difference between where you clicked and where you started dragging
-        currentX = e.clientX - note.initialX;
-        currentY = e.clientY - note.initialY;
+        currentX = e.pageX - note.initialX;
+        currentY = e.pageY - note.initialY;
     }
     return { x: currentX, y: currentY };
 }
 
+function GetNotePos(note, xPos, yPos) {
+    let currentX, currentY;
+    currentX = xPos - note.initialX;
+    currentY = yPos - note.initialY;
+
+    return {x: currentX, y: currentY };
+}
+
 function SetNotePosition(note, xPos, yPos) {
+
+    // let currentMiddle = GetMiddlePosition(note);
+
+    // note.currentX = xPos + (currentMiddle.difference.x / 2);
+    // note.currentY = yPos + (currentMiddle.difference.y / 2);
 
     note.currentX = xPos;
     note.currentY = yPos;
@@ -191,15 +244,12 @@ function GetNotePosition(note) {
     return newPos;
 }
 
+/**
+ * Utilizes the browser cross-compatability of jquery to accurately check if it really is left I'm clicking, 
+ * as some browsers might use 1 = left, while others use 0 = left (0 should clearly be 'undefined', or 'no event' in my books)
+ */
 function IsLeftButton(evt) {
-
-    // Might not work on other browsers (Does work in Chrome), 
-    // as some browsers have left = 1 (which imo is the better way of doing it), while others have left = 0)
-    // I could, with jquery, use 'event.which' to check, 
-    // but it's not necessary if Chrome is the only browser it needs to work with,
-    if ("buttons" in evt) return evt.buttons == 1;
-    let button = evt.which || evt.button;
-    return button == 1;
+    return evt.which == 1;
 }
 
 function CreateNewNoteOnPageWithEvent(task, event) {
@@ -213,11 +263,11 @@ function CreateNewNoteOnPageWithEvent(task, event) {
 function CreateNewNoteOnPage(task, pos) {
     let newDiv = document.createElement("div");
     newDiv.setAttribute("taskID", task.id);
-    container.appendChild(newDiv);
+    container.append(newDiv);
     newDiv.setAttribute("class", "note");
     newDiv.setAttribute("id", "note" + task.id);
-    let titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
-    let descriptionString = "<p>" + task.description + "</p>"
+    let titleString = "<p class = noteName id = 'note" + task.id + "Name'>" + task.name + "</p>";
+    let descriptionString = "<p class = noteDescription id = 'note" + task.id + "Description'>" + task.description + "</p>"
     newDiv.innerHTML = titleString + "\n" + descriptionString;
 
     // Setting the position
@@ -234,7 +284,7 @@ function CreateNewNoteOnPage(task, pos) {
 function CreateNewNoteOnPageNew(task, pos) {
     let newDiv = document.createElement("div");
     newDiv.setAttribute("taskID", task.id);
-    container.appendChild(newDiv);
+    container.append(newDiv);
     newDiv.setAttribute("class", "note");
     newDiv.setAttribute("id", "note" + task.id);
     let titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
@@ -340,7 +390,7 @@ $(".custom-menu li").click(function(event){
     $(".custom-menu").hide(100);
 });
 
-// This is to set the note to a letiable on right-click, in order to know which note to remove when you click on Delete Task in the context menu.
+// This is to set the note to a variable on right-click, in order to know which note to remove when you click on Delete Task in the context menu.
 // as the event in the context menu returns the context menu li instead of the note div
 document.addEventListener("mousedown", function(event) {
     let note = GetNoteDiv(event.target);
@@ -398,8 +448,9 @@ function DeleteTaskAndNoteFromNote(note) {
 }
 
 function CheckIfAboveTrashCan(e) {
+    let trashCanPos = GetJQueryPosition(trashCan);
     // Only returns true if both are true (true + true = true | true + false = false (vice versa) | false + false = false)
-    return comparePositions([e.pageX], trashCanJQPosition[0]) && comparePositions([e.pageY], trashCanJQPosition[1]);
+    return comparePositions([e.pageX], trashCanPos[0]) && comparePositions([e.pageY], trashCanPos[1]);
 }
 
 function GetJQueryPosition(element) {
@@ -419,20 +470,33 @@ function comparePositions(pos1, pos2) {
     return intersecting;
 }
 
+/**
+ * It doesn't seem to be perfectly aligned, but it's close enough so that you understand the idea.
+ *
+ * I don't have enough time to find out why it's not aligned perfectly in the middle, and this is a low-priority issue.
+ */
 function AnimateNotePreDeletion(noteEle) {
     if (noteEle.currentlyAnimating) return;
     noteEle.currentlyAnimating = true;
 
     $(noteEle).attr("oldStyle", $(noteEle).attr("style"));
 
+    let trashCanBody = trashCan.children("#trashCanBody");
+
+    let trashCanBodyPositionData = GetPositionDataRelative(trashCanBody, trashCan);
+    let xOffset = trashCanBodyPositionData.difference.x / 2;
+    let yOffset = trashCanBodyPositionData.difference.y / 2;
+
     let animationDuration = 750;
-    let jqTrashCan = $(trashCan);
-    let middleOfTrashCan = jqTrashCan.position();
-    let xPos = middleOfTrashCan.left - (jqTrashCan.width / 2);
-    let yPos = middleOfTrashCan.top - (jqTrashCan.height / 2);
+
+    // Middle of the trashCanBody minus the difference between the start of the body and the end of the body (divided by 2)
+    let xPos = trashCanBodyPositionData.middle.x - xOffset;
+    let yPos = trashCanBodyPositionData.middle.y - yOffset;
+    
+    SetNotePosition(noteEle, xPos, yPos);
     $(noteEle).animate({
-        transform: "translate(" + xPos + "px, " + yPos + "px)"
-        // opacity: 0.25
+        transform: "translate(" + xPos + "px, " + yPos + "px)",
+        opacity: 0.25
     }, animationDuration, function () {
 
         if (noteToDelete != null) {
@@ -443,6 +507,69 @@ function AnimateNotePreDeletion(noteEle) {
         activeDragNote.readyToBeDeleted = true;
         
     });
+}
+
+/**
+ * @param {*} dom jquery DOM element
+ * @returns {Number[]} The middle of a DOM element's transform
+ */
+function GetPositionData(dom) {
+    let domPos = GetJQueryPosition(dom);
+    let domXArray = domPos[0];
+    let domXStart = domXArray[0];
+    let domXEnd = domXArray[1];
+    let domXDifference = domXEnd - domXStart;
+    let domXMiddle = domXStart + (domXDifference / 2);
+
+    let domYArray = domPos[1];
+    let domYStart = domYArray[0];
+    let domYEnd = domYArray[1];
+    let domYDifference = domYEnd - domYStart;
+    let domYMiddle = domYStart + (domYDifference / 2);
+
+    let start = {x: domXStart, y: domYStart };
+    let end = {x: domXEnd, y: domYEnd };
+    let difference = {x: domXDifference, y: domYDifference };
+    let middle = {x: domXMiddle, y: domYMiddle };
+
+    return {
+        start: start,
+        end: end,
+        difference: difference,
+        middle: middle
+    };
+}
+
+function GetPositionDataRelative(dom, relDom) {
+    let domMiddlePos = GetPositionData(dom);
+    let relDomMiddlePos = GetPositionData(relDom);
+
+    let newStart = {
+        x: relDomMiddlePos.start.x + domMiddlePos.start.x,
+        y: relDomMiddlePos.start.y + domMiddlePos.start.y
+    }
+
+    let newEnd = {
+        x: relDomMiddlePos.end.x + domMiddlePos.end.x,
+        y: relDomMiddlePos.end.y + domMiddlePos.end.y
+    }
+
+    let newDifference = {
+        x: relDomMiddlePos.difference.x + domMiddlePos.difference.x,
+        y: relDomMiddlePos.difference.y + domMiddlePos.difference.y
+    }
+
+    let newMiddle = {
+        x: relDomMiddlePos.middle.x + domMiddlePos.middle.x,
+        y: relDomMiddlePos.middle.y + domMiddlePos.middle.y
+    }
+
+    return {
+        start: newStart,
+        end: newEnd,
+        difference: newDifference,
+        middle: newMiddle
+    };
 }
 
 // https://stackoverflow.com/questions/12783650/convert-matrix-array
@@ -461,6 +588,11 @@ function decodeMatrix(matrixValue) {
 }
 
 PlaceAllNotesOnPage();
+
+
+
+
+
 
 
 // [???] - Don't actually delete the following lines. (DO DELETE THIS THOUGH!!), as it makes it seem we have fun doing this.

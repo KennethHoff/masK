@@ -1,18 +1,26 @@
 // What my comments mean / other information relevant to my code:
 
+
 // I will sometimes (Only in the documentation) use {board}, or {task} etc.. 
 // I know these are not actually valid types (Because I know javascript doesn't really "do types" that way.
 // I do it because I feel it's more readable this way)
 
+
 // I use a "_" before a parameter if the 'name' of the parameter is the same as an attribute I set. This is mostly for readability purposes.
 // Example: function CreateUser(_name) [...] user.name = _name;
 
+
+// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..var..* (like for example "letiables" instead of "variables") that was because I changed all my 'var' into 'let' halfway into the project.
+
+
 // [???] Means it is temporary and/or needs to be rewritten (.. or I forgot to remove it :>)
+
 
 // Some 'less than ideal' things:
 // When you delete something (eg. Task) it will not be removed from its respective 'parent' array (eg. Board). so:
 // Create Task > Add Task.id to Board "tasks" array > Delete Task > board "tasks" array still has the .id value.
 // This is an incredibly minor thing, so I don't think I will bother working on it.
+
 
 // in the JSDoc I almost exclusively use @param, and that is mostly because I'm new to it and don't know the letious syntax.
 // Also, the documentation for JSDoc was unavailable at the time.
@@ -29,7 +37,6 @@ let currentIndexForIDGenerator = 0;
  * @param {{left: number, top: number}} boardPosition  Where on the board it is placed (Coordinates) [For things like the Incubator]
  */
 
-    // Const variables cannot be reassigned (but they are not immutable - so the "contents of the contents" (ie elements of an array etc..) can still be changed)
 let boards = [
     // {
     //     id: (random),
@@ -527,8 +534,6 @@ function LoadFromCookies() {
     let tempIndex = Cookies.getJSON("currentIndexForIDGenerator");
     currentIndexForIDGenerator = (tempIndex >= 0 ? tempIndex : 0);
 }
-
-
 
 
 // Just before the page unloads, save all information to cookies.
