@@ -10,21 +10,21 @@
 
 // Minor quirk: If you hover over the note while it is inside the trashCan, the :hover CSS selector will activate. This is unintended.
 
-var container = document.querySelector("#incubatorContainer");
-var trashCan = document.querySelector("#trashCan");
-var trashCanJQPosition = GetJQueryPosition(trashCan);
+let container = document.querySelector("#incubatorContainer");
+let trashCan = document.querySelector("#trashCan");
+let trashCanJQPosition = GetJQueryPosition(trashCan);
     // which item you are dragging
-var activeDragNote = null;
-var activeRightClickNote = null;
-var currentZIndex = 0;
-var incubatorBoard = CreateIncubatorBoard();
+let activeDragNote = null;
+let activeRightClickNote = null;
+let currentZIndex = 0;
+let incubatorBoard = CreateIncubatorBoard();
 
 // Related to deleting a note
 
-var requireWaitingUntilAnimationIsComplete = true;
+let requireWaitingUntilAnimationIsComplete = true;
 
-var aboveTrashCan = false;
-var noteToDelete = null;
+let aboveTrashCan = false;
+let noteToDelete = null;
 
 // Touch events
 container.addEventListener("touchstart", DragStart);
@@ -78,8 +78,8 @@ function DragEnd(e) {
         activeDragNote.initialX = activeDragNote.currentX;
         activeDragNote.initialY = activeDragNote.currentY;
 
-        var task = GetTaskFromNote(activeDragNote);
-        var position = GetNotePosition(activeDragNote, container);
+        let task = GetTaskFromNote(activeDragNote);
+        let position = GetNotePosition(activeDragNote, container);
         StorePositionDataInTask(task, position.left, position.top);
 
         if (aboveTrashCan) {
@@ -104,21 +104,21 @@ function Drag(e) {
     }
         // Do not move the note if you're over the trashCan. This is to ensure the animation moves smoothly
     else {
-        var pos = GetNotePosWithEvent(activeDragNote, e);
+        let pos = GetNotePosWithEvent(activeDragNote, e);
         SetNotePosition(activeDragNote, pos.x, pos.y);
         ResetNoteStyling(activeDragNote, e);
     }
 }
 function GetNotePosWithEvent(note, e) {
-    var currentX, currentY;
+    let currentX, currentY;
     if (e.type === "touchMove") {
-        // Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
+        // Set the current position letiables (not the actual positions) to be the difference between where you clicked and where you started dragging
         currentX = e.touches[0].clientX - note.initialX;
         currentY = e.touches[0].clientY - note.initialY;
     }
     // Otherwise.. (Which should only be if you are clicking with the mouse)
     else {
-        // Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
+        // Set the current position letiables (not the actual positions) to be the difference between where you clicked and where you started dragging
         currentX = e.clientX - note.initialX;
         currentY = e.clientY - note.initialY;
     }
@@ -144,9 +144,9 @@ function SetNotePosition(note, xPos, yPos) {
  */
 function ResetNoteStyling(note, e) {
     note.currentlyAnimating = false;
-    var currentXPos = note.currentX;
-    var currentYPos = note.currentY;
-    var oldStyle = $(note).attr("oldStyle");
+    let currentXPos = note.currentX;
+    let currentYPos = note.currentY;
+    let oldStyle = $(note).attr("oldStyle");
     $(note).removeAttr("oldStyle");
     $(note).attr("style", oldStyle);
     $(note).stop();
@@ -159,7 +159,7 @@ function SetZIndex(item, index) {
 }
 
 function SetTranslate(xPos, yPos, el) {
-    el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+    el.style.transform = "translate(" + xPos + "px, " + yPos + "px)";
 }
 
 // Thanks to https://www.kirupa.com/html5/drag.htm for the "boilerplate"
@@ -167,9 +167,9 @@ function SetTranslate(xPos, yPos, el) {
 function GetPosition(event, containerString) {
     // TODO: Add touch support
 
-    var offset = $(containerString).offset();
+    let offset = $(containerString).offset();
 
-    var vector2Offset = {
+    let vector2Offset = {
         left: event.pageX - offset.left,
         top: event.pageY - offset.top
     }
@@ -179,10 +179,10 @@ function GetPosition(event, containerString) {
 
 function GetNotePosition(note) {
 
-    var matrix = $(note).css('transform');
-    var newMatrix = decodeMatrix(matrix)
+    let matrix = $(note).css('transform');
+    let newMatrix = decodeMatrix(matrix)
 
-    var newPos = {
+    let newPos = {
         left: newMatrix[4],
         top: newMatrix[5]
     }
@@ -198,32 +198,32 @@ function IsLeftButton(evt) {
     // I could, with jquery, use 'event.which' to check, 
     // but it's not necessary if Chrome is the only browser it needs to work with,
     if ("buttons" in evt) return evt.buttons == 1;
-    var button = evt.which || evt.button;
+    let button = evt.which || evt.button;
     return button == 1;
 }
 
 function CreateNewNoteOnPageWithEvent(task, event) {
-    var pos = GetPosition(event, container);
-    var newPos = CreateNewNoteOnPage(task, pos);
+    let pos = GetPosition(event, container);
+    let newPos = CreateNewNoteOnPage(task, pos);
 
     // Storing the position on the Task (Should only be called on: Initial creation, and on "DragEnd");
     StorePositionDataInTask(task, newPos.left, newPos.top);
 }
 
 function CreateNewNoteOnPage(task, pos) {
-    var newDiv = document.createElement("div");
+    let newDiv = document.createElement("div");
     newDiv.setAttribute("taskID", task.id);
     container.appendChild(newDiv);
     newDiv.setAttribute("class", "note");
     newDiv.setAttribute("id", "note" + task.id);
-    var titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
-    var descriptionString = "<p>" + task.description + "</p>"
+    let titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
+    let descriptionString = "<p>" + task.description + "</p>"
     newDiv.innerHTML = titleString + "\n" + descriptionString;
 
     // Setting the position
 
-    var left = pos.left - ($(newDiv).width() / 2);
-    var top = pos.top - ($(newDiv).height() / 2);
+    let left = pos.left - ($(newDiv).width() / 2);
+    let top = pos.top - ($(newDiv).height() / 2);
     SetTranslate(left, top, newDiv);
     newDiv.xOffset = left;
     newDiv.yOffset = top;
@@ -232,13 +232,13 @@ function CreateNewNoteOnPage(task, pos) {
 }
 
 function CreateNewNoteOnPageNew(task, pos) {
-    var newDiv = document.createElement("div");
+    let newDiv = document.createElement("div");
     newDiv.setAttribute("taskID", task.id);
     container.appendChild(newDiv);
     newDiv.setAttribute("class", "note");
     newDiv.setAttribute("id", "note" + task.id);
-    var titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
-    var descriptionString = "<p>" + task.description + "</p>"
+    let titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
+    let descriptionString = "<p>" + task.description + "</p>"
     newDiv.innerHTML = titleString + "\n" + descriptionString;
 
     SetTranslate(pos.left, pos.top, newDiv);
@@ -258,7 +258,7 @@ function StorePositionDataInTask(task, left, top) {
  * @returns parent div element with the class 'note'
  */
 function GetNoteDiv(inputElement) {
-    var noteDiv = null;
+    let noteDiv = null;
 
     if (inputElement.className === 'note') {
         noteDiv = inputElement;
@@ -273,7 +273,7 @@ function GetNoteDiv(inputElement) {
 function PlaceAllNotesOnPage() {
 
     incubatorBoard.tasks.forEach(noteID => {
-        var task = GetTaskFromID(noteID);
+        let task = GetTaskFromID(noteID);
         if (task === undefined) return;
         // CreateNewNoteOnPage(task, task.boardPosition);
         CreateNewNoteOnPageNew(task, task.boardPosition);
@@ -328,7 +328,7 @@ $(".custom-menu li").click(function(event){
             // If you click the "New Task" 'data-action', then this will happen..
         case "newTask":
                 // Create a new task with the name corresponding to the currend DateTime // Temporary
-            var newTask = CreateAndPushTask(new Date().toString());
+            let newTask = CreateAndPushTask(new Date().toString());
                 // Add said task(specifically its id) to the incubator Board)
             AddTaskIDToBoardViaBoardID(newTask.id, incubatorBoard.id);
                 // Ccreate a new note on the page with the newly created task as the information (Also bring in the event call in order to know where, on the screen, to place it) 
@@ -340,12 +340,12 @@ $(".custom-menu li").click(function(event){
     $(".custom-menu").hide(100);
 });
 
-// This is to set the note to a variable on right-click, in order to know which note to remove when you click on Delete Task in the context menu.
+// This is to set the note to a letiable on right-click, in order to know which note to remove when you click on Delete Task in the context menu.
 // as the event in the context menu returns the context menu li instead of the note div
 document.addEventListener("mousedown", function(event) {
-    var note = GetNoteDiv(event.target);
+    let note = GetNoteDiv(event.target);
     if (note === null) return;
-    var className = note.className; 
+    let className = note.className; 
     if (className !== "note" ) {
         return;
     }
@@ -353,9 +353,9 @@ document.addEventListener("mousedown", function(event) {
 })
 
 function CreateIncubatorBoard() {
-    var incubatorNameString = "Incubator";
+    let incubatorNameString = "Incubator";
 
-    var tempBoardIndex = boards.findIndex( function(e) {
+    let tempBoardIndex = boards.findIndex( function(e) {
         return e.name == incubatorNameString;
     });
     return ( tempBoardIndex === -1 ? CreateAndPushBoard(incubatorNameString) : GetBoardFromID(tempBoardIndex));
@@ -368,31 +368,31 @@ function GetTaskIDFromNote(note) {
     // note.dataset.taskID did not work
 
 
-    var taskIDString = $(note).attr("taskid");
-    var taskID = parseInt(taskIDString);
+    let taskIDString = $(note).attr("taskid");
+    let taskID = parseInt(taskIDString);
     return taskID;
 }
 
 function GetTaskFromNote(note) {
-    var taskID = GetTaskIDFromNote(note);
-    var task = GetTaskFromID(taskID);
+    let taskID = GetTaskIDFromNote(note);
+    let task = GetTaskFromID(taskID);
     return task;
 }
 
 function GetNoteFromTask(task) {
-    var note = GetNoteFromTaskID(task.id);
+    let note = GetNoteFromTaskID(task.id);
     return note;
 }
 
 function GetNoteFromTaskID(taskID) {
-    // var task = GetTaskFromID(taskID);
-    var note = $(taskid = taskID);
+    // let task = GetTaskFromID(taskID);
+    let note = $(taskid = taskID);
 
     return note;
 }
 
 function DeleteTaskAndNoteFromNote(note) {
-    var task = GetTaskFromNote(note);
+    let task = GetTaskFromNote(note);
     DeleteTask(task);
     $(note).remove();
 }
@@ -403,33 +403,36 @@ function CheckIfAboveTrashCan(e) {
 }
 
 function GetJQueryPosition(element) {
-    var jqEle = $(element);
+    let jqEle = $(element);
 
-    var pos = jqEle.position();
-    var width = jqEle.width();
-    var height = jqEle.height();
+    let pos = jqEle.position();
+    let width = jqEle.width();
+    let height = jqEle.height();
     return [[pos.left, pos.left + width], [pos.top, pos.top + height]];
 }
 
 
 function comparePositions(pos1, pos2) {
-    var r1 = (pos1[0] < pos2[0] ? pos1 : pos2);
-    var r2 = (pos1[0] < pos2[0] ? pos2 : pos1);
-    var intersecting = (r1[1] > r2[0]) || (r1[0] === r2[0]);
+    let r1 = (pos1[0] < pos2[0] ? pos1 : pos2);
+    let r2 = (pos1[0] < pos2[0] ? pos2 : pos1);
+    let intersecting = (r1[1] > r2[0]) || (r1[0] === r2[0]);
     return intersecting;
 }
 
 function AnimateNotePreDeletion(noteEle) {
     if (noteEle.currentlyAnimating) return;
     noteEle.currentlyAnimating = true;
+
     $(noteEle).attr("oldStyle", $(noteEle).attr("style"));
-    var animationDuration = 750;
-    var jqTrashCan = $(trashCan);
-    var middleOfTrashCan = jqTrashCan.position();
-    var xPos = middleOfTrashCan.left - (jqTrashCan.width / 2);
-    var yPos = middleOfTrashCan.top - (jqTrashCan.height / 2);
+
+    let animationDuration = 750;
+    let jqTrashCan = $(trashCan);
+    let middleOfTrashCan = jqTrashCan.position();
+    let xPos = middleOfTrashCan.left - (jqTrashCan.width / 2);
+    let yPos = middleOfTrashCan.top - (jqTrashCan.height / 2);
     $(noteEle).animate({
-        opacity: 0.25
+        transform: "translate(" + xPos + "px, " + yPos + "px)"
+        // opacity: 0.25
     }, animationDuration, function () {
 
         if (noteToDelete != null) {
@@ -444,16 +447,16 @@ function AnimateNotePreDeletion(noteEle) {
 
 // https://stackoverflow.com/questions/12783650/convert-matrix-array
 function decodeMatrix(matrixValue) {
-    var values = matrixValue.split('(')[1];
+    let values = matrixValue.split('(')[1];
     values = values.split(')')[0];
     values = values.split(',');
-    var a = values[0];
-    var b = values[1];
-    var c = values[2];
-    var d = values[3];
-    var scale = Math.sqrt(a * a + b * b);
-    var sin = b / scale;
-    var angle = Math.round(Math.asin(sin) * (180 / Math.PI));
+    let a = values[0];
+    let b = values[1];
+    let c = values[2];
+    let d = values[3];
+    let scale = Math.sqrt(a * a + b * b);
+    let sin = b / scale;
+    let angle = Math.round(Math.asin(sin) * (180 / Math.PI));
     return values;
 }
 
@@ -469,7 +472,7 @@ function LimitedRandom(min,max) // min and max included
 }
 
 function NumberOfIntegersNeededForRandom(min, max, checkNum) {
-    var iterations = 0;
+    let iterations = 0;
     if (checkNum >= max) return "Number you are looking for is higher than the possible value";
     while (LimitedRandom(min, max) !== checkNum) {
         iterations++

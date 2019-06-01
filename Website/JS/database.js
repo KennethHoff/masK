@@ -14,7 +14,7 @@
 // Create Task > Add Task.id to Board "tasks" array > Delete Task > board "tasks" array still has the .id value.
 // This is an incredibly minor thing, so I don't think I will bother working on it.
 
-// in the JSDoc I almost exclusively use @param, and that is mostly because I'm new to it and don't know the various syntax.
+// in the JSDoc I almost exclusively use @param, and that is mostly because I'm new to it and don't know the letious syntax.
 // Also, the documentation for JSDoc was unavailable at the time.
 // The URL was changed from usejsdoc.org => jsdoc.app, but no redirecting was available, and the change was very recent)
 
@@ -29,6 +29,7 @@ let currentIndexForIDGenerator = 0;
  * @param {{left: number, top: number}} boardPosition  Where on the board it is placed (Coordinates) [For things like the Incubator]
  */
 
+    // Const variables cannot be reassigned (but they are not immutable - so the "contents of the contents" (ie elements of an array etc..) can still be changed)
 let boards = [
     // {
     //     id: (random),
@@ -157,7 +158,7 @@ function DeleteBoard(board, reason) {
  */
 function CreateTask(_name, _description, _deadlineDate) {
     if (_name == undefined) return null;
-    var maxNameLength = 48;
+    let maxNameLength = 48;
     // if (_name.length >= maxNameLength) window.alert("Name length >= " + maxNameLength);
     _name = _name.slice(0, maxNameLength);
     let newTask = {
@@ -340,7 +341,7 @@ function AddTaskIDToBoard(taskID, board) {
  * @param {Number} boardID the ID of the board you want the task to be pushed into
  */
 function AddTaskIDToBoardViaBoardID(taskID, boardID) {
-    var board = GetBoardFromID(boardID);
+    let board = GetBoardFromID(boardID);
     AddTaskIDToBoard(taskID, board);
 }
 
@@ -369,7 +370,7 @@ function AddUserIDToTask(userID, task) {
  * @param {Number} taskID the ID of the task you want the user to be pushed into
  */
 function AddUserIDToTaskViaTaskID(userID, taskID) {
-    var task = GetTaskFromID(taskID);
+    let task = GetTaskFromID(taskID);
     AddUserIDToTask(userID, task);
 }
 
@@ -399,8 +400,8 @@ function AddRoleIDToUser(roleID, user) {
  * @param {Number} userID the ID the user you want the role to be pushed into
  */
 function AddRoleIDToUserViaUserID(roleID, userID) {
-    var role = GetRoleFromId(roleID);
-    var user = GetUserFromID(userID);
+    let role = GetRoleFromId(roleID);
+    let user = GetUserFromID(userID);
     AddRoleIDToUser(role, user);
 }
 
@@ -419,7 +420,7 @@ function PushGenericElementToGenericArray(arr, ele) {
 /**
  * @param {[]} arr An array object (Array.IsArray())
  * @param {object} ele the element (arr[?])
- * @param {string} [reason] an optional variable to show the reason it was deleted
+ * @param {string} [reason] an optional letiable to show the reason it was deleted
  */
 function RemoveGenericElementFromGenericArray(arr, ele, reason) {
 
@@ -428,7 +429,7 @@ function RemoveGenericElementFromGenericArray(arr, ele, reason) {
     if (reason === undefined) reason = "No reason given";
 
     // Check where in the array(ie. the index) the element is
-    var index = arr.findIndex( function(e) {
+    let index = arr.findIndex( function(e) {
         return e.id === ele.id
     });
 
@@ -514,16 +515,16 @@ function SaveAllToCookies() {
  */
 function LoadFromCookies() {
     // console.log(Cookies.get("Boards"));
-    var tempBoards = Cookies.getJSON("Boards");
-    var tempTasks = Cookies.getJSON("Tasks");
-    var tempUsers = Cookies.getJSON("Users");
-    var tempRoles = Cookies.getJSON("Roles");
+    let tempBoards = Cookies.getJSON("Boards");
+    let tempTasks = Cookies.getJSON("Tasks");
+    let tempUsers = Cookies.getJSON("Users");
+    let tempRoles = Cookies.getJSON("Roles");
     boards = (tempBoards === undefined ? [] : tempBoards );
     tasks = (tempTasks === undefined ? [] : tempTasks);
     users = (tempUsers === undefined ? [] : tempUsers);
     roles = (tempRoles === undefined ? [] : tempRoles);
 
-    var tempIndex = Cookies.getJSON("currentIndexForIDGenerator");
+    let tempIndex = Cookies.getJSON("currentIndexForIDGenerator");
     currentIndexForIDGenerator = (tempIndex >= 0 ? tempIndex : 0);
 }
 
