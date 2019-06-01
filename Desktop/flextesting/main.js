@@ -1,7 +1,8 @@
 // //////////////// lists database///////////////not in use yet
 var arrayOfLists=[];
 
-
+////// to do
+//          make some animations while dragging
 
 
 // this is container that holds everything. it will be used to target id of objects
@@ -14,7 +15,7 @@ var containerCatalogue = document.getElementById("container");
 //container it fetches id of anything.
 containerCatalogue.addEventListener("click",e =>{
     
-console.log(e.target.id);
+console.log(e.target.id)
     //if we click on an object that has addNewListButton in id then new input
     //is implemented. 
     //function createInput() make that button Add new list changes so the 
@@ -68,7 +69,6 @@ console.log(e.target.id);
 });
 
 containerCatalogue.addEventListener("dragstart", e =>{
-    console.log(e.target);
     e.dataTransfer.setData("text", e.target.id);
 });
 
@@ -79,11 +79,9 @@ containerCatalogue.addEventListener("dragover", e =>{
 
 containerCatalogue.addEventListener("drop", e =>{
     if(e.target.id.includes("cardInhold")){
-    var data = e.dataTransfer.getData("text");
-    var target = e.target;
-
-    target.appendChild(document.getElementById(data));
-    
+        var data = e.dataTransfer.getData("text");
+        var target = e.target;
+        target.appendChild(document.getElementById(data));
     }
     else{
         e.preventDefault();
@@ -127,7 +125,7 @@ function acceptNewList(id){
     var acceptNewListButton = document.getElementById(containerID + "buttonAcceptList");
     var value = document.getElementById(containerID+"valueAcceptList").value;
   
-    console.log(columnContainer.id)
+    
     
     if(value){
         var addNewListButton = document.getElementById(containerID+"addNewListButton");
@@ -137,6 +135,7 @@ function acceptNewList(id){
         var itemDiv = document.createElement("div");
         itemDiv.classList.add("cardContainer");
         itemDiv.id = containerID + "cardContainer";
+        itemDiv.setAttribute("draggable", true);
         columnContainer.appendChild(itemDiv);
         var nameOfClass = document.createElement("p");
         nameOfClass.innerText = value;
