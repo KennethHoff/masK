@@ -8,6 +8,7 @@
 // For example, in some functions, I input JS Dom Elements, but then convert those into jquery afterwards. instead of simply inserting the jquery dom element from the start
 // I was planning on fixing all of those issues, but If there are some left, I'm sorry. There were simply more pressing issues that needed to be addressed beforehand.
 
+// Minor quirk: If you hover over the note while it is inside the trashCan, the :hover CSS selector will activate. This is unintended.
 
 var container = document.querySelector("#incubatorContainer");
 var trashCan = document.querySelector("#trashCan");
@@ -96,29 +97,39 @@ function Drag(e) {
     if (activeDragNote == null) return;
     e.preventDefault();
     // If you're touching the screen with your fingers.
-    SetNotePosition(activeDragNote, e);
 
     aboveTrashCan = CheckIfAboveTrashCan(e)
     if (aboveTrashCan) {
         AnimateNotePreDeletion(activeDragNote);
     }
+        // Do not move the note if you're over the trashCan. This is to ensure the animation moves smoothly
     else {
+        var pos = GetNotePosWithEvent(activeDragNote, e);
+        SetNotePosition(activeDragNote, pos.x, pos.y);
         ResetNoteStyling(activeDragNote, e);
     }
 }
-function SetNotePosition(note, e) {
+function GetNotePosWithEvent(note, e) {
+    var currentX, currentY;
     if (e.type === "touchMove") {
         // Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
-        note.currentX = e.touches[0].clientX - note.initialX;
-        note.currentY = e.touches[0].clientY - note.initialY;
+        currentX = e.touches[0].clientX - note.initialX;
+        currentY = e.touches[0].clientY - note.initialY;
     }
     // Otherwise.. (Which should only be if you are clicking with the mouse)
     else {
         // Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
-        note.currentX = e.clientX - note.initialX;
-        note.currentY = e.clientY - note.initialY;
+        currentX = e.clientX - note.initialX;
+        currentY = e.clientY - note.initialY;
     }
-    // Whenever you hold a note, it will be on the top
+    return { x: currentX, y: currentY };
+}
+
+function SetNotePosition(note, xPos, yPos) {
+
+    note.currentX = xPos;
+    note.currentY = yPos;
+
     // Set the new offSet to be where it currently sits.
     // This is used to accurately place the div where you want it.
     note.xOffset = note.currentX;
@@ -141,8 +152,6 @@ function ResetNoteStyling(note, e) {
     $(note).stop();
     SetTranslate(note.currentX, note.currentY, note);
     note.readyToBeDeleted = false;
-
-    // SetNotePosition(note, e);
 }
 
 function SetZIndex(item, index) {
@@ -415,19 +424,21 @@ function AnimateNotePreDeletion(noteEle) {
     noteEle.currentlyAnimating = true;
     $(noteEle).attr("oldStyle", $(noteEle).attr("style"));
     var animationDuration = 750;
-    // var jqTrashCan = $(trashCan);
-    // var middleOfTrashCan = jqTrashCan.position();
-    // var xPos = middleOfTrashCan.left - (jqTrashCan.width / 2);
-    // var yPos = middleOfTrashCan.top - (jqTrashCan.height / 2);
+    var jqTrashCan = $(trashCan);
+    var middleOfTrashCan = jqTrashCan.position();
+    var xPos = middleOfTrashCan.left - (jqTrashCan.width / 2);
+    var yPos = middleOfTrashCan.top - (jqTrashCan.height / 2);
     $(noteEle).animate({
         opacity: 0.25
     }, animationDuration, function () {
+
         if (noteToDelete != null) {
             if (!requireWaitingUntilAnimationIsComplete) DeleteTaskAndNoteFromNote(noteToDelete);
         }
         noteToDelete = null;
         if (activeDragNote === null) return;
         activeDragNote.readyToBeDeleted = true;
+        
     });
 }
 
