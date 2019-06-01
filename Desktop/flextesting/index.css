@@ -37,14 +37,29 @@ body{
     overflow-wrap: break-word;
 }
 
-.textArea{
-    display: inline-block;
-    width:100px;
-    margin-left: 18px;
-    margin-top:6px;
-    resize: none;
+.inputContainer{
+    display: none;
+    position: relative;
+    margin-left: 19px;
+    width: 200px;
+    height: 36px;
+    margin-bottom: 8px;
+    background-color: white;
     border-radius: 3px;
+    box-shadow: 0px 2px #a3644d;
+}
+
+
+.textArea{
+    position: absolute;
+    top:2px;
+    left:3px;
+    width:143px;
+    resize: none;
+    border-radius: 3px 0px 0px 3px;
     border: none;
+    outline: none;
+    overflow: auto;
 }
 
 .textAreaHide{
@@ -57,13 +72,21 @@ body{
     margin-bottom: 15px;
 }
 
-.addCardButton2{
-    display: inline-block;
-    width:40px;
+.addCardButtonHide2{
+    position: absolute;
+    display: none;
+    right: 4px;
+    top:3px;
+    width:45px;
+    height: 30px;
+    background-color: rgb(196, 118, 90);
+    color: white;
+    border: none;
+    border-radius: 3px;
 }
 
 .addCardButtonHide{
-    display: none;
+   display: none;
 }
 
 .cardInhold{
@@ -77,7 +100,7 @@ body{
     min-height:100px;
     background-color: aliceblue;
     border-radius: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     margin-left: 19px;
     padding-bottom: 10px;
     box-shadow: 0px 2px #a3644d;
@@ -106,6 +129,7 @@ body{
 
 
 .addNewListInput{
+    position: relative;
     display: none;
     width: 250px;
     height: 80px;
@@ -123,11 +147,17 @@ body{
     font-size: 14px;
 }
 
-.addNewListInput button{
+.acceptListButton{
     display: block;
     width:85px;
     height: 30px;
     margin-top:3px;
     margin-left:6px;
     border-radius: 3px;
+}
+
+.declineButton {
+    position: absolute;
+    top: 50px;
+    left:100px;
 }

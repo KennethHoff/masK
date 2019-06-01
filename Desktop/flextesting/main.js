@@ -1,15 +1,6 @@
 // //////////////// lists database///////////////not in use yet
 var arrayOfLists=[];
 
-/////////////////////////////////////////////
-////////////////////////////////////////////
-// things to fix 
-//                  dont let an empty card exist
-//                  when clicking aside the input put back to previous status
-//                  enter button to work on both inputs
-
-
-
 
 
 
@@ -23,25 +14,44 @@ var containerCatalogue = document.getElementById("container");
 //container it fetches id of anything.
 containerCatalogue.addEventListener("click",e =>{
     
-console.log(e.target);
+console.log(e.target.id);
     //if we click on an object that has addNewListButton in id then new input
     //is implemented. 
     //function createInput() make that button Add new list changes so the 
     // user can write the name of a new list
     if((e.target.id).includes("addNewListButton") ){
         createInput(e.target.id);
+        
+        document.getElementById(parseInt(e.target.id)+"valueAcceptList").addEventListener("keyup", function(event){
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                document.getElementById(parseInt(e.target.id)+"buttonAcceptList").click();
+            }});
+       
     }
 
     //this function takes value from input and saves it 
     //as a name of the newly created list
     if((e.target.id).includes("buttonAcceptList")){
         acceptNewList(e.target.id);
+        
+
     }
 
     //this function starts createNewCard function that is an user input process
     if((e.target.id).includes("implement")){
         createNewCard(e.target.id);
+        
+
+        
+         document.getElementById(parseInt(e.target.id)+"textArea").addEventListener("keyup", function(event){
+             event.preventDefault();
+             if (event.keyCode === 13) {
+                 document.getElementById(parseInt(e.target.id)+"button2").click();
+          }});
     }
+
+    
 
    
     // this function accepts the input and add new card to the cards container of the
@@ -50,6 +60,11 @@ console.log(e.target);
         addNewCard(e.target.id);
     }
 
+
+    if((e.target.id).includes("buttonDeclineList")){
+        defaultState(e.target.id);
+    }
+    
 });
 
 containerCatalogue.addEventListener("dragstart", e =>{
@@ -77,7 +92,15 @@ containerCatalogue.addEventListener("drop", e =>{
 });
 
 
+function defaultState(id){
+    var containerID = parseInt(id);
+    var addNewListButton = document.getElementById(containerID+"addNewListButton");
+    var addNewListInput = document.getElementById(containerID + "addNewListInput");
+    addNewListButton.style.display ='block';
+    addNewListInput.style.display = 'none';
+    document.getElementById(containerID+"valueAcceptList").value = "";
 
+}
 
 
 //in this function button Add new list is changed into input field by changing style.display
@@ -121,6 +144,9 @@ function acceptNewList(id){
         createCardContainer(containerID,itemDiv);
 
     }
+
+
+
 }
 // in this function div cardInhold is created. cardInhold holds all cards on the list
 // it is attached to. this function creates also textarea that will be used when
@@ -133,10 +159,14 @@ function createCardContainer(id,itemDiv){
     cardContainerInholdDiv.id = id + "cardInhold";
     cardContainerInholdDiv.classList.add("cardInhold");
     itemDiv.appendChild(cardContainerInholdDiv);
-    var addTextAreaToCardContainer = document.createElement("textarea");
+    var itemDiv2 = document.createElement("div");
+    itemDiv2.id = id+"inputContainer";
+    itemDiv2.classList.add("inputContainer");
+    itemDiv.appendChild(itemDiv2);
+    var addTextAreaToCardContainer = document.createElement("input");
     addTextAreaToCardContainer.id = id+ "textArea";
-    addTextAreaToCardContainer.classList.add("textAreaHide");
-    itemDiv.appendChild(addTextAreaToCardContainer);
+    addTextAreaToCardContainer.classList.add("textArea");
+    itemDiv2.appendChild(addTextAreaToCardContainer);
     var itemButton = document.createElement("button");
     //this button starts process of creating new card
     itemButton.innerText = "+Add";
@@ -146,9 +176,9 @@ function createCardContainer(id,itemDiv){
     // this button accepts input and creates new card
     var itemButton2 = document.createElement("button");
     itemButton2.innerText = "+Add";
-    itemButton2.classList.add("addCardButtonHide");
+    itemButton2.classList.add("addCardButtonHide2");
     itemButton2.id = id + "button2";
-    itemDiv.appendChild(itemButton2);
+    itemDiv2.appendChild(itemButton2);
 
     
     addNewColumn();
@@ -184,9 +214,16 @@ function addNewButton(id,nextColumnDiv){
     addNewListInputDiv.appendChild(createInputField);
     var createInputButton = document.createElement("button");
     createInputButton.type = "button";
+    createInputButton.classList.add("acceptListButton");
     createInputButton.textContent = "Add list";
     createInputButton.id = id + "buttonAcceptList";
     addNewListInputDiv.appendChild(createInputButton);
+    var createDeclineButton = document.createElement("button");
+    createDeclineButton.id = id + "buttonDeclineList";
+    createDeclineButton.classList.add("declineButton");
+    createDeclineButton.textContent = "X";
+    addNewListInputDiv.appendChild(createDeclineButton);
+
 }
 
 // this function open textarea for new card. here user can write whatever
@@ -198,11 +235,10 @@ function createNewCard (id){
     var containerID = parseInt(id);
     var button1 = document.getElementById(containerID+"button2");
     var button2 = document.getElementById(containerID+"implement");
-    var textArea = document.getElementById(containerID+"textArea");
+    var inputContainer = document.getElementById(containerID+"inputContainer");
     button1.style.display = "inline-block";
-    button2.style.display ="none"
-    textArea.classList.add("textArea");
-    textArea.classList.remove("textAreaHide");  
+    button2.style.display ="none";
+    inputContainer.style.display = "block"; 
 }
 
 // this function accepts value from the card input and adds newly created card
@@ -213,9 +249,10 @@ function addNewCard(id){
     //id that starts with the same number
     var containerID = parseInt(id);
     var value = document.getElementById(containerID+"textArea").value;
+    if (value){
     document.getElementById(id).style.display ="none";
-    document.getElementById(containerID+"textArea").classList.add("textAreaHide");
-    document.getElementById(containerID+"textArea").classList.remove("textArea");
+    document.getElementById(containerID+"inputContainer").style.display="none";
+
     var cardInhold = document.getElementById(containerID+"cardInhold");
     var itemDiv = document.createElement("div");
     itemDiv.classList.add("cardCreated");
@@ -230,7 +267,7 @@ function addNewCard(id){
     //cardInhold.setAttribute("ondragover", allowDrop(event));
     document.getElementById(containerID+"implement").style.display = 'block';
     document.getElementById(containerID+"textArea").value =""
-    
+    }
 }
 
 
@@ -249,47 +286,6 @@ function idCardsGenerator(){
     var numberID = startNumberIDforCards++;
    return numberID;
 }
-
-
-// function allowDrop(ev){
-//     ev.preventDefault();
-// }
-
-// function drag(ev){
-//     ev.dataTransfer.setData("srcId", ev.target.id);
-// }
-
-// function drop(ev){
-//     ev.preventDefault();
-//     var srcId = ev.dataTransfer.getData("srcId");
-//     ev.target.appendChild(document.getElementById(srcId));
-// }
-
-// function startDraggable(){
-// // drag and drop beauties
-// var dropTarget = document.querySelector(".cardContainer");
-// var draggable = document.querySelector(".cardCreated");
-
-// for (var i=0; i < draggable.length; i++){
-//     draggable[i].addEventListener("dragstart", function(ev){
-//         ev.dataTransfer.setData("srcId", ev.target.id);
-//     }); 
-// }
-// dropTarget.addEventListener("dragover", function(ev){
-//     ev.preventDefault();
-// });
-
-// dropTarget.addEventListener("drop", function(ev){
-//     ev.preventDefault();
-//     var target = ev.target;
-//     var srcId = ev.dataTransfer.getData("srcId");
-
-//     target.appendChild(document.getElementById("srcId"));
-// })
-// }
-
-
-
 
 
 
