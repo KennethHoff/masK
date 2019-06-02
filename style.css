@@ -24,7 +24,8 @@ ul{
 /*-------- SIDEBAR--------*/
 #sidebar{
     position: fixed;
-    width: 6.5em;
+    width: 4.5em;
+    /*was 6.5*/
     height: 90%;
     top: 65px;
     background-color: #272828;
@@ -46,27 +47,34 @@ li a{
     font-weight: 500;
     margin: 5px;
 }
-#navigator ul{
-    /* overflow-y: scroll; */
-}
+/* #navigator ul{
+    overflow-x: hidden;
+    overflow-y: scroll;
+} */
 .dropdown{
     position: absolute; 
     width: 150px;
     top: -15px; 
     opacity: 0;
     visibility: hidden;
+    /* transition: ease-out .35s;
+    transition: ease-out .35s; */
     transition: ease-out .35s;
-    transition: ease-out .35s;
-    transition: ease-out .35s;
-    left: 100px;
+    left: 40px;
 }
 
 #navigator li{
     float: left;
+    /* padding: 15px; */
+    margin-top: 25px;
+    margin-left: 15px;
+    background: #272828;
+    /* border-bottom: 1px dotted #fff; */
+    /*#414040*/
+}
+#navigator ul li{
     padding: 15px;
-    margin-top: 15px;
-    background: #414040;
-    border-left: 1px dotted #fff;
+    margin-top: 2px;
 }
 
 #navigator li:first-child{
@@ -88,7 +96,7 @@ li a{
 
 #navigator .hasSubMenu{
     /* fix styling here */
-    left: -3px;
+    /* left: -3px; */
 }
 /*----------- First Level------------*/
     /*!important overrides any other declartion*/
@@ -156,32 +164,58 @@ So you can see the a tag in the dropdown.*/
 /*---------------- Contact button ---------------*/
 #contact{
     position: absolute;
-    background-color: grey;
-    padding: 15px;
+    background-color: #272828;
+    padding: 5px;
     bottom: 0px;
-    margin: 15px;
+    /* margin-bottom: 15px;
+    margin-left: 10px; */
+    margin: 15px 12px 12px; 
     right: 5px;
     border-radius: 40%;
+}
+#info{
+    width: 30px;
 }
 /*-----------Logo--------------*/
 #logo{
     position: relative;
     height: 100px;
     background-color: #272828;
-    width: 104px;
+    width: 4.5em;
 }
 
-img{
+#homeLogo{
     position: relative;
-    width: 60px;
-    height: 50px;
-    left: 22px;
-    top: 15px;
+    width: 50px;
+    /* left: 22px;
+    top: 15px; */
+    /*height: 50px;*/
+    margin-top: 25px;
+    margin-left: 10px;
 }
 #Home{
 
 }
+.navi{
+    position: relative;
+    width: 20px;
+}
 /*-----------Logo end-----------*/
-/* #calendar{
+ /* #calendar{
     width: 400px;
 } */
+ [id="0"]{
+    
+}
+ [id="1"]{
+
+}
+ [id="12"]{
+
+}
+ [id="13"]{
+
+} 
+ [id="15"]{
+
+}
