@@ -26,6 +26,10 @@
 // Also, the documentation for JSDoc was unavailable at the time.
 // The URL was changed from usejsdoc.org => jsdoc.app, but no redirecting was available, and the change was very recent)
 
+
+
+TODO: Fix animation not stopping when I move it out of the trashcan / approval box
+
 let currentIndexForIDGenerator = 0;
 /**
  * Which board to put new tasks into if you don't specify
@@ -223,6 +227,7 @@ function UpdateTask(task, newName, newDescription, newDeadline) {
  */
 function DeleteTask(task, reason) {
     RemoveGenericElementIDFromArray(tasks, task.ID, reason);
+    
 }
 
 

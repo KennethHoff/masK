@@ -50,14 +50,12 @@ let currentZIndex = 0;
 let requireWaitingUntilDeletionAnimationIsComplete = true;
 
 let aboveTrashCan = false;
-let noteToDelete = null;
 
 // Related to approving a note
 
 let requireWaitingUntilApprovalAnimationIsComplete = true;
 
 let aboveApprovalBox = false;
-let noteToApprove = null;
 
 // Touch events
 container.on("touchstart", DragStart);
@@ -104,28 +102,41 @@ function DragStart(e) {
 }
 
 function DragEnd(e) {
+    if (activeDragNote === null) return;
     e.preventDefault();
-    if (activeDragNote !== null) {
-        activeDragNote.initialX = activeDragNote.currentX;
-        activeDragNote.initialY = activeDragNote.currentY;
 
-        let task = GetTaskFromNote(activeDragNote);
-        let position = GetNotePosition(activeDragNote, container);
-        StorePositionDataInTask(task, position.left, position.top);
+    activeDragNote.initialX = activeDragNote.currentX;
+    activeDragNote.initialY = activeDragNote.currentY;
 
-        if (aboveTrashCan) {
-            noteToDelete = activeDragNote;
-            if (noteToDelete.readyToBeDeleted) DeleteTaskAndNoteFromNote(noteToDelete);
-            else if (requireWaitingUntilDeletionAnimationIsComplete) ResetNoteStyling(noteToDelete);
-        }
-        if (aboveApprovalBox) {
-            noteToApprove = activeDragNote;
-            if (noteToApprove.readyToBeApproved) MoveTaskFromIncubatorToDefaultBoard(noteToApprove);
-            else if (requireWaitingUntilApprovalAnimationIsComplete) ResetNoteStyling(noteToApprove);
-        }
+    let task = GetTaskFromNote(activeDragNote);
+    let position = GetNotePosition(activeDragNote, container);
+    StorePositionDataInTask(task, position.left, position.top);
 
-        activeDragNote = null;
+    if (aboveTrashCan) {
+        if (!requireWaitingUntilDeletionAnimationIsComplete) activeDragNote.DeleteAtEndOfAnimation = true;
+
+        if (activeDragNote.readyToBeDeleted) DeleteNote(activeDragNote);
+
+        else if (requireWaitingUntilDeletionAnimationIsComplete) ResetNoteStyling(activeDragNote);
     }
+    if (aboveApprovalBox) {
+        if (activeDragNote.readyToBeApproved) {
+            ApproveNote(activeDragNote);
+            return;
+        } 
+
+        if (!requireWaitingUntilApprovalAnimationIsComplete) {
+            activeDragNote.ApproveAtEndOfAnimation = true;
+            return;
+        } 
+        
+        if (requireWaitingUntilApprovalAnimationIsComplete) {
+            ResetNoteStyling(activeDragNote);
+            return;
+        } 
+    }
+
+    activeDragNote = null;
 }
 
 function Drag(e) {
@@ -133,23 +144,25 @@ function Drag(e) {
     // If you're "dragging" (ie. moving the mouse) and you're not holding a note, return.
     if (activeDragNote === null) return;  
 
+    console.warn("Approved? " + activeDragNote.readyToBeApproved + ". Deleted? " + activeDragNote.readyToBeDeleted + ". Animating? " + activeDragNote.currentlyAnimating);
+
     aboveTrashCan = CheckIfAboveTrashCan(e)
     aboveApprovalBox = CheckIfAboveApprovalBox(e);
     if (aboveTrashCan) {
             // Do not move the note if you're over the trashCan. This is to ensure the animation moves smoothly
         AnimateNotePreDeletion(activeDragNote, 750);
+        return;
     }
-    else if (aboveApprovalBox) {
+    if (aboveApprovalBox) {
             // Do not move the note if you're over the Approval Box. This is to ensure the animation moves smoothly
         animateNotePreApproval(activeDragNote, 1500);
+        return;
     }
-    else {
-        if (activeDragNote.currentlyAnimating) {
-            ResetNoteStyling(activeDragNote);
-        }
-        let pos = GetNotePosWithEvent(activeDragNote, e); // TODO: Medium-High Priority Find out why the activeDragNote doesn't get sent into the function (note: null).
-        SetNotePosition(activeDragNote, pos.x, pos.y);
+    if (activeDragNote.currentlyAnimating) {
+        ResetNoteStyling(activeDragNote);
     }
+    let pos = GetNotePosWithEvent(activeDragNote, e);
+    SetNotePosition(activeDragNote, pos.x, pos.y);
 }
 
 function SetNoteDefaultPositionValues(note, e) {
@@ -215,12 +228,12 @@ function SetNotePosition(note, xPos, yPos) {
  * @param {event} e Event from the eventhandler
  */
 function ResetNoteStyling(note) {
+    var jqnote = $(note);
     note.currentlyAnimating = false;
-    let oldStyle = $(note).attr("oldStyle");
-    $(note).removeAttr("oldStyle");
-    $(note).attr("style", oldStyle);
-    $(note).stop();
-    // SetTranslate(note.currentX, note.currentY, note);
+    let oldStyle = jqnote.attr("oldStyle");
+    jqnote.removeAttr("oldStyle");
+    jqnote.attr("style", oldStyle);
+    jqnote.stop();
     note.readyToBeDeleted = false;
     note.readyToBeApproved = false;
 }
@@ -287,6 +300,10 @@ function CreateNewNoteOnPage(task, pos) {
     let titleString = "<p class = noteName id = 'note" + task.id + "Name'>" + task.name + "</p>";
     let descriptionString = "<p class = noteDescription id = 'note" + task.id + "Description'>" + task.description + "</p>"
     newDiv.innerHTML = titleString + "\n" + descriptionString;
+
+    newDiv.currentlyAnimating = false;
+    newDiv.readyToBeDeleted = false;
+    newDiv.readyToBeApproved = false;
 
     // Setting the position
 
@@ -467,13 +484,17 @@ function GetNoteFromTaskID(taskID) {
     return note;
 }
 
-function DeleteTaskAndNoteFromNote(note) {
+/**
+ * Deletes the note from the DOM and the task from the tasks array. Does not delete the task from the incubator board 'tasks' array however.
+ * @param {jquery<HTMLElement>} note 
+ */
+function DeleteNote(note) {
     let task = GetTaskFromNote(note);
     DeleteTask(task);
     $(note).remove();
 }
 
-function MoveTaskFromIncubatorToDefaultBoard(note) {
+function ApproveNote(note) {
     let task = GetTaskFromNote(note);
     MoveTaskFromOneBoardToAnother(incubatorBoard, defaultBoard, task.id);
     $(note).remove();
@@ -543,13 +564,12 @@ function AnimateNotePreDeletion(noteEle, duration) {
         opacity: 0.25
     }, duration, function () {
 
-        if (noteToDelete != null) {
-            if (!requireWaitingUntilDeletionAnimationIsComplete) DeleteTaskAndNoteFromNote(noteToDelete);
-        }
-        noteToDelete = null;
-        if (activeDragNote === null) return;
-        activeDragNote.readyToBeDeleted = true;
-        
+            // If, at the end of the animation, the 'DeleteAtEndOfAnimation' variable is set (which gets set if you let go of the mouse ontop of the trash can), then delete the note & task.
+        if (noteEle.DeleteAtEndOfAnimation) {
+            DeleteNote(noteEle);
+            return;
+        } 
+        noteEle.readyToBeDeleted = true;
     });
 }
 
@@ -571,7 +591,16 @@ function animateNotePreApproval(noteEle, duration) {
     $(noteEle).animate({
         borderWidth: "0px"
     }, duration, function () {
+
+            // If, at the end of the animation, the 'ApproveAtEndOfAnimation' variable is set (which gets set if you let go of the mouse ontop of the trash can), then approve the task:
+            // Delete the note element, remove the task from the incubator array and push the task into the 'defaultBoard' (which, by default, is the ToDo Board).
+
+        if (noteEle.ApproveAtEndOfAnimation) {
+            ApproveNote(noteEle);
+            return;
+        } 
         noteEle.readyToBeApproved = true;
+        noteToApprove = null;
     });
 }
 
