@@ -36,10 +36,9 @@
 // container.addEventListener("mouseup", DragEnd);
 // container.addEventListener("mousemove", Drag);
 
-const incubatorBoard = CreateIncubatorBoard();
-
 const container = $("#incubatorContainer");
 const trashCan = $("#trashCan");
+const approvalBox = $("#approvalBox");
 
     // which item you are dragging
 let activeDragNote = null;
@@ -48,10 +47,17 @@ let currentZIndex = 0;
 
 // Related to deleting a note
 
-let requireWaitingUntilAnimationIsComplete = true;
+let requireWaitingUntilDeletionAnimationIsComplete = true;
 
 let aboveTrashCan = false;
 let noteToDelete = null;
+
+// Related to approving a note
+
+let requireWaitingUntilApprovalAnimationIsComplete = true;
+
+let aboveApprovalBox = false;
+let noteToApprove = null;
 
 // Touch events
 container.on("touchstart", DragStart);
@@ -63,17 +69,17 @@ container.on("mousedown", DragStart);
 container.on("mouseup", DragEnd);
 container.on("mousemove", Drag);
 
-$(".note").on("mouseenter", NoteMouseEnter).on("mouseleave", NoteMouseLeave)
+// $(".note").on("mouseenter", NoteMouseEnter).on("mouseleave", NoteMouseLeave)
 
-function NoteMouseEnter(e) {
-    console.log("LOL");
-    e.target.css("cursor", "pointer");
-    e.target.css("border-width", "20px");
-}
+// function NoteMouseEnter(e) {
+//     console.log("LOL");
+//     e.target.css("cursor", "pointer");
+//     e.target.css("border-width", "20px");
+// }
 
-function NoteMouseLeave(e) {
+// function NoteMouseLeave(e) {
 
-}
+// }
 
 /**
  * Not a super-fan of this implementation, as it's an ever-increasing index, but it works
@@ -84,6 +90,7 @@ function GetNextZIndex() {
 }
 
 function DragStart(e) {
+    e.preventDefault();
         // If it's not left button (meaning right-button, middle click etc..), return.
         // Only allow dragging with left-click
     if (!IsLeftButton(e)) return;
@@ -94,6 +101,55 @@ function DragStart(e) {
     SetNoteDefaultPositionValues(activeDragNote, e);
     
     SetZIndex(activeDragNote, GetNextZIndex());
+}
+
+function DragEnd(e) {
+    e.preventDefault();
+    if (activeDragNote !== null) {
+        activeDragNote.initialX = activeDragNote.currentX;
+        activeDragNote.initialY = activeDragNote.currentY;
+
+        let task = GetTaskFromNote(activeDragNote);
+        let position = GetNotePosition(activeDragNote, container);
+        StorePositionDataInTask(task, position.left, position.top);
+
+        if (aboveTrashCan) {
+            noteToDelete = activeDragNote;
+            if (noteToDelete.readyToBeDeleted) DeleteTaskAndNoteFromNote(noteToDelete);
+            else if (requireWaitingUntilDeletionAnimationIsComplete) ResetNoteStyling(noteToDelete);
+        }
+        if (aboveApprovalBox) {
+            noteToApprove = activeDragNote;
+            if (noteToApprove.readyToBeApproved) MoveTaskFromIncubatorToDefaultBoard(noteToApprove);
+            else if (requireWaitingUntilApprovalAnimationIsComplete) ResetNoteStyling(noteToApprove);
+        }
+
+        activeDragNote = null;
+    }
+}
+
+function Drag(e) {
+    e.preventDefault();
+    // If you're "dragging" (ie. moving the mouse) and you're not holding a note, return.
+    if (activeDragNote === null) return;  
+
+    aboveTrashCan = CheckIfAboveTrashCan(e)
+    aboveApprovalBox = CheckIfAboveApprovalBox(e);
+    if (aboveTrashCan) {
+            // Do not move the note if you're over the trashCan. This is to ensure the animation moves smoothly
+        AnimateNotePreDeletion(activeDragNote, 750);
+    }
+    else if (aboveApprovalBox) {
+            // Do not move the note if you're over the Approval Box. This is to ensure the animation moves smoothly
+        animateNotePreApproval(activeDragNote, 1500);
+    }
+    else {
+        if (activeDragNote.currentlyAnimating) {
+            ResetNoteStyling(activeDragNote);
+        }
+        let pos = GetNotePosWithEvent(activeDragNote, e); // TODO: Medium-High Priority Find out why the activeDragNote doesn't get sent into the function (note: null).
+        SetNotePosition(activeDragNote, pos.x, pos.y);
+    }
 }
 
 function SetNoteDefaultPositionValues(note, e) {
@@ -112,57 +168,20 @@ function SetNoteDefaultPositionValues(note, e) {
         note.initialY = e.clientY - note.yOffset;
     }
 }
-function DragEnd(e) {
-    if (activeDragNote !== null) {
-        activeDragNote.initialX = activeDragNote.currentX;
-        activeDragNote.initialY = activeDragNote.currentY;
-
-        let task = GetTaskFromNote(activeDragNote);
-        let position = GetNotePosition(activeDragNote, container);
-        StorePositionDataInTask(task, position.left, position.top);
-
-        if (aboveTrashCan) {
-            noteToDelete = activeDragNote;
-            if (noteToDelete.readyToBeDeleted) DeleteTaskAndNoteFromNote(noteToDelete);
-            else if (requireWaitingUntilAnimationIsComplete) ResetNoteStyling(noteToDelete);
-        }
-
-        activeDragNote = null;
-    }
-}
-
-function Drag(e) {
-    // If you're "dragging" (ie. moving the mouse) and you're not holding a note, return.
-    if (activeDragNote == null) return;  
-    e.preventDefault();
-    // If you're touching the screen with your fingers.
-
-    aboveTrashCan = CheckIfAboveTrashCan(e)
-    if (aboveTrashCan) {
-        AnimateNotePreDeletion(activeDragNote);
-    }
-        // Do not move the note if you're over the trashCan. This is to ensure the animation moves smoothly
-    else {
-        let pos = GetNotePosWithEvent(activeDragNote, e);
-        SetNotePosition(activeDragNote, pos.x, pos.y);
-        ResetNoteStyling(activeDragNote, e);
-    }
-}
 /**
  * Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
  */
 function GetNotePosWithEvent(note, e) {
-    let currentX, currentY;
+    let tempNotePos;
 
     if (e.type === "touchMove") {
-        GetNotePos(note, e.touches[0].pageX, e.touches[0].pageY);
+        tempNotePos = GetNotePos(note, e.touches[0].pageX, e.touches[0].pageY);
     }
     // Otherwise.. (Which should only be if you are clicking with the mouse)
     else {
-        currentX = e.pageX - note.initialX;
-        currentY = e.pageY - note.initialY;
+        tempNotePos = GetNotePos(note, e.pageX, e.pageY);
     }
-    return { x: currentX, y: currentY };
+    return { x: tempNotePos.x, y: tempNotePos.y };
 }
 
 function GetNotePos(note, xPos, yPos) {
@@ -195,16 +214,15 @@ function SetNotePosition(note, xPos, yPos) {
  * @param {note} note DOM element for the note Div
  * @param {event} e Event from the eventhandler
  */
-function ResetNoteStyling(note, e) {
+function ResetNoteStyling(note) {
     note.currentlyAnimating = false;
-    let currentXPos = note.currentX;
-    let currentYPos = note.currentY;
     let oldStyle = $(note).attr("oldStyle");
     $(note).removeAttr("oldStyle");
     $(note).attr("style", oldStyle);
     $(note).stop();
-    SetTranslate(note.currentX, note.currentY, note);
+    // SetTranslate(note.currentX, note.currentY, note);
     note.readyToBeDeleted = false;
+    note.readyToBeApproved = false;
 }
 
 function SetZIndex(item, index) {
@@ -218,7 +236,7 @@ function SetTranslate(xPos, yPos, el) {
 // Thanks to https://www.kirupa.com/html5/drag.htm for the "boilerplate"
 
 function GetPosition(event, containerString) {
-    // TODO: Add touch support
+    // TODO: Low-Medium Add touch support
 
     let offset = $(containerString).offset();
 
@@ -322,6 +340,15 @@ function GetNoteDiv(inputElement) {
 
 function PlaceAllNotesOnPage() {
 
+    if (incubatorBoard === undefined || incubatorBoard === null) {
+        console.error("No incubator board!");
+        return;
+    }
+    if (incubatorBoard.tasks === undefined || incubatorBoard.task === null) {
+        console.error("No incubator board tasks!");
+        return;
+    }
+
     incubatorBoard.tasks.forEach(noteID => {
         let task = GetTaskFromID(noteID);
         if (task === undefined) return;
@@ -380,7 +407,7 @@ $(".custom-menu li").click(function(event){
                 // Create a new task with the name corresponding to the currend DateTime // Temporary
             let newTask = CreateAndPushTask(new Date().toString());
                 // Add said task(specifically its id) to the incubator Board)
-            AddTaskIDToBoardViaBoardID(newTask.id, incubatorBoard.id);
+            AddTaskIDToBoard(newTask.id, incubatorBoard);
                 // Ccreate a new note on the page with the newly created task as the information (Also bring in the event call in order to know where, on the screen, to place it) 
             CreateNewNoteOnPageWithEvent(newTask, event)
             break;
@@ -402,13 +429,12 @@ document.addEventListener("mousedown", function(event) {
     activeRightClickNote = note;
 })
 
-function CreateIncubatorBoard() {
-    let incubatorNameString = "Incubator";
-
+function GetIncubatorBoard() {
+    
     let tempBoardIndex = boards.findIndex( function(e) {
-        return e.name == incubatorNameString;
+        return e.name == "Incubator";
     });
-    return ( tempBoardIndex === -1 ? CreateAndPushBoard(incubatorNameString) : GetBoardFromID(tempBoardIndex));
+    return boards[tempBoardIndex];
 
 }
 
@@ -447,18 +473,33 @@ function DeleteTaskAndNoteFromNote(note) {
     $(note).remove();
 }
 
-function CheckIfAboveTrashCan(e) {
-    let trashCanPos = GetJQueryPosition(trashCan);
+function MoveTaskFromIncubatorToDefaultBoard(note) {
+    let task = GetTaskFromNote(note);
+    MoveTaskFromOneBoardToAnother(incubatorBoard, defaultBoard, task.id);
+    $(note).remove();
+}
+
+
+function CheckIfAboveElement(e, otherEle) {
+    let otherElePos = GetJQueryPosition(otherEle);
+
     // Only returns true if both are true (true + true = true | true + false = false (vice versa) | false + false = false)
-    return comparePositions([e.pageX], trashCanPos[0]) && comparePositions([e.pageY], trashCanPos[1]);
+    return comparePositions([e.pageX], otherElePos[0]) && comparePositions([e.pageY], otherElePos[1]);
+}
+
+function CheckIfAboveTrashCan(e) {
+    return CheckIfAboveElement(e, trashCan);
+}
+
+function CheckIfAboveApprovalBox(e) {
+    return CheckIfAboveElement(e, approvalBox);
 }
 
 function GetJQueryPosition(element) {
-    let jqEle = $(element);
+    let pos = element.position();
+    let width = element.width();
+    let height = element.height();
 
-    let pos = jqEle.position();
-    let width = jqEle.width();
-    let height = jqEle.height();
     return [[pos.left, pos.left + width], [pos.top, pos.top + height]];
 }
 
@@ -470,16 +511,20 @@ function comparePositions(pos1, pos2) {
     return intersecting;
 }
 
+function animateNoteBaseline(noteEle, duration) {
+    if (noteEle.currentlyAnimating) return;
+    noteEle.currentlyAnimating = true;
+    $(noteEle).attr("oldStyle", $(noteEle).attr("style"));
+
+}
+
 /**
  * It doesn't seem to be perfectly aligned, but it's close enough so that you understand the idea.
  *
  * I don't have enough time to find out why it's not aligned perfectly in the middle, and this is a low-priority issue.
  */
-function AnimateNotePreDeletion(noteEle) {
-    if (noteEle.currentlyAnimating) return;
-    noteEle.currentlyAnimating = true;
-
-    $(noteEle).attr("oldStyle", $(noteEle).attr("style"));
+function AnimateNotePreDeletion(noteEle, duration) {
+    animateNoteBaseline(noteEle, duration);
 
     let trashCanBody = trashCan.children("#trashCanBody");
 
@@ -487,7 +532,6 @@ function AnimateNotePreDeletion(noteEle) {
     let xOffset = trashCanBodyPositionData.difference.x / 2;
     let yOffset = trashCanBodyPositionData.difference.y / 2;
 
-    let animationDuration = 750;
 
     // Middle of the trashCanBody minus the difference between the start of the body and the end of the body (divided by 2)
     let xPos = trashCanBodyPositionData.middle.x - xOffset;
@@ -497,15 +541,37 @@ function AnimateNotePreDeletion(noteEle) {
     $(noteEle).animate({
         transform: "translate(" + xPos + "px, " + yPos + "px)",
         opacity: 0.25
-    }, animationDuration, function () {
+    }, duration, function () {
 
         if (noteToDelete != null) {
-            if (!requireWaitingUntilAnimationIsComplete) DeleteTaskAndNoteFromNote(noteToDelete);
+            if (!requireWaitingUntilDeletionAnimationIsComplete) DeleteTaskAndNoteFromNote(noteToDelete);
         }
         noteToDelete = null;
         if (activeDragNote === null) return;
         activeDragNote.readyToBeDeleted = true;
         
+    });
+}
+
+
+
+function animateNotePreApproval(noteEle, duration) {
+    animateNoteBaseline(noteEle, duration);
+
+    let approvalBoxPositionData = GetPositionData(approvalBox);
+    let xOffset = approvalBoxPositionData.difference.x / 2;
+    let yOffset = approvalBoxPositionData.difference.y / 2;
+
+
+    // Middle of the approvedBoxBody minus the difference between the start of the body and the end of the body (divided by 2)
+    let xPos = approvalBoxPositionData.middle.x - xOffset;
+    let yPos = approvalBoxPositionData.middle.y - yOffset;
+
+    SetNotePosition(noteEle, xPos, yPos);
+    $(noteEle).animate({
+        borderWidth: "0px"
+    }, duration, function () {
+        noteEle.readyToBeApproved = true;
     });
 }
 

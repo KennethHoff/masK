@@ -27,6 +27,13 @@
 // The URL was changed from usejsdoc.org => jsdoc.app, but no redirecting was available, and the change was very recent)
 
 let currentIndexForIDGenerator = 0;
+/**
+ * Which board to put new tasks into if you don't specify
+ * 
+ * The default is the "To Do" board
+ */
+let defaultBoard;
+let incubatorBoard;
 
 /**
  * @description Array for all boards ("Incubator", "To Do" etc..)
@@ -34,7 +41,6 @@ let currentIndexForIDGenerator = 0;
  * @param {string} name What you see at the top of the board
  * @param {task[]} tasks All tasks assigned to this board
  * @param {Number} pageOrder Which order the board is relative to other boards (Lower comes earliest) [For things like the Main Page]
- * @param {{left: number, top: number}} boardPosition  Where on the board it is placed (Coordinates) [For things like the Incubator]
  */
 
 let boards = [
@@ -43,7 +49,6 @@ let boards = [
     //     name: "Test Board",
     //     tasks: [],
     //     pageOrder: Number
-    //     boardPosition: {x: Number, y: Number}
     // }
 ];
 
@@ -115,8 +120,7 @@ function CreateBoard(_name) {
         id: IDGenerator(),
         name: _name,
         tasks: [],
-        pageOrder: 0,
-        boardPosition: {x: 0, y: 0}
+        pageOrder: 0
     };
     return newBoard;
 }
@@ -127,8 +131,8 @@ function CreateBoard(_name) {
  * @returns {board} returns the board object (id, name, tasks[])
  */
 function CreateAndPushBoard(_name) {
-    let newBoard = CreateBoard(_name)
-    PushGenericElementToGenericArray(boards, newBoard);
+    let tempBoard = CreateBoard(_name)
+    let newBoard = PushGenericElementToArray(boards, tempBoard);
     return newBoard;
 }
 /**
@@ -145,7 +149,7 @@ function UpdateBoard(board, _name) {
  * @param {string} [reason] [Optional] The reason it was deleted.
  */
 function DeleteBoard(board, reason) {
-    RemoveGenericElementFromGenericArray(boards, board, reason);
+    RemoveGenericElementIDFromArray(boards, board.ID, reason);
 }
 
 
@@ -195,9 +199,8 @@ function CreateTask(_name, _description, _deadlineDate) {
  * @returns {task} returns the task object (id, name, description, user[], deadlineDate, creationDate, completionDate)
  */
 function CreateAndPushTask(_name, _description, _deadlineDate) {
-    
-    let newTask = CreateTask(_name, _description, _deadlineDate)
-    PushGenericElementToGenericArray(tasks, newTask);
+    let tempTask = CreateTask(_name, _description, _deadlineDate)
+    let newTask = PushGenericElementToArray(tasks, tempTask);
     return newTask;
 }
 /**
@@ -219,7 +222,7 @@ function UpdateTask(task, newName, newDescription, newDeadline) {
  * @param {string} [reason] [Optional] The reason it was deleted
  */
 function DeleteTask(task, reason) {
-    RemoveGenericElementFromGenericArray(tasks, task, reason);
+    RemoveGenericElementIDFromArray(tasks, task.ID, reason);
 }
 
 
@@ -249,9 +252,8 @@ function CreateUser(_name) {
  * @returns {user} returns the user object (id, name, role[])
  */
 function CreateAndPushUser(_name, _role) {
-
-    let newUser = CreateUser(_name, _role);
-    PushGenericElementToGenericArray(users, newUser);
+    let tempUser = CreateUser(_name, _role);
+    let newUser = PushGenericElementToArray(users, tempUser);
     return newUser;
 }
 /**
@@ -270,7 +272,7 @@ function UpdateUser(user, newName) {
  * @param {string} [reason] the reason it was deleted
  */
 function DeleteUser(user, reason) {
-    RemoveGenericElementFromGenericArray(users, user, reason);
+    RemoveGenericElementIDFromArray(users, user.ID, reason);
 }
 
 
@@ -299,9 +301,8 @@ function CreateRole(_name) {
  * @returns {role} returns the role object (id, name)
  */
 function CreateAndPushRole(_name) {
-
-    let newRole = CreateRole(_name);
-    PushGenericElementToGenericArray(roles, newRole);
+    let tempRole = CreateRole(_name);
+    let newRole = PushGenericElementToArray(roles, tempRole);
     return newRole;
 }
 /**
@@ -314,14 +315,14 @@ function UpdateRole(role, _name) {
 }
 
 function DeleteRole(role, reason) {
-    RemoveGenericElementFromGenericArray(roles, role, reason);
+    RemoveGenericElementIDFromArray(roles, role.ID, reason);
 }
 
 /* --------- USER END -------- */
 
 /* --- Object Manipulation END --- */
 
-/* Array manipulation START */
+/* --- Array manipulation START --- */
 
 
 /* --------- TASK START -------- */
@@ -342,14 +343,8 @@ function AddTaskIDToBoard(taskID, board) {
     board.tasks.push(taskID);
 }
 
-/**
- * Gets the board from the given boardID and pushes the taskID to that board
- * @param {Number} taskID the ID of a task
- * @param {Number} boardID the ID of the board you want the task to be pushed into
- */
-function AddTaskIDToBoardViaBoardID(taskID, boardID) {
-    let board = GetBoardFromID(boardID);
-    AddTaskIDToBoard(taskID, board);
+function MoveTaskFromOneBoardToAnother(oldBoard, newBoard, taskID) {
+    MoveGenericElementFromOneArrayToAnother(oldBoard.tasks, newBoard.tasks, taskID);
 }
 
 /* --------- TASK END -------- */
@@ -372,14 +367,12 @@ function AddUserIDToTask(userID, task) {
 }
 
 /**
- * Gets the task from the given taskID and pushes the userID to that task
- * @param {Number} userID the ID of a user
- * @param {Number} taskID the ID of the task you want the user to be pushed into
+ * Don't know why this function would ever be used, but good to have, I guess
  */
-function AddUserIDToTaskViaTaskID(userID, taskID) {
-    let task = GetTaskFromID(taskID);
-    AddUserIDToTask(userID, task);
+function MoveUserFromOneTaskToAnother(oldTask, newTask, userID) {
+    MoveGenericElementFromOneArrayToAnother(oldTask.users, newTask.users, userID);
 }
+
 
 /* --------- USER END -------- */
 /* --------- ROLE START -------- */
@@ -402,61 +395,131 @@ function AddRoleIDToUser(roleID, user) {
 }
 
 /**
- * Gets the user from the given userID and pushes the roleID to that task
- * @param {Number} roleID the ID of a role
- * @param {Number} userID the ID the user you want the role to be pushed into
+ * Don't know why this function would ever be used, but good to have, I guess
  */
-function AddRoleIDToUserViaUserID(roleID, userID) {
-    let role = GetRoleFromId(roleID);
-    let user = GetUserFromID(userID);
-    AddRoleIDToUser(role, user);
+function MoveRoleFromOneUserToAnother(oldUser, newUser, roleID) {
+    MoveGenericElementFromOneArrayToAnother(oldUser.roles, newUser.roles, roleID);
 }
-
-
 
 /**
  * Input any array and any element and the element will be pushed into the array
  * @param {array} arr An array object (Array.IsArray())
- * @param {Number} ele the ID of the element (arr[?].id)
+ * @param {(Object|number)} ele the element (arr[?]) *or* the ID
  * @param {string} [reason] [Optional] The reason it was deleted
  */
-function PushGenericElementToGenericArray(arr, ele) {
-    if (arr.includes(ele)) return;
-    arr.push(ele);
+function PushGenericElementToArray(arr, ele) {
+
+    let returnEle, found
+
+    if (typeof(ele) === typeof(1)) {
+        found = arr.find(function(e) {
+            let same = e === ele;
+            if (same) return e;
+            return false;
+        })
+    }
+    else {
+
+        // returns the element if it exists, false if element does not exist, or undefined is array is empty. #JustJavascriptThings
+        found = arr.find(function (e) {
+            let sameID = e.id === ele.id;
+            let sameName = e.name === ele.name;
+            if (sameID || sameName) return e;
+            return false;
+        });
+    }
+
+    if (found === false || found === undefined) {
+        arr.push(ele);
+        returnEle = ele;
+    }
+    else {
+        returnEle = found;
+    }
+    return returnEle;
+
+
+
+
+
+    // let newEle;
+
+    // if (ele === null || ele === undefined) return false;
+
+    // // If the name of the element already exists, return that existing element instead
+
+    // var foundEle = arr.find( function(e) {
+    //     let sameID = e.id === ele.id;
+    //     let sameName = e.name === ele.name;
+
+    //     if (sameID || sameName) return true;
+    //     return false;
+    // });
+
+
+    // if (foundEle === null || foundEle === undefined) {
+    //     newEle = ele;
+    //     arr.push(newEle);
+    // }
+    // else {
+    //     newEle = foundEle;
+
+    //         // I was thinking of doing this, but I figured it's completely unnecessary. 
+    //         // "Oh no, an integer increased by 4 when it didn't have to!"
+    //         // The pros (more consistent IDs) does not outweigh the cons (potential of two things with same ID)
+    //     // currentIndexForIDGenerator--; 
+    // }
+    // return newEle;
+
 }
 /**
  * @param {[]} arr An array object (Array.IsArray())
- * @param {object} ele the element (arr[?])
- * @param {string} [reason] an optional letiable to show the reason it was deleted
+ * @param {number} eleID the element (arr[?])
+ * @param {string} [reason] an optional variable to show the reason it was deleted
  */
-function RemoveGenericElementFromGenericArray(arr, ele, reason) {
+function RemoveGenericElementIDFromArray(arr, eleID, reason) {
+
+    if (eleID === null || eleID === undefined) return false;
+
+    let index;
 
     // if the reason parameter is not given, then set the reason to be "No Reason Given"
     // [???] Currently not being used
     if (reason === undefined) reason = "No reason given";
 
-    // Check where in the array(ie. the index) the element is
-    let index = arr.findIndex( function(e) {
-        return e.id === ele.id
+        // Check where in the array(ie. the index) the element is
+    index = arr.findIndex(function (e) {
+        console.log("Looking for ID: " + eleID + ". Found: " + e.id);
+        return e === eleID;
     });
+
 
     // If the task does not exist within the array (Which means the indexOf function returns -1)
     if (index === -1) {
         // send a message that the task does not exist and return out of the function.
         console.warn("Cannot delete Element: It does not exist");
-        return;
+        return false;
     }
+
     arr.splice(index, 1);
+    return true;
 }
 
 /**
- * Checks an array to see if the given name already exists within. 
- * @param {[]} array The array you want to check
- * @param {string} name The name you want to see if exists within that array
- * @returns {boolean} true if it exists. False if not
+ * Moves an element from one array to another
+ * @param {[*]} fromArr Which array to move element from
+ * @param {[*]} toArr Which array to move element to
+ * @param {*} ele Which element to move
+ * @param {string} [reason] Why you want to move it 
  */
-function CheckIfArrayAlreadyHasName(array, name) {
-    return array.find(function(e) {return e.name == name});
+function MoveGenericElementFromOneArrayToAnother(fromArr, toArr, eleID, reason) {
+
+    if (reason === undefined) reason = "No reason given";
+
+        // If you were to able to remove, push it to another, otherwise don't even bother trying.
+    if (RemoveGenericElementIDFromArray(fromArr, eleID, reason)) {
+        PushGenericElementToArray(toArr, eleID, reason);
+    }
 }
 
 /**
@@ -498,6 +561,17 @@ function GetRoleFromId(id) {
     return GetGenericArrayElementFromID(roles, id);
 }
 
+
+function CreateDefaultBoards() {
+    var newIncubatorBoard = CreateAndPushBoard("Incubator");
+    var newTodoBoard = CreateAndPushBoard("ToDo");
+    var newInProgressBoard = CreateAndPushBoard("InProgress");
+    var newCompletedBoard = CreateAndPushBoard("Completed");
+
+    incubatorBoard = newIncubatorBoard;
+    defaultBoard = newTodoBoard;
+
+}
 
 
 /* --- Array Manipulation END --- */
@@ -543,26 +617,18 @@ $(window).on("beforeunload", function () {
 
 
 LoadFromCookies();
+CreateDefaultBoards();
 
 
 /* ------- Cookies END ------- */
-
-
-function Test() {
-    CreateAndPushBoard("Dette er et Board");
-    CreateAndPushTask( "Dette er en Task");
-    CreateAndPushUser( "Dette er en User");
-    CreateAndPushRole( "Dette er en Role");
-
-    AddTaskIDToBoardViaBoardID(tasks[0].id, boards[0].id);
-    AddUserIDToTaskViaTaskID( users[0].id, tasks[0].id);
-    AddRoleIDToUserViaUserID( roles[0].id, users[0].id);
-}
-
 
 /**
  * Gives you the next ID, then increments the value
  */
 function IDGenerator() {
     return currentIndexForIDGenerator++;
+}
+
+function Test() {
+    MoveTaskFromOneBoardToAnother(incubatorBoard, defaultBoard, incubatorBoard.tasks[incubatorBoard.tasks.length-1]);
 }
