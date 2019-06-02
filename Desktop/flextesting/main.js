@@ -10,6 +10,7 @@ var arrayOfLists=[];
 var containerCatalogue = document.getElementById("container");
 var cardMenuBackground = document.getElementById("cardMenuBackground");
 var cardMenu = document.getElementById("cardMenu");
+var currentCard;
 
 
 
@@ -63,8 +64,7 @@ console.log(e.target.id)
 
 
     if((e.target.id).includes("cardCreated")){
-        cardMenuBackground.style.display = "block";
-        cardMenu.style.display = "block";
+        cardMenuOn(e.target.id);
     }
     
 
@@ -104,9 +104,31 @@ containerCatalogue.addEventListener("drop", e =>{
 });
 
 document.getElementById("cardMenuX").addEventListener("click", function(){
+    // make value of txtarea the same as on the card
+    //make a button to delete card
+    var value = document.getElementById("cardMenuTextArea").value;
+    document.getElementById(currentCard).textContent = value;
     cardMenuBackground.style.display = "none";
     cardMenu.style.display = "none";
 });
+
+document.getElementById("deleteCard").addEventListener("click",function(){
+    var el = document.getElementById(currentCard);
+    el.parentNode.removeChild(el);
+    cardMenuBackground.style.display = "none";
+    cardMenu.style.display = "none";
+});
+
+
+
+function cardMenuOn(id){
+    currentCard = id;
+    cardMenuBackground.style.display = "block";
+    cardMenu.style.display = "block";
+    var value = document.getElementById(id).textContent;
+    document.getElementById("cardMenuTextArea").value = value;
+
+}
 
 
 function defaultState(id){
@@ -288,9 +310,9 @@ function addNewCard(id){
     var itemDiv = document.createElement("div");
     itemDiv.classList.add("cardCreated");
     cardInhold.appendChild(itemDiv);
-    var itemP = document.createElement("p");
-    itemP.textContent = value;
-    itemDiv.appendChild(itemP);
+    // var itemP = document.createElement("p");
+    itemDiv.textContent = value;
+    // itemDiv.appendChild(itemP);
     itemDiv.id = idCardsGenerator()+"cardCreated";
     itemDiv.setAttribute("draggable", true);
     //cardInhold.setAttribute("ondrop", drop(event));
