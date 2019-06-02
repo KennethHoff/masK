@@ -8,6 +8,8 @@ var arrayOfLists=[];
 // this is container that holds everything. it will be used to target id of objects
 //on the site
 var containerCatalogue = document.getElementById("container");
+var cardMenuBackground = document.getElementById("cardMenuBackground");
+var cardMenu = document.getElementById("cardMenu");
 
 
 
@@ -34,10 +36,17 @@ console.log(e.target.id)
     //this function takes value from input and saves it 
     //as a name of the newly created list
     if((e.target.id).includes("buttonAcceptList")){
-        acceptNewList(e.target.id);
-        
+        acceptNewList(e.target.id); 
 
     }
+
+
+    //function let to interact with the button attached to every list
+    if((e.target.id).includes("editListButton")){
+        cancelList(e.target.id);
+    }
+
+
 
     //this function starts createNewCard function that is an user input process
     if((e.target.id).includes("implement")){
@@ -52,6 +61,11 @@ console.log(e.target.id)
           }});
     }
 
+
+    if((e.target.id).includes("cardCreated")){
+        cardMenuBackground.style.display = "block";
+        cardMenu.style.display = "block";
+    }
     
 
    
@@ -87,6 +101,11 @@ containerCatalogue.addEventListener("drop", e =>{
         e.preventDefault();
     }
     
+});
+
+document.getElementById("cardMenuX").addEventListener("click", function(){
+    cardMenuBackground.style.display = "none";
+    cardMenu.style.display = "none";
 });
 
 
@@ -140,6 +159,11 @@ function acceptNewList(id){
         var nameOfClass = document.createElement("p");
         nameOfClass.innerText = value;
         itemDiv.appendChild(nameOfClass);
+        var itemEditButton = document.createElement("button");
+        itemEditButton.classList.add("editListButton");
+        itemEditButton.id = containerID + "editListButton";
+        itemDiv.appendChild(itemEditButton)
+        
         createCardContainer(containerID,itemDiv);
 
     }
@@ -193,6 +217,14 @@ function addNewColumn(){
     containerCatalogue.appendChild(nextColumnDiv)
     addNewButton(parseInt(nextColumnDiv.id),nextColumnDiv);
 }
+
+function cancelList(id){
+    var containerID = parseInt(id);
+    var el = document.getElementById(containerID + "columnContainer");
+    el.parentNode.removeChild(el);
+}
+
+
 
 //this function creates new Add new list button and addNewListInput div that inholds
 //can be used while clicked on Add new list button. 
@@ -259,7 +291,7 @@ function addNewCard(id){
     var itemP = document.createElement("p");
     itemP.textContent = value;
     itemDiv.appendChild(itemP);
-    itemDiv.id = idCardsGenerator();
+    itemDiv.id = idCardsGenerator()+"cardCreated";
     itemDiv.setAttribute("draggable", true);
     //cardInhold.setAttribute("ondrop", drop(event));
     //itemDiv.setAttribute("ondragstart", drag(event));
