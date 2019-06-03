@@ -18,12 +18,12 @@ var currentIndex = 0;
    memberList = [
       {
          name: "incubator",
-         html: "<a href='#'><img class='navi' src='/masK/Website/HTML/images/incubator-white.wide.png'></a>"
+         html: "<a href='#'><img class='navi' src='/masK/Website/AS-HTML/Images/incubator-white.wide.png'></a>"
          // subMenu: []
       },
       {
          name: "Members",
-         html: "<a href='#'><img class='navi' src='/masK/Website/HTML/images/memberLogo-white.png'></a>",
+         html: "<a href='#'><img class='navi' src='/masK/Website/AS-HTML/Images/memberLogo-white.png'></a>",
          subMenu: [
             {
                name: "Andreas",
@@ -49,12 +49,12 @@ var currentIndex = 0;
       },
       {
          name: "Book",
-         html: "<a href='#'><img class='navi' src='/masK/Website/HTML/images/book-white.png'></a>"
+         html: "<a href='#'><img class='navi' src='/masK/Website/AS-HTML/Images/book-white.png'></a>"
          // subMenu: []
       },
       {
          name: "Filler",
-         html: "<a href='#'><img class='navi' src='/masK/Website/HTML/images/calendar-white-extraa.png'></a>"
+         html: "<a href='#'><img class='navi' src='/masK/Website/AS-HTML/Images/calendar-white-extraa.png'></a>"
          // subMenu: []
       },
       {
