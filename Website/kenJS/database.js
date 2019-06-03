@@ -28,7 +28,7 @@
 
 
 
-TODO: Fix animation not stopping when I move it out of the trashcan / approval box
+// TODO: Fix animation not stopping when I move it out of the trashcan / approval box
 
 let currentIndexForIDGenerator = 0;
 /**
@@ -153,7 +153,7 @@ function UpdateBoard(board, _name) {
  * @param {string} [reason] [Optional] The reason it was deleted.
  */
 function DeleteBoard(board, reason) {
-    RemoveGenericElementIDFromArray(boards, board.ID, reason);
+    RemoveGenericElementFromArray(boards, board.id, reason);
 }
 
 
@@ -226,14 +226,13 @@ function UpdateTask(task, newName, newDescription, newDeadline) {
  * @param {string} [reason] [Optional] The reason it was deleted
  */
 function DeleteTask(task, reason) {
-    RemoveGenericElementIDFromArray(tasks, task.ID, reason);
+    RemoveGenericElementFromArray(tasks, task.id, reason);
     
 }
 
 
 /* --------- TASK END -------- */
 /* --------- USER START -------- */
-
 
 
 /**
@@ -277,7 +276,7 @@ function UpdateUser(user, newName) {
  * @param {string} [reason] the reason it was deleted
  */
 function DeleteUser(user, reason) {
-    RemoveGenericElementIDFromArray(users, user.ID, reason);
+    RemoveGenericElementFromArray(users, user.id, reason);
 }
 
 
@@ -320,7 +319,7 @@ function UpdateRole(role, _name) {
 }
 
 function DeleteRole(role, reason) {
-    RemoveGenericElementIDFromArray(roles, role.ID, reason);
+    RemoveGenericElementFromArray(roles, role.id, reason);
 }
 
 /* --------- USER END -------- */
@@ -443,61 +442,46 @@ function PushGenericElementToArray(arr, ele) {
     }
     return returnEle;
 
-
-
-
-
-    // let newEle;
-
-    // if (ele === null || ele === undefined) return false;
-
-    // // If the name of the element already exists, return that existing element instead
-
-    // var foundEle = arr.find( function(e) {
-    //     let sameID = e.id === ele.id;
-    //     let sameName = e.name === ele.name;
-
-    //     if (sameID || sameName) return true;
-    //     return false;
-    // });
-
-
-    // if (foundEle === null || foundEle === undefined) {
-    //     newEle = ele;
-    //     arr.push(newEle);
-    // }
-    // else {
-    //     newEle = foundEle;
-
-    //         // I was thinking of doing this, but I figured it's completely unnecessary. 
-    //         // "Oh no, an integer increased by 4 when it didn't have to!"
-    //         // The pros (more consistent IDs) does not outweigh the cons (potential of two things with same ID)
-    //     // currentIndexForIDGenerator--; 
-    // }
-    // return newEle;
-
 }
 /**
  * @param {[]} arr An array object (Array.IsArray())
- * @param {number} eleID the element (arr[?])
+ * @param {(number|Object)} ele the element (arr[?])
  * @param {string} [reason] an optional variable to show the reason it was deleted
  */
-function RemoveGenericElementIDFromArray(arr, eleID, reason) {
+function RemoveGenericElementFromArray(arr, ele, reason) {
 
-    if (eleID === null || eleID === undefined) return false;
+        // if ele is null or undefined, it's clearly not inside the array, therefore return false 
+    if (ele === null || ele === undefined) return false;
 
-    let index;
+        // if the length of the array is 0, it's clearly not inside the array, therefore return false 
+    if (arr.length === 0) return false;
+
+    let index, id;
 
     // if the reason parameter is not given, then set the reason to be "No Reason Given"
     // [???] Currently not being used
     if (reason === undefined) reason = "No reason given";
 
-        // Check where in the array(ie. the index) the element is
-    index = arr.findIndex(function (e) {
-        console.log("Looking for ID: " + eleID + ". Found: " + e.id);
-        return e === eleID;
-    });
+        // If 
+    if (typeof(ele) === typeof(1)) {
+        id = ele;
+    }
+    else {
+        id = ele.id;
+    }
 
+    if (typeof(arr[0]) === typeof(1)) {
+        index = arr.findIndex(function (eId) {
+            console.log("Looking for ID: " + id + ". Found: " + eId);
+            return eId === id;
+        });
+    }
+    else {
+        index = arr.findIndex(function (e) {
+            console.log("Looking for ID: " + id + ". Found: " + e.id);
+            return e.id === id;
+        });
+    }
 
     // If the task does not exist within the array (Which means the indexOf function returns -1)
     if (index === -1) {
@@ -522,7 +506,7 @@ function MoveGenericElementFromOneArrayToAnother(fromArr, toArr, eleID, reason) 
     if (reason === undefined) reason = "No reason given";
 
         // If you were to able to remove, push it to another, otherwise don't even bother trying.
-    if (RemoveGenericElementIDFromArray(fromArr, eleID, reason)) {
+    if (RemoveGenericElementFromArray(fromArr, eleID, reason)) {
         PushGenericElementToArray(toArr, eleID, reason);
     }
 }

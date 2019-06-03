@@ -1,7 +1,7 @@
 // What my comments mean / other information relevant to my code:
 
 
-// This JavaScript document is badly documented compared to my other scripts (specifically database.js), there are a few reasons for this:
+// This JavaScript document is less documented compared to my other scripts (specifically database.js), there are a few reasons for this:
 // Database.js is as close to an "API" as we get, and those need the best documentation, as they are literally used by other developers, instead of "just" as a way to grade our assignment
 
 
@@ -142,15 +142,13 @@ function DragEnd(e) {
 function Drag(e) {
     e.preventDefault();
     // If you're "dragging" (ie. moving the mouse) and you're not holding a note, return.
-    if (activeDragNote === null) return;  
-
-    console.warn("Approved? " + activeDragNote.readyToBeApproved + ". Deleted? " + activeDragNote.readyToBeDeleted + ". Animating? " + activeDragNote.currentlyAnimating);
+    if (activeDragNote === null) return;
 
     aboveTrashCan = CheckIfAboveTrashCan(e)
     aboveApprovalBox = CheckIfAboveApprovalBox(e);
     if (aboveTrashCan) {
             // Do not move the note if you're over the trashCan. This is to ensure the animation moves smoothly
-        AnimateNotePreDeletion(activeDragNote, 750);
+        AnimateNotePreDeletion(activeDragNote, 250);
         return;
     }
     if (aboveApprovalBox) {
@@ -325,6 +323,10 @@ function CreateNewNoteOnPageNew(task, pos) {
     let titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
     let descriptionString = "<p>" + task.description + "</p>"
     newDiv.innerHTML = titleString + "\n" + descriptionString;
+    
+    newDiv.currentlyAnimating = false;
+    newDiv.readyToBeDeleted = false;
+    newDiv.readyToBeApproved = false;
 
     SetTranslate(pos.left, pos.top, newDiv);
     newDiv.xOffset = pos.left;
@@ -532,11 +534,16 @@ function comparePositions(pos1, pos2) {
     return intersecting;
 }
 
-function animateNoteBaseline(noteEle, duration) {
-    if (noteEle.currentlyAnimating) return;
+/**
+ * 
+ * @param {note} noteEle 
+ * @returns {Boolean} if it is already animating, return true
+ */
+function animateNoteBaseline(noteEle) {
+    if (noteEle.currentlyAnimating) return true;
     noteEle.currentlyAnimating = true;
-    $(noteEle).attr("oldStyle", $(noteEle).attr("style"));
-
+    var jqNote = $(noteEle);
+    jqNote.attr("oldStyle", jqNote.attr("style"));
 }
 
 /**
@@ -545,22 +552,12 @@ function animateNoteBaseline(noteEle, duration) {
  * I don't have enough time to find out why it's not aligned perfectly in the middle, and this is a low-priority issue.
  */
 function AnimateNotePreDeletion(noteEle, duration) {
-    animateNoteBaseline(noteEle, duration);
+    if (animateNoteBaseline(noteEle)) return;
 
-    let trashCanBody = trashCan.children("#trashCanBody");
+    RelocateToMiddleOfTrashcanBody();
 
-    let trashCanBodyPositionData = GetPositionDataRelative(trashCanBody, trashCan);
-    let xOffset = trashCanBodyPositionData.difference.x / 2;
-    let yOffset = trashCanBodyPositionData.difference.y / 2;
-
-
-    // Middle of the trashCanBody minus the difference between the start of the body and the end of the body (divided by 2)
-    let xPos = trashCanBodyPositionData.middle.x - xOffset;
-    let yPos = trashCanBodyPositionData.middle.y - yOffset;
-    
-    SetNotePosition(noteEle, xPos, yPos);
     $(noteEle).animate({
-        transform: "translate(" + xPos + "px, " + yPos + "px)",
+        // transform: "translate(" + xPos + "px, " + yPos + "px)",
         opacity: 0.25
     }, duration, function () {
 
@@ -571,23 +568,43 @@ function AnimateNotePreDeletion(noteEle, duration) {
         } 
         noteEle.readyToBeDeleted = true;
     });
+
+    function RelocateToMiddleOfTrashcanBody() {
+        let trashCanBody = trashCan.children("#trashCanBody");
+        
+        // let trashCanBody = $("#trashCanBody");
+
+        let trashCanBodyPositionData = GetPositionDataRelative(trashCanBody, trashCan);
+
+        let xOffset = $(noteEle).width() / 2;
+        let yOffset = $(noteEle).height() / 2;
+
+            // You get the position
+        let xPos = trashCanBodyPositionData.middle.x - xOffset;
+        let yPos = trashCanBodyPositionData.middle.y - yOffset;
+        SetNotePosition(noteEle, xPos, yPos);
+    }
+}
+/**
+ * 
+ * @param {jquery<HTMLElement>} element 
+ * @param {jquery<HTMLElement>} [relativeTo] Which, if applicable, element to set it relative to - if unset it is relative to parent; 
+ */
+function GetMiddlePosOfElement(element, relativeTo) {
+    let elementPositionData = GetPositionData(element);
+    let relativeElementPositionData;
+    if (relativeTo !== undefined) {
+        relativeElementPositionData = GetPositionDataRelative(relativeTo);
+    }
 }
 
 
 
 function animateNotePreApproval(noteEle, duration) {
-    animateNoteBaseline(noteEle, duration);
+    if (animateNoteBaseline(noteEle)) return;
 
-    let approvalBoxPositionData = GetPositionData(approvalBox);
-    let xOffset = approvalBoxPositionData.difference.x / 2;
-    let yOffset = approvalBoxPositionData.difference.y / 2;
-
-
-    // Middle of the approvedBoxBody minus the difference between the start of the body and the end of the body (divided by 2)
-    let xPos = approvalBoxPositionData.middle.x - xOffset;
-    let yPos = approvalBoxPositionData.middle.y - yOffset;
-
-    SetNotePosition(noteEle, xPos, yPos);
+    RelocateToMiddleOfApprovalBox();
+    
     $(noteEle).animate({
         borderWidth: "0px"
     }, duration, function () {
@@ -602,6 +619,16 @@ function animateNotePreApproval(noteEle, duration) {
         noteEle.readyToBeApproved = true;
         noteToApprove = null;
     });
+
+    function RelocateToMiddleOfApprovalBox() {
+        let approvalBoxPositionData = GetPositionData(approvalBox);
+        let xOffset = $(noteEle).width() / 2;
+        let yOffset = $(noteEle).height() / 2;
+        // Middle of the approvedBoxBody minus the difference between the start of the body and the end of the body (divided by 2)
+        let xPos = approvalBoxPositionData.middle.x - xOffset;
+        let yPos = approvalBoxPositionData.middle.y - yOffset;
+        SetNotePosition(noteEle, xPos, yPos);
+    }
 }
 
 /**
@@ -645,18 +672,23 @@ function GetPositionDataRelative(dom, relDom) {
     }
 
     let newEnd = {
-        x: relDomMiddlePos.end.x + domMiddlePos.end.x,
-        y: relDomMiddlePos.end.y + domMiddlePos.end.y
+        x: relDomMiddlePos.end.x /* + domMiddlePos.end.x */,
+        y: relDomMiddlePos.end.y /* + domMiddlePos.end.y*/
     }
 
     let newDifference = {
-        x: relDomMiddlePos.difference.x + domMiddlePos.difference.x,
-        y: relDomMiddlePos.difference.y + domMiddlePos.difference.y
+        // x: $(dom).width()
+        x: newEnd.x - newStart.x,
+        y: newEnd.y - newStart.y
+        // x: relDomMiddlePos.difference.x + domMiddlePos.difference.x,
+        // y: relDomMiddlePos.difference.y + domMiddlePos.difference.y
     }
 
     let newMiddle = {
-        x: relDomMiddlePos.middle.x + domMiddlePos.middle.x,
-        y: relDomMiddlePos.middle.y + domMiddlePos.middle.y
+        x: newStart.x + ( newDifference.x / 2),
+        y: newStart.y + ( newDifference.y / 2)
+        // x: relDomMiddlePos.middle.x + domMiddlePos.middle.x,
+        // y: relDomMiddlePos.middle.y + domMiddlePos.middle.y
     }
 
     return {
