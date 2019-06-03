@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login</title>
-  <link rel="stylesheet" href="../CSS/login.css">
-  <link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
+    <title>Login</title>
+    <link rel="stylesheet" href="../CSS/main.css">
+    <link rel="stylesheet" href="../CSS/index.css">
+    <link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,300,600' rel='stylesheet' type='text/css'>
 </head>
 <body>
     <div id="container">
         
         <!--Sign up and Login button-->
         <ul id="tabGroup">
-            <li id="signUp" class="tab active"><button id="signupBtn">Sign Up</button></li>
-            <li id="logIn" class="tab"><button id="loginBtn">Login</button></li>
+            <li id="signUp" class="tab active"><button id="signUpMenuBtn">Sign Up</button></li>
+            <li id="logIn" class="tab"><button id="loginMenuBtn">Login</button></li>
         </ul>
-        
         
         <div class="tabContent">
             <div id="signup">   
@@ -53,10 +53,18 @@
                     <input type="password" name="password" placeholder="Password: *">
                 </div>
                 
-                <button class="button">Log In</button>
+                <button class="button" id = "loginBtn">Log In</button>
         
             </div> <!--- Login --->
         </div> <!--- TabContent --->   
     </div> <!--- Container --->
-    <script src="../JS/login.js"></script>
 </body>
+
+    <!-- jquery v3.4.1 "jQuery is a fast, small, and feature-rich JavaScript library" - it's a hugely popular JS library that, if notthing else, is used in a lot of answers on StackOverFlow-->
+    <script src = "../JS/node_modules/jquery/dist/jquery.js"></script>
+
+    <!-- JS cookie v2.2.0 - "A simple, lightweight javascript API for handling cookies" - quite self-explanatory -->
+    <script src="../JS/node_modules/js-cookie/src/js.cookie.js"></script>
+    <script src="../JS/login.js"></script>
+
+</html>

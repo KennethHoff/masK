@@ -15,15 +15,17 @@ var currentIndex = 0;
 /**
  * MemberList array with navigation buttons and (members) with a potential calender function. 
 */
+
+var imageFolder = "../Images/"
    memberList = [
       {
          name: "incubator",
-         html: "<a href='#'><img class='navi' src='images/incubator-white.wide.png'></a>"
+         html: "<a href='#'><img class='navi' src='" + imageFolder + "/incubator-white.wide.png'></a>"
          // subMenu: []
       },
       {
          name: "Members",
-         html: "<a href='#'><img class='navi' src='images/memberLogo-white.png'></a>",
+         html: "<a href='#'><img class='navi' src='" + imageFolder + "/memberLogo-white.png'></a>",
          subMenu: [
             {
                name: "Andreas",
@@ -49,12 +51,12 @@ var currentIndex = 0;
       },
       {
          name: "Book",
-         html: "<a href='#'><img class='navi' src='images/book-white.png'></a>"
+         html: "<a href='#'><img class='navi' src='" + imageFolder + "/book-white.png'></a>"
          // subMenu: []
       },
       {
          name: "Filler",
-         html: "<a href='#'><img class='navi' src='images/calendar-white-extraa.png'></a>"
+         html: "<a href='#'><img class='navi' src='" + imageFolder + "/calendar-white-extraa.png'></a>"
          // subMenu: []
       },
       {
