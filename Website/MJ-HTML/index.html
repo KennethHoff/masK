@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<head>
+    <title>Flextest</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/masK/Website/MJ-CSS/index.css">
+    <link rel="stylesheet" type="text/css" href="/masK/Website/CSS/style.css">
+</head>
+<body>
+    <!--
+        container inholds columns that are task lists. user can chose the name 
+        of the list/column.
+        every column has also button to add new cards
+        every column has cards container that keeps all the saved cards
+        inside this specific column. 
+        with creating new list, the button to create another list moves to the
+        right and is waiting to be used again.
+
+
+    -->
+    <!-- --------------------- Main sidebar container---------------- -->
+    <!-- <main id="mainTag"> -->
+        <!-- ----------------------LOGO-------------------------- -->
+        <!-- The logo that takes you home.  -->
+        <!-- <div id="logo">
+            <a href="#" id="home"><img id="homeLogo" src="/masK/Website/HTML/images/logoNoBackground.png"></a>
+        </div> -->
+        <!-- --------------------------SIDEBAR------------------------ -->
+        
+        <!-- The sidebar div only have the button element here, the rest is created through
+        DOM manipulation in JS so the sidebar works as a navigator and holds ul and li and a tags
+        that takes you to others sites. -->
+        <div id="sidebar">
+            <div id="logo">
+                <a href="#" id="home"><img id="homeLogo" src="/masK/Website/HTML/images/logoNoBackground.png"></a>
+            </div>
+                <!-- This button is the contact button -->
+            <button id="contact"><a href="#"><img id="info" class="navi" src="/masK/Website/HTML/images/info-white.png"></a></button>
+        </div>
+        
+    <!-- </main> -->
+    <div class="wrapper">
+            <div id="cardMenu" class="cardMenu"><!-- card menu board-->
+                <div class="cardMenuMainArea">
+                    <textarea id="cardMenuTextArea"></textarea>
+                    <button id="cardMenuX">X</button>
+                    <button id="deleteCard">Delete this card</button>
+                </div>
+            </div> 
+    <div id="cardMenuBackground" class="cardMenuBackground"><!-- this makes the whole website
+            fade when the card menu is launched-->
+                 
+    </div> 
+        <div id="container" class="container">
+        
+            <div id="0columnContainer" class="columnContainer">
+                <button id="0addNewListButton" class="addNewListButton">
+                    Add new list
+                </button>
+                <div id="0addNewListInput" class="addNewListInput">
+                    <input id="0valueAcceptList" type="text" placeholder="Enter list title">
+                    <button id="0buttonAcceptList" class="acceptListButton" type="button">Add List</button>
+                    <button id="0buttonDeclineList" class="declineButton" type="button">X</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/masK/Website/JS/script.js"></script>
+    <script src="/masK/Website/MJ-JS/main.js"></script>
+</body>
+
+
+</html>
+
+
+<!-- <!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Aggregation</title>
+        <link rel="stylesheet" type="text/css" href="index.css">
+        
+    </head>
+    <body>
+        <div class="flexContainer">
+        <div class="content group">
+            <div id="columns">  container for new columns
+               
+                
+                 <div class="column">
+                        <h3>Name</h3>
+                        <div class="cardsWrapper">
+                            <div class="card">
+                                <p class="cardInholdParagraph">hi alle smmen widncjkadvijqecjdvjqefbvjeqbvjk   njeknvdjkfvnwkfnvefv
+                                </p>
+                            </div>
+                            <button type="button" class="acceptCardButtonHide">Accept</button>
+                        </div>
+                        <button type="button" class="addNewCardButton">+Add</button>
+                        
+                    </div>  
+            
+                     
+            </div>
+
+
+                <div id="addList">
+                    <h3>+ Add new list</h3>
+                </div>
+              
+            
+            <div id="addListInput">
+                <input id="value" type="text" placeholder="Enter list title">
+                <button id="button" type="button">Add List</button>
+            </div>
+            </div>
+
+
+
+            
+            
+            
+            
+                
+        </div>    
+    
+     
+
+       <script src="main.js"></script>
+    </body>
+</html> -->
