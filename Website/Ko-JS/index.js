@@ -80,11 +80,18 @@ function handleDragStart(e) {
     return false;
   }
 
+
   function myBackground() {
 
+
+    // var StrTestTest = "hello / dette er / men / ";
     input = document.getElementById ("myFile");
-    alert(input.value);
+    // alert(input.value);
+    var newStrTest = input.value.replace(/ \/ /g, '\\');
 
     // document.body.style.backgroundColor = "#f3f3f3";
-       document.body.style.backgroundImage = "url('" + input.value + "')";
+    console.log(newStrTest);
+       document.body.style.backgroundImage = "url('" + newStrTest + "')";
   }
+
+  

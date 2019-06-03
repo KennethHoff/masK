@@ -1,12 +1,12 @@
 #mainpageBody {
-    background-color: white;
+    background-color: #ffffff;
     background: url(/image/stickyNotesMaskLogo.png);
     background-position: top;
     background-repeat: no-repeat;
   background-size: 100%;
 }
 #incubatorBody{
-  background-color: white;
+  background-color: #ffffff;
     background: url(/image/stickyNotesMaskLogo.png);
     background-position: top;
     background-repeat: no-repeat;
@@ -16,7 +16,7 @@
     width: 50%;
 }
 
-#main-container{
+#mainContainer{
     position: relative;
     width: 1200;
     height: 1200px;
@@ -34,13 +34,13 @@
 }
 .navbar {
     overflow: hidden;
-    background-color:black;
+    background-color:#000000;
   }
   
   .navbar a {
     float: left;
     font-size: 20px;
-    color: white;
+    color: #ffffff;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -55,7 +55,7 @@
     font-size: 20px;  
     border: none;
     outline: none;
-    color: white;
+    color: #ffffff;
     padding: 14px 16px;
     background-color: inherit;
     font-family: inherit;
@@ -71,7 +71,7 @@
     position: absolute;
     background-color: #f9f9f9;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px #00000033;
     z-index: 1;
   }
   
@@ -106,8 +106,8 @@
     height: 150px;
     width: 150px;
     float: left;
-    border:5px solid white;
-    background-color: rgb(255, 255, 255);
+    border:5px solid #ffffff;
+    background-color: #ffffff;
     margin-right: 5px;
     -webkit-border-radius: 10px;
     -ms-border-radius: 1px;
@@ -125,7 +125,7 @@
     color: #fff;
     box-shadow: 5px;
     padding: 5px;
-    background: -moz-linear-gradient(left center, rgb(0,0,0), rgb(79,79,79), rgb(21,21,21));
+    background: -moz-linear-gradient(left center, #000000, #4f4f4f, #151515);
     background: black;
    border-bottom: 1px solid #ddd;
     -webkit-border-top-left-radius: 10px;
@@ -147,14 +147,15 @@
       float: left;
   }
   
-  #main-containerIncubator {
+  #mainContainerIncubator {
     width: 100%;
     height:90vh;
-    background-color: rgb(133, 130, 130);
+    background-color: #858282;
     border-radius: 3px;
     touch-action: none;
     font-size: 15px;
     opacity: .5;
+    overflow: visible;
   }
 
  .sticker {
@@ -166,8 +167,8 @@
   border-radius: 2%;
   width: 180px;
   height: 150px;
-  background-color: rgb(233, 223, 133);
-  box-shadow: 2px 2px 15px rgb(0,0,0);
+  background-color: #e9df85;
+  box-shadow: 2px 2px 15px #000000;
   overflow: hidden;
   opacity: .9;
   font-family:"Reenie Beanie",arial,sans-serif;
@@ -179,7 +180,7 @@
   top: 0;
   left: 0;
   height: 25px;
-  background:  rgb(218, 176, 86);
+  background:  #dab056;
   width: 110%;
   border-radius: 2%;
   opacity: .9;
@@ -210,7 +211,7 @@
   height: 90vh;
   left: 10px;
   position: absolute;
-  background-color:rgb(235, 240, 230);
+  background-color:#ebf0e6;
   font-size: 30px;
   border: none;
   opacity: 0;
@@ -228,14 +229,128 @@
   height: 20px;
   left: 160px;
   top: 25px;
-  background: red;
+  background: #ff0000;
   position: absolute;
   border: none;
   border-radius: 50%;
 }
 
-#myFile { 
-  visibility: visible;
+#myFile{
   background: white;
-  border: saddlebrown
 }
+
+.incubator{
+  border: solid; 
+  border: 5px;
+  position: absolute;
+
+ 
+
+}
+
+#iBody{
+  width: 150px;
+  height: 250px;
+  position: absolute;
+  top: 500px;
+  left: 900px;
+  z-index: 20;
+}
+
+
+#incTop{
+  width: 150px;
+  height: 50px;
+ 
+  background-color: #000000;
+  border-top-left-radius: 50%;
+  border-top-right-radius: 50%;
+  /* opacity: 0.3; */
+}
+#incBot{
+  width: 150px;
+  height: 50px;
+  top: 200px;
+  background-color: #000000;
+  border-bottom-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+  /* opacity: 0.3; */
+}
+#incLeft{
+  width: 10px;
+  height: 190px;
+  top: 30px;
+  background-color: #000000;
+  /* opacity: 0.3; */
+}
+#incRight{
+  width: 10px;
+  height: 190px;
+  top: 30px;
+  left: 140px;
+  background-color: #000000;
+  /* opacity: 0.3; */
+}
+#egg{
+  width: 62px;
+	height: 100px;
+  margin: 10px auto 15px;
+  background: #ebcea9;
+  top: 85px;
+  left: 45px;
+
+	-webkit-border-radius: 50%/60% 60% 40% 40%;
+	-moz-border-radius: 50%/60% 60% 40% 40%;
+	border-radius: 50%/60% 60% 40% 40%;
+  box-shadow: 0px 0px 10px #000000;
+}
+#glass{
+  width: 150px;
+  height: 250px;
+  background-color: #33e9f334;
+  border-radius: 40%;
+}
+#circle1{
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffffff;
+  top: 35px;
+  left: 130px;
+}
+#circle2{
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffffff;
+  top: 35px;
+  left: 115px;
+}
+#circle3{
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffffff;
+  top: 35px;
+  left: 100px;
+}
+
+#h1Logo{
+  top:7px;
+left: 20px;
+  position: absolute;
+  color: #ffffff;
+  font-size: 20px;
+  font-family:"Reenie Beanie",arial,sans-serif;
+} 
+#h1Logo2{
+  position: absolute;
+  top: -16px;
+  left: 27px;
+  font-size: 5px;
+  color: #ffffff;
+  font-size: 19px;
+  font-family:"Reenie Beanie",arial,sans-serif;
+} 
+
+
