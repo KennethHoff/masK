@@ -18,7 +18,7 @@ var currentIndex = 0;
    memberList = [
       {
          name: "incubator",
-         html: "<a href='#'><img class='navi' src='images/incubator-white-extra.png'></a>"
+         html: "<a href='#'><img class='navi' src='images/incubator-white.wide.png'></a>"
          // subMenu: []
       },
       {

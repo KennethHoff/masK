@@ -16,7 +16,7 @@ ul{
     display: flex;
     height: 100%;
     width: 100%;
-    background-color: grey;
+    background-color: #808080;
 
 }
 /*-----------Main Container end---------- */
@@ -57,20 +57,15 @@ li a{
     top: -15px; 
     opacity: 0;
     visibility: hidden;
-    /* transition: ease-out .35s;
-    transition: ease-out .35s; */
     transition: ease-out .35s;
     left: 40px;
 }
 
 #navigator li{
     float: left;
-    /* padding: 15px; */
     margin-top: 25px;
     margin-left: 15px;
     background: #272828;
-    /* border-bottom: 1px dotted #fff; */
-    /*#414040*/
 }
 #navigator ul li{
     padding: 15px;
@@ -92,11 +87,6 @@ li a{
     transition: ease-in .35s;
     transition: ease-in .35s;
     transition: ease-in .35s;
-}
-
-#navigator .hasSubMenu{
-    /* fix styling here */
-    /* left: -3px; */
 }
 /*----------- First Level------------*/
     /*!important overrides any other declartion*/
@@ -132,11 +122,11 @@ So you can see the a tag in the dropdown.*/
 }
 /*This makes the text in the li´s inside members white*/
 #navigator li:hover ul /*a*/{
-    color: white;
+    color: #fff;
 }
 /* This makes the text inside the a tag in the li and ul have a white color.*/
 #navigator li:hover ul li ul li /*a*/{
-    color: white;
+    color: #fff;
 }
 /*-------------First level End---------*/
 
@@ -167,8 +157,6 @@ So you can see the a tag in the dropdown.*/
     background-color: #272828;
     padding: 5px;
     bottom: 0px;
-    /* margin-bottom: 15px;
-    margin-left: 10px; */
     margin: 15px 12px 12px; 
     right: 5px;
     border-radius: 40%;
@@ -187,9 +175,6 @@ So you can see the a tag in the dropdown.*/
 #homeLogo{
     position: relative;
     width: 50px;
-    /* left: 22px;
-    top: 15px; */
-    /*height: 50px;*/
     margin-top: 25px;
     margin-left: 10px;
 }
@@ -201,9 +186,6 @@ So you can see the a tag in the dropdown.*/
     width: 20px;
 }
 /*-----------Logo end-----------*/
- /* #calendar{
-    width: 400px;
-} */
  [id="0"]{
     
 }
