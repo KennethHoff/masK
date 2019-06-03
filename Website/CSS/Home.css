@@ -1,4 +1,4 @@
-/* Fix the position: absolute, cant get (add new list button away from sidebar) */
+/* Remove most absolute positioning so that it's more dynamic */
 body{
     margin: 0;
     background-color: rgb(124, 161, 149);
@@ -6,6 +6,10 @@ body{
     max-width: 3000px;
     overflow-x: scroll;
     white-space: nowrap;
+}
+
+#home {
+    cursor:pointer;
 }
 
 .container{
@@ -191,7 +195,7 @@ body{
 .wrapper{
     position: relative;
     width: calc(100% - 72px);
-    left: 72px;
+    /* left: 72px; */
 }
 
 .cardMenuBackground{

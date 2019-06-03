@@ -8,19 +8,18 @@ var currentIndex = 0;
  * Its also here that the ulNavigator = ul with id "navigator"
  * Sidebar is where everything is inside.
 */
-(function(){
-   var ulNavigator = CreateUl("navigator", null, document.getElementById("sidebar"));
+var ulNavigator = CreateUl("navigator", null, document.getElementById("sidebar"));
 /*---------------ARRAY---------------*/
 
 /**
  * MemberList array with navigation buttons and (members) with a potential calender function. 
 */
 
-var imageFolder = "../Images/"
+const imageFolder = "../Images"
    memberList = [
       {
          name: "incubator",
-         html: "<a href='#'><img class='navi' src='" + imageFolder + "/incubator-white.wide.png'></a>"
+         html: "<a href='../HTML/incubator.html'><img class='navi' src='" + imageFolder + "/incubator-white.wide.png'></a>"
          // subMenu: []
       },
       {
@@ -58,11 +57,6 @@ var imageFolder = "../Images/"
          name: "Filler",
          html: "<a href='#'><img class='navi' src='" + imageFolder + "/calendar-white-extraa.png'></a>"
          // subMenu: []
-      },
-      {
-         name: "Filler",
-         html: "<a href='#'> Filler </a>"
-         // submenu: []
       }];
 // ------------------- ARRAY end --------------------
 
@@ -109,7 +103,6 @@ var imageFolder = "../Images/"
       var subMenuUL = CreateUl(null, "dropdown", li);
       RenderArray(objEle.subMenu, subMenuUL);
    }
-})();
 // ------------------- Render function end ------------------------
 
 

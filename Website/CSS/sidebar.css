@@ -5,29 +5,17 @@
     font-family: sans-serif;
 }
 a{
-    color: #fff;   
+    color: #fff;
 }
 ul{
     list-style-type: none;
 }
-/*----------- Main container ----------*/
-#mainTag{
-    height: 100%;
-    width: 100%;
-    background-color: #808080;
-
-}
-/*-----------Main Container end---------- */
 
 /*-------- SIDEBAR--------*/
 #sidebar{
-    position: absolute;
-    display: flex;
-    /* width: 4.5em; */
-    /*was 6.5*/
-    /* height: 90%; */
+    position: fixed;
+    width: 72px;
     height: 100%;
-    width: 4.5em;
     background-color: #272828;
 }
 /*---------SIDEBAR end ---------*/
@@ -47,10 +35,7 @@ li a{
     font-weight: 500;
     margin: 5px;
 }
-/* #navigator ul{
-    overflow-x: hidden;
-    overflow-y: scroll;
-} */
+
 .dropdown{
     position: absolute; 
     width: 150px;
@@ -169,7 +154,7 @@ So you can see the a tag in the dropdown.*/
     position: relative;
     height: 100px;
     background-color: #272828;
-    width: 4.5em;
+    width: 72px;
 }
 
 #homeLogo{
@@ -178,26 +163,7 @@ So you can see the a tag in the dropdown.*/
     margin-top: 25px;
     margin-left: 10px;
 }
-#Home{
-
-}
 .navi{
     position: relative;
     width: 20px;
-}
-/*-----------Logo end-----------*/
- [id="0"]{
-    
-}
- [id="1"]{
-
-}
- [id="12"]{
-
-}
- [id="13"]{
-
-} 
- [id="15"]{
-
 }
