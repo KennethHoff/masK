@@ -12,8 +12,6 @@ ul{
 }
 /*----------- Main container ----------*/
 #mainTag{
-    position: absolute;
-    display: flex;
     height: 100%;
     width: 100%;
     background-color: #808080;
@@ -23,11 +21,13 @@ ul{
 
 /*-------- SIDEBAR--------*/
 #sidebar{
-    position: fixed;
-    width: 4.5em;
+    position: absolute;
+    display: flex;
+    /* width: 4.5em; */
     /*was 6.5*/
-    height: 90%;
-    top: 65px;
+    /* height: 90%; */
+    height: 100%;
+    width: 4.5em;
     background-color: #272828;
 }
 /*---------SIDEBAR end ---------*/

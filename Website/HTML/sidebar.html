@@ -2,28 +2,27 @@
 <html>
 <head>
     <title>Homepage</title>
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="../CSS/sidebar.css" />
 </head>
 <body>
     <!-- --------------------MAIN CONTAINER------------------------- -->
-<main id="mainTag">
     <!-- ----------------------LOGO-------------------------- -->
 <!-- The logo that takes you home.  -->
-    <div id="logo">
-        <a href="#" id="home"><img id="homeLogo" src="images/logoNoBackground.png"></a>
-    </div>
+
 <!-- --------------------------SIDEBAR------------------------ -->
 
 <!-- The sidebar div only have the button element here, the rest is created through
 DOM manipulation in JS so the sidebar works as a navigator and holds ul and li and a tags
 that takes you to others sites. -->
-    <div id="sidebar">
-
-        <!-- This button is the contact button -->
-        <button id="contact"><a href="#"><img id="info" class="navi" src="images/info-white.png"></a></button>
+<div id="sidebar">
+    <div id="logo">
+        <a href="#" id="home"><img id="homeLogo" src="images/logoNoBackground.png"></a>
     </div>
+    <!-- This button is the contact button -->
+    <button id="contact"><a href="#"><img id="info" class="navi" src="images/info-white.png"></a></button>
+</div>
 
 </main>
-        <script src="script.js"></script>
+        <script src="../JS/sidebar.js"></script>
     </body>
 </html>
