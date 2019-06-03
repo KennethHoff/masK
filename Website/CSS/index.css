@@ -149,11 +149,12 @@
   
   #main-containerIncubator {
     width: 100%;
-    height:0px;
-    background-color: rgb(251, 21, 21);
+    height:90vh;
+    background-color: rgb(133, 130, 130);
     border-radius: 3px;
     touch-action: none;
     font-size: 15px;
+    opacity: .5;
   }
 
  .sticker {
@@ -169,6 +170,8 @@
   box-shadow: 2px 2px 15px rgb(0,0,0);
   overflow: hidden;
   opacity: .9;
+  font-family:"Reenie Beanie",arial,sans-serif;
+  font-size: 25px;
 }
 
 .sticker .bar {
@@ -176,10 +179,10 @@
   top: 0;
   left: 0;
   height: 25px;
-  background: rgb(2, 2, 2);
+  background:  rgb(218, 176, 86);
   width: 110%;
   border-radius: 2%;
-  opacity: .1;
+  opacity: .9;
 }
 
 .sticker textarea {
@@ -203,11 +206,36 @@
   z-index: 1;
 }
 .addNoteBtn{
-  width: 40px;
-  height: 40px;
+  width: 100%;
+  height: 90vh;
+  left: 10px;
   position: absolute;
-  border-radius: 50%;
-  background-color:lightgray;
+  background-color:rgb(235, 240, 230);
   font-size: 30px;
-  
+  border: none;
+  opacity: 0;
+}
+#buttonText{
+  left: 50px;
+  top: 108px;
+  position: absolute;
+  font-family:"Reenie Beanie",arial,sans-serif;
+  font-weight: bolder;
+}
+
+.noteBtn{
+  width: 20px;
+  height: 20px;
+  left: 160px;
+  top: 25px;
+  background: red;
+  position: absolute;
+  border: none;
+  border-radius: 50%;
+}
+
+#myFile { 
+  visibility: visible;
+  background: white;
+  border: saddlebrown
 }
