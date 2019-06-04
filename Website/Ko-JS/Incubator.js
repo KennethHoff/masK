@@ -13,7 +13,7 @@
   var clicks = 1;
   function counter(){
       clicks += 1;
-      document.getElementsByClassName("addNoteBtn").innerHTML = clicks;
+      // document.getElementById("mainContainerIncubator").innerHTML = clicks;
       console.log("Note: " + clicks);
     }
 
@@ -113,7 +113,7 @@
     
 
     createNote(); 
-    addNoteBtnEl = document.querySelector('.addNoteBtn');
+    addNoteBtnEl = document.querySelector('#mainContainerIncubator');
     addNoteBtnEl.addEventListener('click', createNote, false);
     document.addEventListener('mousemove', onDrag, false);
     document.addEventListener('mouseup', onDragEnd, false);
@@ -150,11 +150,11 @@
 //                 } 
 //             } 
 
-            function test(){
-                    console.log("You've tried to open context menu");
-                    // window.event.returnValue = false;
-                    void(document.oncontextmenu=null);
-            }
+            // function test(){
+            //         console.log("You've tried to open context menu");
+            //         // window.event.returnValue = false;
+            //         void(document.oncontextmenu=null);
+            // }
 
 
 // // Listen for click events on the <body> element
@@ -210,41 +210,47 @@
 //   //*************************************** *//
   
 
-//   // function setCookie(cname,cvalue,exdays) {
-//   //   var d = new Date();
-//   //   d.setTime(d.getTime() + (exdays*24*60*60*1000));
-//   //   var expires = "expires=" + d.toGMTString();
-//   //   document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-//   // }
+  // function setCookie(cname,cvalue,exdays) {
+  //   var d = new Date();
+  //   d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  //   var expires = "expires=" + d.toGMTString();
+  //   document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  // }
   
-//   // function getCookie(cname) {
-//   //   var name = cname + "=";
-//   //   var decodedCookie = decodeURIComponent(document.cookie);
-//   //   var ca = decodedCookie.split(';');
-//   //   for(var i = 0; i < ca.length; i++) {
-//   //     var c = ca[i];
-//   //     while (c.charAt(0) == ' ') {
-//   //       c = c.substring(1);
-//   //     }
-//   //     if (c.indexOf(name) == 0) {
-//   //       return c.substring(name.length, c.length);
-//   //     }
-//   //   }
-//   //   return "";
-//   // }
+  // function getCookie(cname) {
+  //   var name = cname + "=";
+  //   var decodedCookie = decodeURIComponent(document.cookie);
+  //   var ca = decodedCookie.split(';');
+  //   for(var i = 0; i < ca.length; i++) {
+  //     var c = ca[i];
+  //     while (c.charAt(0) == ' ') {
+  //       c = c.substring(1);
+  //     }
+  //     if (c.indexOf(name) == 0) {
+  //       return c.substring(name.length, c.length);
+  //     }
+  //   }
+  //   return "";
+  // }
   
-//   // function checkCookie() {
-//   //   var user=getCookie("username");
-//   //   if (user != "") {
-//   //     alert("Welcome again " + user);
-//   //   } else {
-//   //      user = prompt("Please enter your name:","");
-//   //      if (user != "" && user != null) {
-//   //        setCookie("username", user, 30);
-//   //      }
-//   //   }
-//   // }
-//   // Drag to delete
+  // function checkCookie() {
+  //   var user=getCookie("username");
+  //   if (user != "") {
+  //     alert("Welcome again " + user);
+  //   } else {
+  //      user = prompt("Please enter your name:","");
+  //      if (user != "" && user != null) {
+  //        setCookie("username", user, 30);
+  //      }
+  //   }
+  // }
+
+
+
+
+
+
+//   Drag to delete
 
 //   function allowDrop(ev)
 // {

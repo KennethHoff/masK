@@ -1,12 +1,16 @@
 body {
-    background-color: #3333;
+    background-color: rgba(238, 238, 238, 0);
     color: antiquewhite;
 }
 
 body {
     background-image: url(../Images/masKlogo.png);
+    position: absolute;
     font-family: 'Titillium Web', sans-serif;
     background-repeat: no-repeat;
     background-position: center;
-    /* background-size: 730px; */
+    background-size: 700px 700px;
+    background-position-x: 450px;
+    background-position-y: 5px;
+    background-size: 1000px;
 }
