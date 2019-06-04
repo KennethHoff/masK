@@ -1,0 +1,269 @@
+/* Remove most absolute positioning so that it's more dynamic */
+body{
+    margin: 0;
+    background-color: rgb(124, 161, 149);
+    min-width: 1420px;
+    max-width: 3000px;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+
+
+#home {
+    cursor:pointer;
+}
+
+.container{
+    display: flex; 
+    flex-direction: row;
+    padding-left: 90px;
+    padding-top: 20px;
+}
+
+.columnContainer{
+    flex-shrink: 0;
+    width:250px;
+    min-height: 200px;
+    margin:10px;    
+}
+
+.cardContainer{  /*change name into section */
+    display:  inline-block;
+    width: 240px;
+    min-height: 83px;
+    background-color: #c4765a;
+    text-align: left;
+    border-radius: 5px;
+}
+
+.cardContainer p{
+    display: inline-block;
+    font-size: 18px;
+    height: 10px;
+    min-width: 180px;
+    max-width: 180px;
+    margin-top:10px;
+    margin-bottom: 20px;
+    margin-left: 21px;
+    overflow-wrap: break-word;
+}
+
+.inputContainer{
+    display: none;
+    position: relative;
+    margin-left: 19px;
+    width: 200px;
+    height: 36px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: 0px 2px #a3644d;
+}
+
+
+.textArea{
+    position: absolute;
+    top:2px;
+    left:3px;
+    width:143px;
+    resize: none;
+    border-radius: 3px 0px 0px 3px;
+    border: none;
+    outline: none;
+    overflow: auto;
+}
+
+.textAreaHide{
+    display: none;
+}
+
+.addCardButton{
+    display: block;
+    margin-top: 14px;
+    margin-left:12px;
+    margin-bottom: 15px;
+    width: 45px;
+    border: none;
+    color: white;
+    background-color: #c4765a;
+}
+
+.addCardButtonHide2{
+    position: absolute;
+    display: none;
+    right: 4px;
+    top:3px;
+    width:45px;
+    height: 30px;
+    background-color: rgb(196, 118, 90);
+    color: white;
+    border: none;
+    border-radius: 3px;
+}
+
+.addCardButtonHide{
+   display: none;
+}
+
+.cardInhold{
+    display: block; 
+    min-height: 110px; 
+}
+
+.cardCreated{
+    display: block;
+    font-size: 16px;
+    max-width:190px;
+    min-height:100px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 5px;
+    margin-bottom: 5px;
+    margin-left: 19px;
+    padding-bottom: 10px;
+    box-shadow: 0px 3px #a3644d;
+    transition: background-color 0.2s;
+    padding: 5px;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.cardCreated:hover{
+    background-color: #ebebeb;
+}
+
+/* .cardCreated p{
+    margin-left: 25px;
+    font-size: 16px;
+    max-width: 180px;
+    overflow-wrap: break-word;
+    white-space: normal;
+    } */
+
+.addNewListButton{
+    display:inline-block;
+    border: none;
+    font-size: 14px;
+    width:240px;
+    height: 40px;
+    padding-left: 15px;
+    color: white;
+    background-color: rgb(86, 83, 88);   
+    opacity: 0.7;
+    text-align: left;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
+
+.addNewListButton:hover{
+    background-color: rgb(54, 54, 54);  
+}
+
+.editListButton{
+    border: none;
+    background: none;
+    
+}
+
+
+
+.addNewListInput{
+    position: relative;
+    display: none;
+    width: 240px;
+    height: 80px;
+    background-color: #c4765a;
+    border-radius: 3px;
+}
+
+.addNewListInput input{
+    display: inline-block;
+    border: none;
+    width:220px;
+    height: 32px;
+    margin-top:5px;
+    margin-left: 6px;
+    border-radius: 2px;
+    font-size: 14px;
+    padding-left: 10px;
+    box-sizing: border-box;
+    
+}
+
+.acceptListButton{
+    display: block;
+    width:85px;
+    height: 30px;
+    margin-top:3px;
+    margin-left:6px;
+    border-radius: 3px;
+}
+
+.declineButton {
+    position: absolute;
+    top: 42px;
+    left:94px;
+    width: 18px;
+    height: 18px;
+    background: none;
+    border: 1px solid black;
+    border-radius: 50%;
+    
+}
+
+.wrapper{
+    position: relative;
+    width: calc(100% - 72px);
+    /* left: 72px; */
+}
+
+.cardMenuBackground{
+    position: absolute;
+    display: none;
+    margin-top: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: black;
+    opacity: 0.5;
+    z-index: 1;
+    
+}
+
+.cardMenu{
+    position: absolute;
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    left:0;
+    right: 0;
+    top:100px;
+    width:400px;
+    height: 500px;
+    background-color: white;
+    z-index: 2;   
+}
+
+.cardMenuMainArea{
+    position: relative;
+}
+
+#cardMenuX{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+#cardMenuTextArea{
+    position: absolute;
+    width: 300px;
+    top: 10px;
+    left: 10px;
+    resize: none;
+    font-size: 16px;
+}
+
+#deleteCard{
+    position: absolute;
+    top: 100px; 
+    left:10px;
+}
