@@ -45,6 +45,19 @@ function signup() {
     var username = signupUser;
     var password = signupPassword;
 
+    if (name.length     <= 1 || name     === undefined || name     === null) {
+        alert("Name too short");
+        return;
+    }
+    if (username.length <= 1 || username === undefined || username === null) {
+        alert("Username too short");
+        return;
+    } 
+    if (password.length <= 1 || password === undefined || password === null) {
+        alert("Password too short");
+        return;
+    }
+
     let newUser = CreateAndPushUser(name, username, password);
 
     loginMenu();
