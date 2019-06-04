@@ -29,6 +29,7 @@ li a{
     width: 72px;
     height: 100%;
     background-color: #272828;
+    z-index: 1000000;
 }
 /*---------SIDEBAR end ---------*/
 
