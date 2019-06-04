@@ -2,6 +2,7 @@ $(loginMenuBtn).on("click", loginMenu);
 $(signUpMenuBtn).on("click", signUpMenu);
 
 $(loginBtn).on("click", login)
+$(getstartedBtn).on("click", signup)
 
 function signUpMenu() {
     document.getElementById("login").style.display ="none";
@@ -18,5 +19,8 @@ function loginMenu() {
 }
 
 function login() {
+    location.href = "../HTML/incubator.html";
+}
+function signup() {
     location.href = "../HTML/incubator.html";
 }
