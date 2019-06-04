@@ -2,7 +2,10 @@
 var arrayOfLists=[];
 
 ////// to do
-//          make some animations while dragging
+//          make some animations while dragging/ kinda done
+//          add x to add new card
+//          maybe add some animations in class changes
+//          fix the input on cardContainer so it wraps down
 
 
 // this is container that holds everything. it will be used to target id of objects
@@ -13,12 +16,18 @@ var cardMenu = document.getElementById("cardMenu");
 var currentCard;
 
 
-
+document.addEventListener("keyup", function(event){
+    if (event.keyCode === 13 ) {
+        if (event.target.className === "valueAcceptList") {
+            acceptNewList(event.target.id); 
+        }
+    }
+});
 //her the container directory is used. whenever we click on sth inside this 
 //container it fetches id of anything.
 containerCatalogue.addEventListener("click",e =>{
-    
-console.log(e.target.id)
+     console.log(e.target.id);   
+    //  console.log(e.target.id)
     //if we click on an object that has addNewListButton in id then new input
     //is implemented. 
     //function createInput() make that button Add new list changes so the 
@@ -26,13 +35,15 @@ console.log(e.target.id)
     if((e.target.id).includes("addNewListButton") ){
         createInput(e.target.id);
         
-        document.getElementById(parseInt(e.target.id)+"valueAcceptList").addEventListener("keyup", function(event){
-            event.preventDefault();
-            if (event.keyCode === 13) {
-                document.getElementById(parseInt(e.target.id)+"buttonAcceptList").click();
-            }});
+        // document.getElementById(parseInt(e.target.id)+"valueAcceptList").addEventListener("keyup", function(event){
+        //     event.preventDefault();
+        //     if (event.keyCode === 13) {
+        //         document.getElementById(parseInt(e.target.id)+"buttonAcceptList").click();
+        //     }});
        
     }
+
+
 
     //this function takes value from input and saves it 
     //as a name of the newly created list
@@ -73,7 +84,7 @@ console.log(e.target.id)
     //column
     if((e.target.id).includes("button2")){
         addNewCard(e.target.id);
-    }
+    } 
 
 
     if((e.target.id).includes("buttonDeclineList")){
@@ -82,8 +93,12 @@ console.log(e.target.id)
     
 });
 
+var currentTarget;
+
 containerCatalogue.addEventListener("dragstart", e =>{
     e.dataTransfer.setData("text", e.target.id);
+    currentTarget = e.target;
+    console.log(document.getElementById(currentTarget.parentNode.id));
 });
 
 containerCatalogue.addEventListener("dragover", e =>{
@@ -91,21 +106,60 @@ containerCatalogue.addEventListener("dragover", e =>{
     e.preventDefault();
 });
 
-containerCatalogue.addEventListener("drop", e =>{
+
+
+containerCatalogue.addEventListener("drop", e => {
     if(e.target.id.includes("cardInhold")){
         var data = e.dataTransfer.getData("text");
         var target = e.target;
         target.appendChild(document.getElementById(data));
-    }
+        document.getElementById(parseInt(e.target.id)+"cardContainer").style.backgroundColor = "#c4765a";
+    } 
+    else if(e.target.id.includes("cardCreated")){
+        //parentNode
+        var data = e.dataTransfer.getData("text");
+        var target = document.getElementById(e.target.parentNode.id);
+        target.appendChild(document.getElementById(data));
+        document.getElementById(parseInt(e.target.parentNode.id)+"cardContainer").style.backgroundColor = "#c4765a";
+    } 
+    // else if(e.target.id.includes("cardContainer")){
+    //     var data = e.dataTransfer.getData("text");
+    //     var target = e.target.parentNode;
+    //     target.appendChild(document.getElementById(data));
+    //     e.dataTransfer.clearData();
+    //     e.dataTransfer.setData("text2", e.target.it);
+    //     var data2 = e.dataTransfer.getData("text2");
+    //     console.log(data2);
+    //     // document.getElementById(currentTarget.parentNode.id).appendChild(data2);
+    //     // e.target.parentNode.removeChild(e.target);
+        
+    // }
     else{
         e.preventDefault();
     }
+
     
 });
 
+containerCatalogue.addEventListener("dragenter", e =>{
+    if(e.target.id.includes("cardInhold")){
+        document.getElementById(parseInt(e.target.id)+"cardContainer").style.backgroundColor = "#e78f6f";
+    } 
+    
+    // if(e.target.id.includes("cardCreated")){
+        
+        
+    //      document.getElementById(parseInt(e.target.parentNode.id)+"cardContainer").style.backgroundColor = "#e78f6f";
+    // }
+});
+
+containerCatalogue.addEventListener("dragleave", e =>{
+    if(e.target.id.includes("cardInhold")){
+        document.getElementById(parseInt(e.target.id)+"cardContainer").style.backgroundColor = "#c4765a";
+    }
+});
+
 document.getElementById("cardMenuX").addEventListener("click", function(){
-    // make value of txtarea the same as on the card
-    //make a button to delete card
     var value = document.getElementById("cardMenuTextArea").value;
     document.getElementById(currentCard).textContent = value;
     cardMenuBackground.style.display = "none";
@@ -183,6 +237,7 @@ function acceptNewList(id){
         itemDiv.appendChild(nameOfClass);
         var itemEditButton = document.createElement("button");
         itemEditButton.classList.add("editListButton");
+        itemEditButton.textContent = "X";
         itemEditButton.id = containerID + "editListButton";
         itemDiv.appendChild(itemEditButton)
         
@@ -264,6 +319,7 @@ function addNewButton(id,nextColumnDiv){
     createInputField.type = "text";
     createInputField.placeholder = "Enter list title";
     createInputField.id = id + "valueAcceptList";
+    createInputField.classList.add("valueAcceptList");
     addNewListInputDiv.appendChild(createInputField);
     var createInputButton = document.createElement("button");
     createInputButton.type = "button";

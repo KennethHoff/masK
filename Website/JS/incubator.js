@@ -36,13 +36,9 @@
 // container.addEventListener("mouseup", DragEnd);
 // container.addEventListener("mousemove", Drag);
 
-// TODO: Fix the misaligned dragging
-
 const container = $("#incubatorContainer");
 const trashCan = $("#trashCan");
 const approvalBox = $("#approvalBox");
-const sidebar = $("#sidebar");
-const sidebarWidth = sidebar.width();
 
     // which item you are dragging
 let activeDragNote = null;
@@ -190,11 +186,11 @@ function GetNotePosWithEvent(note, e) {
     let tempNotePos;
 
     if (e.type === "touchMove") {
-        tempNotePos = GetNotePos(note, e.touches[0] + sidebarWidth, e.touches[0].pageY);
+        tempNotePos = GetNotePos(note, e.touches[0].pageX, e.touches[0].pageY);
     }
     // Otherwise.. (Which should only be if you are clicking with the mouse)
     else {
-        tempNotePos = GetNotePos(note, e.pageX + sidebarWidth, e.pageY);
+        tempNotePos = GetNotePos(note, e.pageX, e.pageY);
     }
     return { x: tempNotePos.x, y: tempNotePos.y };
 }
@@ -272,6 +268,8 @@ function GetNotePosition(note) {
         left: newMatrix[4],
         top: newMatrix[5]
     }
+
+    
     return newPos;
 }
 
@@ -298,7 +296,7 @@ function CreateNewNoteOnPage(task, pos) {
     newDiv.setAttribute("class", "note");
     newDiv.setAttribute("id", "note" + task.id);
     let titleString = "<p class = noteName id = 'note" + task.id + "Name'>" + task.name + "</p>";
-    let descriptionString = "<p class = noteDescription id = 'note" + task.id + "Description'>" + task.description + "</p>";
+    let descriptionString = "<p class = noteDescription id = 'note" + task.id + "Description'>" + task.description + "</p>"
     newDiv.innerHTML = titleString + "\n" + descriptionString;
 
     newDiv.currentlyAnimating = false;
@@ -377,6 +375,10 @@ function PlaceAllNotesOnPage() {
         CreateNewNoteOnPageNew(task, task.boardPosition);
     });
 }
+
+
+
+
 
 // Context Menu
 
@@ -501,15 +503,11 @@ function ApproveNote(note) {
 }
 
 
-function GetMousePosition(event) {
-    event.pageX + sidebarWidth;
-}
-
 function CheckIfAboveElement(e, otherEle) {
     let otherElePos = GetJQueryPosition(otherEle);
 
     // Only returns true if both are true (true + true = true | true + false = false (vice versa) | false + false = false)
-    return comparePositions([e.pageX + sidebarWidth], otherElePos[0]) && comparePositions([e.pageY], otherElePos[1]);
+    return comparePositions([e.pageX], otherElePos[0]) && comparePositions([e.pageY], otherElePos[1]);
 }
 
 function CheckIfAboveTrashCan(e) {

@@ -18,39 +18,43 @@
         <div class="tabContent">
             <div id="signup">   
                 <h1>Sign Up for Free</h1>
-                <div class="topRow">
-                    <div class="fieldWrap">
-                        <input type="text" id="signupFirstname" name="firstname" placeholder="First Name: *">
-                    </div>
-        
-                    <div class="fieldWrap">
-                        <input type="text" id="signupLastname" name="lastname" placeholder="Last Name: *" > 
-                    </div>
-                </div>
                     
-                <div class="fieldWrap">
-                    <input type="text" id="signupUser" name="username" placeholder="Username: *"/>
-                </div>
+                    <div class="topRow">
+                        <div class="fieldWrap">
+                            <input type="text" id="firstname" name="firstname" placeholder="First Name: *">
+                        </div>
+        
+                        <div class="fieldWrap">
+                            <input type="text" id="lastname" name="lastname" placeholder="Last Name: *" > 
+                        </div>
+                    </div>
+                    
+                    <div class="fieldWrap">
+                        <input type="email" id="email" name="email" placeholder="Email Address: *"/>
+                    </div>
           
-                <div class="fieldWrap">
-                    <input type="password" id="signupPassword" name="password" placeholder="Password: *"/>
-                </div>
-              
-                    <button type="submit" class="button" id="getstartedBtn">Get Started</button>
-              
+                    <div class="fieldWrap">
+                        <input type="password" name="password" placeholder="Password: *"/>
+                    </div>
+                    
+                    <button type="submit" class="button">Get Started</button>
+                
+            
             </div> <!--- Signup ---> 
             
             
             <div id="login">
                 <h1>Welcome Back!</h1>
+            
                 <div class="fieldWrap">
                     <input type="text" id="username" name="username" placeholder="Username: *">
                 </div>
                 <div class="fieldWrap">
-                    <input id="password" type="password" name="password" placeholder="Password: *">
+                    <input type="password" name="password" placeholder="Password: *">
                 </div>
-                    
+                
                 <button class="button" id = "loginBtn">Log In</button>
+        
             </div> <!--- Login --->
         </div> <!--- TabContent --->   
     </div> <!--- Container --->
@@ -62,6 +66,5 @@
     <!-- JS cookie v2.2.0 - "A simple, lightweight javascript API for handling cookies" - quite self-explanatory -->
     <script src="../JS/node_modules/js-cookie/src/js.cookie.js"></script>
     <script src="../JS/login.js"></script>
-    <script src="../JS/database.js"></script>
 
 </html>

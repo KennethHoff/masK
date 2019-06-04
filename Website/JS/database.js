@@ -94,8 +94,6 @@ let users = [
     //     name: "Test Name",
     //     visibleInSidebar,
     //     roles: [],
-    //     username: String,
-    //     password: String
     // }
 ];
 /**
@@ -229,6 +227,7 @@ function UpdateTask(task, newName, newDescription, newDeadline) {
  */
 function DeleteTask(task, reason) {
     RemoveGenericElementFromArray(tasks, task.id, reason);
+    
 }
 
 
@@ -241,16 +240,13 @@ function DeleteTask(task, reason) {
  * @param {string} _name What the name of the user will be
  * @returns {user} returns the user object (id, name, role[])
  */
-function CreateUser(_name, _username, _password) {
+function CreateUser(_name) {
     if (_name == undefined) return null;
     let newUser = {
         id: IDGenerator(),
         name: _name,
         roles: [],
-        username: _username,
-        password: _password
-    };
-
+    }
     console.log("New user created: " + newUser.name);
     return newUser;
 }
@@ -259,8 +255,8 @@ function CreateUser(_name, _username, _password) {
  * @param {string} _name What the name of the user will be
  * @returns {user} returns the user object (id, name, role[])
  */
-function CreateAndPushUser(_name, _username, _password) {
-    let tempUser = CreateUser(_name, _username, _password);
+function CreateAndPushUser(_name, _role) {
+    let tempUser = CreateUser(_name, _role);
     let newUser = PushGenericElementToArray(users, tempUser);
     return newUser;
 }
@@ -269,10 +265,8 @@ function CreateAndPushUser(_name, _username, _password) {
  * @param {user} user The user you want to update
  * @param {string} newName The new name of the user
  */
-function UpdateUser(user, newName, newUsername, newPasword) {
-    if (newName !== undefined) user.name = newName;
-    if (newUser !== undefined) user.username = newUsername;
-    if (newPasword !== undefined) user.password = newPasword;
+function UpdateUser(user, newName) {
+    user.name = newName;
 }
 
 /**
