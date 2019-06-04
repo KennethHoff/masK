@@ -95,7 +95,7 @@ let users = [
     //     visibleInSidebar,
     //     roles: [],
     //     username: String,
-    //     password String
+    //     password: String
     // }
 ];
 /**
