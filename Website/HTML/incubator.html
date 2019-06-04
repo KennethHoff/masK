@@ -1,34 +1,37 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>masK</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-        <link rel="stylesheet" type="text/css" href="../CSS/main.css">
-        <link rel="stylesheet" type="text/css" href="../css/incubator.css">
-        <link rel="stylesheet" type="text/css" href="../css/sidebar.css">
+<head>
+    <title>Hatch good ideas!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" lang="en" />
 
-    </head>
-    <body>
-         <!-- TODO: This screams bad practice to me.-->
-        <div id="sidebar" style="z-index: 1000000000">
-            <div id="logo">
-                <a id="home" href="../HTML/Home.html"><img id="homeLogo" src="../Images/logoNoBackground.png"></a>
-            </div>
-            <button id="contact"><a href="#"><img id="info" class="navi" src="../Images/info-white.png"></a></button>
-        </div>
+    <link rel="stylesheet" type="text/css" href="../CSS/main.css">
 
-        <div id = "incubatorContainer">
-            <ul class='custom-menu'>
-                <li data-action = "newTask">New Task</li>
-            </ul>
-            <div id="trashCan">
-                <img id="trashCanCover" src="../Images/TrashCan-cover-white.png">
-                <img id="trashCanBody"  src="../Images/TrashCan-body-white.png">
-            </div>
-            <div id="approvalBox">
-                <img id="approvalBoxImg" src="../Images/incubator-white-extra.png">
-            </div>
+    <link rel="stylesheet" type="text/css" href="../css/incubator.css">
+    <link rel="stylesheet" type="text/css" href="../css/sidebar.css">
+
+</head>
+<body>
+        <!-- TODO: This screams bad practice to me.-->
+    <div id="sidebar" style="z-index: 1000000000">
+        <div id="logo">
+            <a id="home" href="../HTML/Home.html"><img id="homeLogo" src="../Images/logoNoBackground.png"></a>
         </div>
-    </body>
+        <button id="contact"><a href="#"><img id="info" class="navi" src="../Images/info-white.png"></a></button>
+    </div>
+
+    <div id = "incubatorContainer">
+        <ul class='custom-menu'>
+            <li data-action = "newTask">New Task</li>
+        </ul>
+        <div id="trashCan">
+            <img id="trashCanCover" src="../Images/TrashCan-cover-white.png">
+            <img id="trashCanBody"  src="../Images/TrashCan-body-white.png">
+        </div>
+        <div id="approvalBox">
+            <img id="approvalBoxImg" src="../Images/incubator-white-extra.png">
+        </div>
+    </div>
+</body>
 
     <!-- jquery v3.4.1 "jQuery is a fast, small, and feature-rich JavaScript library" - it's a hugely popular JS library that, if notthing else, is used in a lot of answers on StackOverFlow-->
     <script src = "../JS/node_modules/jquery/dist/jquery.js"></script>
@@ -36,7 +39,10 @@
     <!-- JS cookie v2.2.0 - "A simple, lightweight javascript API for handling cookies" - quite self-explanatory -->
     <script src="../JS/node_modules/js-cookie/src/js.cookie.js"></script>
 
+    <!-- Our 'database' - The closest masK comes to having an API -->
     <script src="../JS/database.js"></script>
+
     <script src="../JS/incubator.js"></script>
     <script src="../JS/Sidebar.js"></script>
+
 </html>

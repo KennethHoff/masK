@@ -567,8 +567,11 @@ function GetRoleFromId(id) {
 function CreateDefaultBoards() {
     var newIncubatorBoard = CreateAndPushBoard("Incubator", true);
     var newTodoBoard = CreateAndPushBoard("ToDo", true);
+        newTodoBoard.pageOrder = 0;
     var newInProgressBoard = CreateAndPushBoard("InProgress", true);
+        newInProgressBoard.pageOrder = 1;
     var newCompletedBoard = CreateAndPushBoard("Completed", true);
+        newCompletedBoard.pageOrder = 2;
 
     incubatorBoard = newIncubatorBoard;
     defaultBoard = newTodoBoard;
