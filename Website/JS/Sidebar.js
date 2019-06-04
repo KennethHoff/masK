@@ -50,7 +50,7 @@ const imageFolder = "../Images"
       },
       {
          name: "Book",
-         html: "<a href='#'><img class='navi' src='" + imageFolder + "/book-white.png'></a>"
+         html: "<a href='#'><img class='navi' src='" + imageFolder + "/book-logo-white-wide.png'></a>"
          // subMenu: []
       },
       {
