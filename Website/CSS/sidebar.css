@@ -1,4 +1,3 @@
-
 * {
     margin: 0px;
     padding: 0px;
@@ -24,9 +23,11 @@ ul{
 #navigator{
     margin: 0 auto;
 }
+
 li{
     list-style: none;
 }
+
 li a{
     text-decoration: none;
     text-align: center;
@@ -44,20 +45,22 @@ li a{
     visibility: hidden;
     transition: ease-out .35s;
     left: 40px;
+    overflow-y: scroll;
+    max-height: 50vh;
 }
 
-#navigator li{
+#navigator li {
     float: left;
     margin-top: 25px;
     margin-left: 15px;
     background: #272828;
 }
-#navigator ul li{
+#navigator ul li {
     padding: 15px;
     margin-top: 2px;
 }
 
-#navigator li:first-child{
+#navigator li:first-child {
     border: none;
 }
 #navigator { 

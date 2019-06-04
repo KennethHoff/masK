@@ -17,6 +17,7 @@
 
 
 // Some 'less than ideal' things:
+
 // When you delete something (eg. Task) it will not be removed from its respective 'parent' array (eg. Board). so:
 // Create Task > Add Task.id to Board "tasks" array > Delete Task > board "tasks" array still has the .id value.
 // This is an incredibly minor thing, so I don't think I will bother working on it.
@@ -87,6 +88,8 @@ let tasks = [
  * @param {string} name What you see
  * @param {boolean} visibleInSidebar Whether or not this is displayed in the sidebar
  * @param {role[]} roles All roles assigned to this user
+ * @param {String} username The username you sign in with.
+ * @param {String} password This is stored in raw text in your cookies so it's clearly not fault
  */
 let users = [
     // {
@@ -136,9 +139,9 @@ function CreateBoard(_name) {
  * @param {string} _name What the name of the board will be
  * @returns {board} returns the board object (id, name, tasks[])
  */
-function CreateAndPushBoard(_name) {
+function CreateAndPushBoard(_name, disallowSameName) {
     let tempBoard = CreateBoard(_name)
-    let newBoard = PushGenericElementToArray(boards, tempBoard);
+    let newBoard = PushGenericElementToArray(boards, tempBoard, disallowSameName);
     return newBoard;
 }
 /**
@@ -415,9 +418,9 @@ function MoveRoleFromOneUserToAnother(oldUser, newUser, roleID) {
  * Input any array and any element and the element will be pushed into the array
  * @param {array} arr An array object (Array.IsArray())
  * @param {(Object|number)} ele the element (arr[?]) *or* the ID
- * @param {string} [reason] [Optional] The reason it was deleted
+ * @param {Boolean} disallowSameName if you allow the same name for multipe elements in the array (It's generally okay for tasks, but bad for boards). Undefined or a falsy value means you can have multiple with same name 
  */
-function PushGenericElementToArray(arr, ele) {
+function PushGenericElementToArray(arr, ele, disallowSameName) {
 
     let returnEle, found
 
@@ -432,6 +435,10 @@ function PushGenericElementToArray(arr, ele) {
 
         // returns the element if it exists, false if element does not exist, or undefined is array is empty. #JustJavascriptThings
         found = arr.find(function (e) {
+            if (!disallowSameName) {
+                return e.id === ele.id;
+            }
+
             let sameID = e.id === ele.id;
             let sameName = e.name === ele.name;
             if (sameID || sameName) return e;
@@ -558,10 +565,13 @@ function GetRoleFromId(id) {
 
 
 function CreateDefaultBoards() {
-    var newIncubatorBoard = CreateAndPushBoard("Incubator");
-    var newTodoBoard = CreateAndPushBoard("ToDo");
-    var newInProgressBoard = CreateAndPushBoard("InProgress");
-    var newCompletedBoard = CreateAndPushBoard("Completed");
+    var newIncubatorBoard = CreateAndPushBoard("Incubator", true);
+    var newTodoBoard = CreateAndPushBoard("ToDo", true);
+        newTodoBoard.pageOrder = 0;
+    var newInProgressBoard = CreateAndPushBoard("InProgress", true);
+        newInProgressBoard.pageOrder = 1;
+    var newCompletedBoard = CreateAndPushBoard("Completed", true);
+        newCompletedBoard.pageOrder = 2;
 
     incubatorBoard = newIncubatorBoard;
     defaultBoard = newTodoBoard;
@@ -574,13 +584,14 @@ function CreateDefaultBoards() {
 
 /* ------- Cookies START ------- */
 /**
- * Save all to cookies that will delete itself after 7 days. (You're welcome, sensor ;) )
+ * Save all to cookies that will delete itself after [Default: 7] days. (You're welcome, sensor ;) )
+ * @param {Number} duration how long the cookies will last
  */
-function SaveAllToCookies() {
-    Cookies.set("Boards", boards, {expires: 7});
-    Cookies.set("Tasks",  tasks , {expires: 7});
-    Cookies.set("Users",  users , {expires: 7});
-    Cookies.set("Roles",  roles , {expires: 7});
+function SaveAllToCookies(duration) {
+    Cookies.set("Boards", boards, {expires: duration});
+    Cookies.set("Tasks",  tasks , {expires: duration});
+    Cookies.set("Users",  users , {expires: duration});
+    Cookies.set("Roles",  roles , {expires: duration});
     Cookies.set("currentIndexForIDGenerator", currentIndexForIDGenerator, {expires: 7});
 }
 
@@ -607,7 +618,7 @@ function LoadFromCookies() {
 
 // Just before the page unloads, save all information to cookies.
 $(window).on("beforeunload", function () {
-    SaveAllToCookies();
+    SaveAllToCookies(7);
 });
 
 
