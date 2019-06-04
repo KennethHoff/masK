@@ -46,7 +46,7 @@ li a{
     transition: ease-out .35s;
     left: 40px;
     overflow-y: scroll;
-    height: 50vh;
+    max-height: 50vh;
 }
 
 #navigator li {
