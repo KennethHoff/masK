@@ -17,6 +17,7 @@
 
 
 // Some 'less than ideal' things:
+
 // When you delete something (eg. Task) it will not be removed from its respective 'parent' array (eg. Board). so:
 // Create Task > Add Task.id to Board "tasks" array > Delete Task > board "tasks" array still has the .id value.
 // This is an incredibly minor thing, so I don't think I will bother working on it.
@@ -138,9 +139,9 @@ function CreateBoard(_name) {
  * @param {string} _name What the name of the board will be
  * @returns {board} returns the board object (id, name, tasks[])
  */
-function CreateAndPushBoard(_name) {
+function CreateAndPushBoard(_name, disallowSameName) {
     let tempBoard = CreateBoard(_name)
-    let newBoard = PushGenericElementToArray(boards, tempBoard);
+    let newBoard = PushGenericElementToArray(boards, tempBoard, disallowSameName);
     return newBoard;
 }
 /**
@@ -564,10 +565,10 @@ function GetRoleFromId(id) {
 
 
 function CreateDefaultBoards() {
-    var newIncubatorBoard = CreateAndPushBoard("Incubator");
-    var newTodoBoard = CreateAndPushBoard("ToDo");
-    var newInProgressBoard = CreateAndPushBoard("InProgress");
-    var newCompletedBoard = CreateAndPushBoard("Completed");
+    var newIncubatorBoard = CreateAndPushBoard("Incubator", true);
+    var newTodoBoard = CreateAndPushBoard("ToDo", true);
+    var newInProgressBoard = CreateAndPushBoard("InProgress", true);
+    var newCompletedBoard = CreateAndPushBoard("Completed", true);
 
     incubatorBoard = newIncubatorBoard;
     defaultBoard = newTodoBoard;
