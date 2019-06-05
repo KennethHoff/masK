@@ -32,6 +32,9 @@
 // TODO: Fix animation not stopping when I move it out of the trashcan / approval box
 
 let currentIndexForIDGenerator = 0;
+
+// For board creation
+let currentPageOrder = 0;
 /**
  * Which board to put new tasks into if you don't specify
  * 
@@ -129,7 +132,7 @@ function CreateBoard(_name) {
         id: IDGenerator(),
         name: _name,
         tasks: [],
-        pageOrder: 0
+        pageOrder: PageOrderGenerator()
     };
     return newBoard;
 }
@@ -578,6 +581,9 @@ function CreateDefaultBoards() {
 
 }
 
+function PageOrderGenerator() {
+    return currentPageOrder++;
+}
 
 /* --- Array Manipulation END --- */
 
