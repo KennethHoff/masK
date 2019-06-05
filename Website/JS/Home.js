@@ -25,6 +25,7 @@ var boardsId;
 var boardsName;
 var tasksId;
 var tasksName;
+var taskParentID;
 var startNumberID = 0;
 
 
@@ -33,9 +34,10 @@ var startNumberID = 0;
 addNewColumn();
 
 
-// for (board of boards){
-//     createColumnContainer((parseInt(board.id)), board.name, board.columnContainerId)
-// }
+for (board of boards){
+    createColumnContainer((parseInt(board.id)), board.name, document.getElementById(board.columnContainerId));
+    document.getElementById((parseInt(board.id))+"addNewListButton").style.display ='none';
+}
 
 
 
@@ -147,7 +149,7 @@ containerCatalogue.addEventListener("click",e =>{
     //column
     if((e.target.id).includes("button2")){
         addNewCard(e.target.id);
-        tasks.push({id:tasksId, name:tasksName});
+        tasks.push({id:tasksId, name:tasksName, parentID:taskParentID});
     } 
 
    
@@ -181,16 +183,22 @@ containerCatalogue.addEventListener("drop", e => {
     if(e.target.id.includes("cardInhold")){
         var data = e.dataTransfer.getData("text");
         var target = e.target;
-        target.appendChild(document.getElementById(data));
+        var dataMoved = document.getElementById(data)
+        target.appendChild(dataMoved);
         document.getElementById(parseInt(e.target.id)+"cardContainer").style.backgroundColor = "#c4765a";
+
+        index = tasks.findIndex(x => x.id=dataMoved.id);
+        tasks[index].parentID = target.id;
+
+
     } 
-    else if(e.target.id.includes("cardCreated")){
-        //parentNode
-        var data = e.dataTransfer.getData("text");
-        var target = document.getElementById(e.target.parentNode.id);
-        target.appendChild(document.getElementById(data));
-        document.getElementById(parseInt(e.target.parentNode.id)+"cardContainer").style.backgroundColor = "#c4765a";
-    } 
+    // else if(e.target.id.includes("cardCreated")){
+    //     //parentNode
+    //     var data = e.dataTransfer.getData("text");
+    //     var target = document.getElementById(e.target.parentNode.id);
+    //     target.appendChild(document.getElementById(data));
+    //     document.getElementById(parseInt(e.target.parentNode.id)+"cardContainer").style.backgroundColor = "#c4765a";
+    // } 
     // else if(e.target.id.includes("cardContainer")){
     //     var data = e.dataTransfer.getData("text");
     //     var target = e.target.parentNode;
@@ -240,6 +248,10 @@ document.getElementById("deleteCard").addEventListener("click",function(){
     el.parentNode.removeChild(el);
     cardMenuBackground.style.display = "none";
     cardMenu.style.display = "none";
+    
+    index = tasks.findIndex(x => x.id=el);
+    tasks.splice(index,1);
+
 });
 
 
@@ -378,6 +390,10 @@ function cancelList(id){
     var containerID = parseInt(id);
     var el = document.getElementById(containerID + "columnContainer");
     el.parentNode.removeChild(el);
+
+    index = boards.findIndex(x => x.id=el);
+    boards.splice(index,1);
+
 }
 
 
@@ -457,6 +473,8 @@ function addNewCard(id){
     document.getElementById(containerID+"textArea").value =""
     tasksId = itemDiv.id;
     tasksName = itemDiv.textContent;
+    taskParentID= itemDiv.parentNode.id;
+    
     }
 }
 
