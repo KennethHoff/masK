@@ -1,4 +1,4 @@
-/* ------------------- General Tags -------------------- */
+
 * {
     margin: 0px;
     padding: 0px;
@@ -9,6 +9,21 @@ a{
 }
 ul{
     list-style-type: none;
+}
+
+/*-------- SIDEBAR--------*/
+#sidebar{
+    position: fixed;
+    width: 72px;
+    height: 100%;
+    background-color: #272828;
+    z-index: 1;
+}
+/*---------SIDEBAR end ---------*/
+
+/*---------------- General Menu Styling ----------------*/
+#navigator{
+    margin: 0 auto;
 }
 li{
     list-style: none;
@@ -21,26 +36,20 @@ li a{
     font-weight: 500;
     margin: 5px;
 }
-/* ------------------------ IDs --------------------------- */
 
-/*-------- SIDEBAR--------*/
-#sidebar{
-    position: fixed;
-    width: 72px;
-    height: 100%;
-    background-color: #272828;
-    z-index: 1000000;
-}
-/*---------SIDEBAR end ---------*/
-
-/* --------------------- Member ---------------- */
-#navigator{
-    margin: 0 auto;
+.dropdown{
+    position: absolute; 
+    width: 150px;
+    top: -15px; 
+    opacity: 0;
+    visibility: hidden;
+    transition: ease-out .35s;
+    left: 40px;
 }
 
 #navigator li{
     float: left;
-    margin-top: 35px;
+    margin-top: 25px;
     margin-left: 15px;
     background: #272828;
 }
@@ -59,80 +68,11 @@ li a{
     font-family: sans-serif;
 }
 /*Changes the color of the background of Li elements when hovered on.*/
-#navigator li ul li:hover{
+#navigator li:hover{
     background: #525151;
-    transition: ease-in .45s;
-}
-
-#navigator [id="0"]:hover .navi{
-    /* background: #982342; */
-    transform: scale(1.35);
-    filter: drop-shadow(0px 0px 3px #ffffff);
-    transition: ease-in .10s;
-    /* #4444dd */
-}
- #navigator [id="1"]:hover .navi{
-    /* background: #982342; */
-    transform: scale(1.35);
-    filter: drop-shadow(0px 0px 3px #ffffff);
-    transition: ease-in .10s;
-}
- #navigator [id="12"]:hover .navi{
-    /* background: #982342; */
-    transform: scale(1.35);
-    filter: drop-shadow(0px 0px 3px #ffffff);
-    transition: ease-in .10s;
-}
- #navigator [id="13"]:hover .navi{
-    /* background: #982342; */
-    transform: scale(1.35);
-    filter: drop-shadow(0px 0px 3px #ffffff);
-    transition: ease-in .10s;
-}
-/*---------------- Contact button ---------------*/
-#contact{
-    position: absolute;
-    background-color: #272828;
-    padding: 5px;
-    bottom: 0px;
-    margin: 15px 12px 12px; 
-    right: 5px;
-    border-radius: 40%;
-}
-#info{
-    width: 30px;
-}
-/*-----------Logo--------------*/
-#logo{
-    position: relative;
-    height: 60px;
-    background-color: #272828;
-    width: 72px;
-}
-
-#homeLogo{
-    position: relative;
-    width: 50px;
-    margin-top: 25px;
-    margin-left: 10px;
-}
-#homeLogo:hover{
-    transform: scale(1.35);
-    filter: drop-shadow(0px 0px 2px #ffffff);
-    transition: ease-in .10s;
-}
-/* ------------------ CLASSES ------------------- */
-.dropdown{
-    position: absolute; 
-    width: 150px;
-    top: -15px; 
-    opacity: 0;
-    visibility: hidden;
-    transition: ease-out .35s;
-    left: 40px;
-    max-height: 50vh;
-    max-width: 10vw;
-    overflow: scroll;
+    transition: ease-in .35s;
+    transition: ease-in .35s;
+    transition: ease-in .35s;
 }
 /*----------- First Level------------*/
     /*!important overrides any other declartion*/
@@ -166,6 +106,14 @@ So you can see the a tag in the dropdown.*/
     transition: ease-in .35s;
     transition: ease-in .35s;
 }
+/*This makes the text in the li´s inside members white*/
+#navigator li:hover ul /*a*/{
+    color: #fff;
+}
+/* This makes the text inside the a tag in the li and ul have a white color.*/
+#navigator li:hover ul li ul li /*a*/{
+    color: #fff;
+}
 /*-------------First level End---------*/
 
 /*------------Second Level-------------*/
@@ -188,6 +136,34 @@ So you can see the a tag in the dropdown.*/
     transition: ease-out .35s;
 }
 /*--------------Secound Level end ----------------*/
+
+/*---------------- Contact button ---------------*/
+#contact{
+    position: absolute;
+    background-color: #272828;
+    padding: 5px;
+    bottom: 0px;
+    margin: 15px 12px 12px; 
+    right: 5px;
+    border-radius: 40%;
+}
+#info{
+    width: 30px;
+}
+/*-----------Logo--------------*/
+#logo{
+    position: relative;
+    height: 100px;
+    background-color: #272828;
+    width: 72px;
+}
+
+#homeLogo{
+    position: relative;
+    width: 50px;
+    margin-top: 25px;
+    margin-left: 10px;
+}
 .navi{
     position: relative;
     width: 20px;
