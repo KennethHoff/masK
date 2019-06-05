@@ -1,33 +1,20 @@
-
 * {
     margin: 0px;
     padding: 0px;
     font-family: sans-serif;
 }
 a{
-    color: #fff;   
+    color: #fff;
 }
 ul{
     list-style-type: none;
 }
-/*----------- Main container ----------*/
-#mainTag{
-    height: 100%;
-    width: 100%;
-    background-color: #808080;
-
-}
-/*-----------Main Container end---------- */
 
 /*-------- SIDEBAR--------*/
 #sidebar{
-    position: absolute;
-    display: flex;
-    /* width: 4.5em; */
-    /*was 6.5*/
-    /* height: 90%; */
+    position: fixed;
+    width: 72px;
     height: 100%;
-    width: 4.5em;
     background-color: #272828;
 }
 /*---------SIDEBAR end ---------*/
@@ -36,9 +23,11 @@ ul{
 #navigator{
     margin: 0 auto;
 }
+
 li{
     list-style: none;
 }
+
 li a{
     text-decoration: none;
     text-align: center;
@@ -47,10 +36,7 @@ li a{
     font-weight: 500;
     margin: 5px;
 }
-/* #navigator ul{
-    overflow-x: hidden;
-    overflow-y: scroll;
-} */
+
 .dropdown{
     position: absolute; 
     width: 150px;
@@ -59,20 +45,22 @@ li a{
     visibility: hidden;
     transition: ease-out .35s;
     left: 40px;
+    overflow-y: scroll;
+    max-height: 50vh;
 }
 
-#navigator li{
+#navigator li {
     float: left;
     margin-top: 25px;
     margin-left: 15px;
     background: #272828;
 }
-#navigator ul li{
+#navigator ul li {
     padding: 15px;
     margin-top: 2px;
 }
 
-#navigator li:first-child{
+#navigator li:first-child {
     border: none;
 }
 #navigator { 
@@ -169,7 +157,7 @@ So you can see the a tag in the dropdown.*/
     position: relative;
     height: 100px;
     background-color: #272828;
-    width: 4.5em;
+    width: 72px;
 }
 
 #homeLogo{
@@ -178,26 +166,7 @@ So you can see the a tag in the dropdown.*/
     margin-top: 25px;
     margin-left: 10px;
 }
-#Home{
-
-}
 .navi{
     position: relative;
     width: 20px;
-}
-/*-----------Logo end-----------*/
- [id="0"]{
-    
-}
- [id="1"]{
-
-}
- [id="12"]{
-
-}
- [id="13"]{
-
-} 
- [id="15"]{
-
 }
