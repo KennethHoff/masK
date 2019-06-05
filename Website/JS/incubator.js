@@ -13,7 +13,7 @@
 // Only use it when it's actually somewhat beneficial (saves time mostly, as performance is not a super-important factor with this project
 
 
-// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..var..* (like for example "letiables" instead of "variables") that was because I changed all my 'var' into 'let' halfway into the project.
+// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..let..* (like for example "letiables" instead of "variables") that was because I changed all my 'let' into 'let' halfway into the project.
 
 
 // Some 'less than ideal' things:
@@ -45,21 +45,21 @@ const sidebar = $("#sidebar");
 const sidebarWidth = sidebar.width();
 
     // which item you are dragging
-    var activeDragNote = null;
-var activeRightClickNote = null;
-var currentZIndex = 0;
+let activeDragNote = null;
+let activeRightClickNote = null;
+let currentZIndex = 0;
 
 // Related to deleting a note
 
-var requireWaitingUntilDeletionAnimationIsComplete = true;
+let requireWaitingUntilDeletionAnimationIsComplete = true;
 
-var aboveTrashCan = false;
+let aboveTrashCan = false;
 
 // Related to approving a note
 
-var requireWaitingUntilApprovalAnimationIsComplete = true;
+let requireWaitingUntilApprovalAnimationIsComplete = true;
 
-var aboveApprovalBox = false;
+let aboveApprovalBox = false;
 
 // Touch events
 container.on("touchstart", DragStart);
@@ -116,8 +116,8 @@ function DragEnd(e) {
     activeDragNote.initialX = activeDragNote.currentX;
     activeDragNote.initialY = activeDragNote.currentY;
 
-    var task = GetTaskFromNote(activeDragNote);
-    var position = GetNotePosition(activeDragNote, container);
+    let task = GetTaskFromNote(activeDragNote);
+    let position = GetNotePosition(activeDragNote, container);
     StorePositionDataInTask(task, position.left, position.top);
 
     if (aboveTrashCan) {
@@ -177,7 +177,7 @@ function Drag(e) {
     if (activeDragNote.currentlyAnimating) {
         ResetNoteStyling(activeDragNote);
     }
-    var pos = GetNotePosWithEvent(activeDragNote, e);
+    let pos = GetNotePosWithEvent(activeDragNote, e);
     SetNotePosition(activeDragNote, pos.x, pos.y);
 }
 
@@ -448,19 +448,19 @@ function GetTaskIDFromNote(note) {
 }
 
 function GetTaskFromNote(note) {
-    var taskID = GetTaskIDFromNote(note);
-    var task = GetTaskFromID(taskID);
+    let taskID = GetTaskIDFromNote(note);
+    let task = GetTaskFromID(taskID);
     return task;
 }
 
 function GetNoteFromTask(task) {
-    var note = GetNoteFromTaskID(task.id);
+    let note = GetNoteFromTaskID(task.id);
     return note;
 }
 
 function GetNoteFromTaskID(taskID) {
     // let task = GetTaskFromID(taskID);
-    var note = $(taskid = taskID);
+    let note = $(taskid = taskID);
 
     return note;
 }
@@ -470,13 +470,13 @@ function GetNoteFromTaskID(taskID) {
  * @param {jquery<HTMLElement>} note 
  */
 function DeleteNote(note) {
-    var task = GetTaskFromNote(note);
+    let task = GetTaskFromNote(note);
     DeleteTask(task);
     $(note).remove();
 }
 
 function ApproveNote(note) {
-    var task = GetTaskFromNote(note);
+    let task = GetTaskFromNote(note);
     MoveTaskFromOneBoardToAnother(incubatorBoard, defaultBoard, task.id);
     $(note).remove();
 }
@@ -514,18 +514,18 @@ function CheckIfAboveApprovalBox(e) {
 }
 
 function GetJQueryPosition(element) {
-    var pos = element.position();
-    var width = element.width();
-    var height = element.height();
+    let pos = element.position();
+    let width = element.width();
+    let height = element.height();
 
     return [[pos.left, pos.left + width], [pos.top, pos.top + height]];
 }
 
 
 function comparePositions(pos1, pos2) {
-    var r1 = (pos1[0] < pos2[0] ? pos1 : pos2);
-    var r2 = (pos1[0] < pos2[0] ? pos2 : pos1);
-    var intersecting = (r1[1] > r2[0]) || (r1[0] === r2[0]);
+    let r1 = (pos1[0] < pos2[0] ? pos1 : pos2);
+    let r2 = (pos1[0] < pos2[0] ? pos2 : pos1);
+    let intersecting = (r1[1] > r2[0]) || (r1[0] === r2[0]);
     return intersecting;
 }
 
@@ -537,22 +537,22 @@ function comparePositions(pos1, pos2) {
 function animateNoteBaseline(noteEle) {
     if (noteEle.currentlyAnimating) return true;
     noteEle.currentlyAnimating = true;
-    var jqNote = $(noteEle);
+    let jqNote = $(noteEle);
     jqNote.attr("oldStyle", jqNote.attr("style"));
 }
 
-// /**
-//  * 
-//  * @param {jquery<HTMLElement>} element 
-//  * @param {jquery<HTMLElement>} [relativeTo] Which, if applicable, element to set it relative to - if unset it is relative to parent; 
-//  */
-// function GetMiddlePosOfElement(element, relativeTo) {
-//     let elementPositionData = GetPositionData(element);
-//     let relativeElementPositionData;
-//     if (relativeTo !== undefined) {
-//         relativeElementPositionData = GetPositionDataRelative(relativeTo);
-//     }
-// }
+/**
+ * 
+ * @param {jquery<HTMLElement>} element 
+ * @param {jquery<HTMLElement>} [relativeTo] Which, if applicable, element to set it relative to - if unset it is relative to parent; 
+ */
+function GetMiddlePosOfElement(element, relativeTo) {
+    let elementPositionData = GetPositionData(element);
+    let relativeElementPositionData;
+    if (relativeTo !== undefined) {
+        relativeElementPositionData = GetPositionDataRelative(relativeTo);
+    }
+}
 
 
 function AnimateNotePreDeletion(noteEle, duration) {
@@ -574,34 +574,21 @@ function AnimateNotePreDeletion(noteEle, duration) {
     });
 
     function RelocateToMiddleOfTrashcanBody() {
-        var trashCanBody = trashCan.children("#trashCanBody");
+        let trashCanBody = trashCan.children("#trashCanBody");
         
         // let trashCanBody = $("#trashCanBody");
 
-        var trashCanBodyPositionData = GetPositionDataRelative(trashCanBody, trashCan);
+        let trashCanBodyPositionData = GetPositionDataRelative(trashCanBody, trashCan);
 
-        var xOffset = $(noteEle).width() / 2;
-        var yOffset = $(noteEle).height() / 2;
+        let xOffset = $(noteEle).width() / 2;
+        let yOffset = $(noteEle).height() / 2;
 
             // You get the position
-        var xPos = trashCanBodyPositionData.middle.x - xOffset;
-        var yPos = trashCanBodyPositionData.middle.y - yOffset;
+        let xPos = trashCanBodyPositionData.middle.x - xOffset;
+        let yPos = trashCanBodyPositionData.middle.y - yOffset;
         SetNotePosition(noteEle, xPos, yPos);
     }
 }
-/**
- * 
- * @param {jquery<HTMLElement>} element 
- * @param {jquery<HTMLElement>} [relativeTo] Which, if applicable, element to set it relative to - if unset it is relative to parent; 
- */
-function GetMiddlePosOfElement(element, relativeTo) {
-    var elementPositionData = GetPositionData(element);
-    var relativeElementPositionData;
-    if (relativeTo !== undefined) {
-        relativeElementPositionData = GetPositionDataRelative(relativeTo);
-    }
-
-
 function animateNotePreApproval(noteEle, duration) {
     if (animateNoteBaseline(noteEle)) return;
 
@@ -623,12 +610,12 @@ function animateNotePreApproval(noteEle, duration) {
     });
 
     function RelocateToMiddleOfApprovalBox() {
-        var approvalBoxPositionData = GetPositionData(approvalBox);
-        var xOffset = $(noteEle).width() / 2;
-        var yOffset = $(noteEle).height() / 2;
+        let approvalBoxPositionData = GetPositionData(approvalBox);
+        let xOffset = $(noteEle).width() / 2;
+        let yOffset = $(noteEle).height() / 2;
         // Middle of the approvedBoxBody minus the difference between the start of the body and the end of the body (divided by 2)
-        var xPos = approvalBoxPositionData.middle.x - xOffset;
-        var yPos = approvalBoxPositionData.middle.y - yOffset;
+        let xPos = approvalBoxPositionData.middle.x - xOffset;
+        let yPos = approvalBoxPositionData.middle.y - yOffset;
         SetNotePosition(noteEle, xPos, yPos);
     }
 }
@@ -638,23 +625,23 @@ function animateNotePreApproval(noteEle, duration) {
  * @returns {Number[]} The middle of a DOM element's transform
  */
 function GetPositionData(dom) {
-    var domPos = GetJQueryPosition(dom);
-    var domXArray = domPos[0];
-    var domXStart = domXArray[0];
-    var domXEnd = domXArray[1];
-    var domXDifference = domXEnd - domXStart;
-    var domXMiddle = domXStart + (domXDifference / 2);
+    let domPos = GetJQueryPosition(dom);
+    let domXArray = domPos[0];
+    let domXStart = domXArray[0];
+    let domXEnd = domXArray[1];
+    let domXDifference = domXEnd - domXStart;
+    let domXMiddle = domXStart + (domXDifference / 2);
 
-    var domYArray = domPos[1];
-    var domYStart = domYArray[0];
-    var domYEnd = domYArray[1];
-    var domYDifference = domYEnd - domYStart;
-    var domYMiddle = domYStart + (domYDifference / 2);
+    let domYArray = domPos[1];
+    let domYStart = domYArray[0];
+    let domYEnd = domYArray[1];
+    let domYDifference = domYEnd - domYStart;
+    let domYMiddle = domYStart + (domYDifference / 2);
 
-    var start = {x: domXStart, y: domYStart };
-    var end = {x: domXEnd, y: domYEnd };
-    var difference = {x: domXDifference, y: domYDifference };
-    var middle = {x: domXMiddle, y: domYMiddle };
+    let start = {x: domXStart, y: domYStart };
+    let end = {x: domXEnd, y: domYEnd };
+    let difference = {x: domXDifference, y: domYDifference };
+    let middle = {x: domXMiddle, y: domYMiddle };
 
     return {
         start: start,
@@ -665,20 +652,20 @@ function GetPositionData(dom) {
 }
 
 function GetPositionDataRelative(dom, relDom) {
-    var domMiddlePos = GetPositionData(dom);
-    var relDomMiddlePos = GetPositionData(relDom);
+    let domMiddlePos = GetPositionData(dom);
+    let relDomMiddlePos = GetPositionData(relDom);
 
-    // var newStart = {
+    // let newStart = {
     //     x: relDomMiddlePos.start.x + domMiddlePos.start.x,
     //     y: relDomMiddlePos.start.y + domMiddlePos.start.y
     // }
 
-    var newEnd = {
+    let newEnd = {
         x: relDomMiddlePos.end.x /* + domMiddlePos.end.x */,
         y: relDomMiddlePos.end.y /* + domMiddlePos.end.y*/
     };
 
-    var newDifference = {
+    let newDifference = {
         // x: $(dom).width()
         x: newEnd.x - newStart.x,
         y: newEnd.y - newStart.y
@@ -686,7 +673,7 @@ function GetPositionDataRelative(dom, relDom) {
         // y: relDomMiddlePos.difference.y + domMiddlePos.difference.y
     };
 
-    var newMiddle = {
+    let newMiddle = {
         x: newStart.x + ( newDifference.x / 2),
         y: newStart.y + ( newDifference.y / 2)
         // x: relDomMiddlePos.middle.x + domMiddlePos.middle.x,
@@ -703,16 +690,16 @@ function GetPositionDataRelative(dom, relDom) {
 
 // https://stackoverflow.com/questions/12783650/convert-matrix-array
 function decodeMatrix(matrixValue) {
-    var values = matrixValue.split('(')[1];
+    let values = matrixValue.split('(')[1];
     values = values.split(')')[0];
     values = values.split(',');
-    var a = values[0];
-    var b = values[1];
-    var c = values[2];
-    var d = values[3];
-    var scale = Math.sqrt(a * a + b * b);
-    var sin = b / scale;
-    var angle = Math.round(Math.asin(sin) * (180 / Math.PI));
+    let a = values[0];
+    let b = values[1];
+    let c = values[2];
+    let d = values[3];
+    let scale = Math.sqrt(a * a + b * b);
+    let sin = b / scale;
+    let angle = Math.round(Math.asin(sin) * (180 / Math.PI));
     return values;
 }
 
@@ -727,13 +714,13 @@ PlaceAllNotesOnPage();
 // [???] - Don't actually delete the following lines. (DO DELETE THIS THOUGH!!), as it makes it seem we have fun doing this.
 
 // Fun things -- if this is in the final product.. I did an oopsie
-function LimitedRandom(min,max) // min and max included
-{
+ // min and max included 
+function LimitedRandom(min,max){
     return Math.floor( Math.random() * (max-min+1)+min );
 }
 
 function NumberOfIntegersNeededForRandom(min, max, checkNum) {
-    var iterations = 0;
+    let iterations = 0;
     if (checkNum >= max) return "Number you are looking for is higher than the possible value";
     while (LimitedRandom(min, max) !== checkNum) {
         iterations++;

@@ -10,7 +10,7 @@
 // Example: function CreateUser(_name) [...] user.name = _name;
 
 
-// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..var..* (like for example "letiables" instead of "variables") that was because I changed all my 'var' into 'let' halfway into the project.
+// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..let..* (like for example "letiables" instead of "variables") that was because I changed all my 'let' into 'let' halfway into the project.
 
 
 // [???] Means it is temporary and/or needs to be rewritten (.. or I forgot to remove it :>)
@@ -565,12 +565,12 @@ function GetRoleFromId(id) {
 
 
 function CreateDefaultBoards() {
-    var newIncubatorBoard = CreateAndPushBoard("Incubator", true);
-    var newTodoBoard = CreateAndPushBoard("ToDo", true);
+    let newIncubatorBoard = CreateAndPushBoard("Incubator", true);
+    let newTodoBoard = CreateAndPushBoard("ToDo", true);
         newTodoBoard.pageOrder = 0;
-    var newInProgressBoard = CreateAndPushBoard("InProgress", true);
+    let newInProgressBoard = CreateAndPushBoard("InProgress", true);
         newInProgressBoard.pageOrder = 1;
-    var newCompletedBoard = CreateAndPushBoard("Completed", true);
+    let newCompletedBoard = CreateAndPushBoard("Completed", true);
         newCompletedBoard.pageOrder = 2;
 
     incubatorBoard = newIncubatorBoard;
