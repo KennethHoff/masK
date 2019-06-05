@@ -4,11 +4,9 @@ body {
 }
 
 body {
-    background-image: url(../Images/logoNoBackground.png);
+    background-image: url(../Images/masKlogo.png);
     font-family: 'Titillium Web', sans-serif;
-    background-size: 650px;
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 650px;
     /* background-size: 730px; */
 }

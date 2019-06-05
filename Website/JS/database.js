@@ -10,14 +10,13 @@
 // Example: function CreateUser(_name) [...] user.name = _name;
 
 
-// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..let..* (like for example "letiables" instead of "variables") that was because I changed all my 'let' into 'let' halfway into the project.
+// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..var..* (like for example "letiables" instead of "variables") that was because I changed all my 'var' into 'let' halfway into the project.
 
 
 // [???] Means it is temporary and/or needs to be rewritten (.. or I forgot to remove it :>)
 
 
 // Some 'less than ideal' things:
-
 // When you delete something (eg. Task) it will not be removed from its respective 'parent' array (eg. Board). so:
 // Create Task > Add Task.id to Board "tasks" array > Delete Task > board "tasks" array still has the .id value.
 // This is an incredibly minor thing, so I don't think I will bother working on it.
@@ -48,7 +47,7 @@ let incubatorBoard;
  * @param {Number} pageOrder Which order the board is relative to other boards (Lower comes earliest) [For things like the Main Page]
  */
 
-let boards = [
+let boards = [{id:"0cardContainer", name:"blablah", columnContainerId:"0columnContainer"}
     // {
     //     id: (random),
     //     name: "Test Board",
@@ -88,8 +87,6 @@ let tasks = [
  * @param {string} name What you see
  * @param {boolean} visibleInSidebar Whether or not this is displayed in the sidebar
  * @param {role[]} roles All roles assigned to this user
- * @param {String} username The username you sign in with.
- * @param {String} password This is stored in raw text in your cookies so it's clearly not fault
  */
 let users = [
     // {
@@ -97,8 +94,6 @@ let users = [
     //     name: "Test Name",
     //     visibleInSidebar,
     //     roles: [],
-    //     username: String,
-    //     password: String
     // }
 ];
 /**
@@ -139,9 +134,9 @@ function CreateBoard(_name) {
  * @param {string} _name What the name of the board will be
  * @returns {board} returns the board object (id, name, tasks[])
  */
-function CreateAndPushBoard(_name, disallowSameName) {
+function CreateAndPushBoard(_name) {
     let tempBoard = CreateBoard(_name)
-    let newBoard = PushGenericElementToArray(boards, tempBoard, disallowSameName);
+    let newBoard = PushGenericElementToArray(boards, tempBoard);
     return newBoard;
 }
 /**
@@ -232,6 +227,7 @@ function UpdateTask(task, newName, newDescription, newDeadline) {
  */
 function DeleteTask(task, reason) {
     RemoveGenericElementFromArray(tasks, task.id, reason);
+    
 }
 
 
@@ -244,16 +240,13 @@ function DeleteTask(task, reason) {
  * @param {string} _name What the name of the user will be
  * @returns {user} returns the user object (id, name, role[])
  */
-function CreateUser(_name, _username, _password) {
+function CreateUser(_name) {
     if (_name == undefined) return null;
     let newUser = {
         id: IDGenerator(),
         name: _name,
         roles: [],
-        username: _username,
-        password: _password
-    };
-
+    }
     console.log("New user created: " + newUser.name);
     return newUser;
 }
@@ -262,8 +255,8 @@ function CreateUser(_name, _username, _password) {
  * @param {string} _name What the name of the user will be
  * @returns {user} returns the user object (id, name, role[])
  */
-function CreateAndPushUser(_name, _username, _password) {
-    let tempUser = CreateUser(_name, _username, _password);
+function CreateAndPushUser(_name, _role) {
+    let tempUser = CreateUser(_name, _role);
     let newUser = PushGenericElementToArray(users, tempUser);
     return newUser;
 }
@@ -272,10 +265,8 @@ function CreateAndPushUser(_name, _username, _password) {
  * @param {user} user The user you want to update
  * @param {string} newName The new name of the user
  */
-function UpdateUser(user, newName, newUsername, newPasword) {
-    if (newName !== undefined) user.name = newName;
-    if (newUser !== undefined) user.username = newUsername;
-    if (newPasword !== undefined) user.password = newPasword;
+function UpdateUser(user, newName) {
+    user.name = newName;
 }
 
 /**
@@ -418,9 +409,9 @@ function MoveRoleFromOneUserToAnother(oldUser, newUser, roleID) {
  * Input any array and any element and the element will be pushed into the array
  * @param {array} arr An array object (Array.IsArray())
  * @param {(Object|number)} ele the element (arr[?]) *or* the ID
- * @param {Boolean} disallowSameName if you allow the same name for multipe elements in the array (It's generally okay for tasks, but bad for boards). Undefined or a falsy value means you can have multiple with same name 
+ * @param {string} [reason] [Optional] The reason it was deleted
  */
-function PushGenericElementToArray(arr, ele, disallowSameName) {
+function PushGenericElementToArray(arr, ele) {
 
     let returnEle, found
 
@@ -435,10 +426,6 @@ function PushGenericElementToArray(arr, ele, disallowSameName) {
 
         // returns the element if it exists, false if element does not exist, or undefined is array is empty. #JustJavascriptThings
         found = arr.find(function (e) {
-            if (!disallowSameName) {
-                return e.id === ele.id;
-            }
-
             let sameID = e.id === ele.id;
             let sameName = e.name === ele.name;
             if (sameID || sameName) return e;
@@ -565,13 +552,10 @@ function GetRoleFromId(id) {
 
 
 function CreateDefaultBoards() {
-    let newIncubatorBoard = CreateAndPushBoard("Incubator", true);
-    let newTodoBoard = CreateAndPushBoard("ToDo", true);
-        newTodoBoard.pageOrder = 0;
-    let newInProgressBoard = CreateAndPushBoard("InProgress", true);
-        newInProgressBoard.pageOrder = 1;
-    let newCompletedBoard = CreateAndPushBoard("Completed", true);
-        newCompletedBoard.pageOrder = 2;
+    var newIncubatorBoard = CreateAndPushBoard("Incubator");
+    var newTodoBoard = CreateAndPushBoard("ToDo");
+    var newInProgressBoard = CreateAndPushBoard("InProgress");
+    var newCompletedBoard = CreateAndPushBoard("Completed");
 
     incubatorBoard = newIncubatorBoard;
     defaultBoard = newTodoBoard;
@@ -584,14 +568,13 @@ function CreateDefaultBoards() {
 
 /* ------- Cookies START ------- */
 /**
- * Save all to cookies that will delete itself after [Default: 7] days. (You're welcome, sensor ;) )
- * @param {Number} duration how long the cookies will last
+ * Save all to cookies that will delete itself after 7 days. (You're welcome, sensor ;) )
  */
-function SaveAllToCookies(duration) {
-    Cookies.set("Boards", boards, {expires: duration});
-    Cookies.set("Tasks",  tasks , {expires: duration});
-    Cookies.set("Users",  users , {expires: duration});
-    Cookies.set("Roles",  roles , {expires: duration});
+function SaveAllToCookies() {
+    Cookies.set("Boards", boards, {expires: 7});
+    Cookies.set("Tasks",  tasks , {expires: 7});
+    Cookies.set("Users",  users , {expires: 7});
+    Cookies.set("Roles",  roles , {expires: 7});
     Cookies.set("currentIndexForIDGenerator", currentIndexForIDGenerator, {expires: 7});
 }
 
@@ -618,7 +601,7 @@ function LoadFromCookies() {
 
 // Just before the page unloads, save all information to cookies.
 $(window).on("beforeunload", function () {
-    SaveAllToCookies(7);
+    SaveAllToCookies();
 });
 
 
