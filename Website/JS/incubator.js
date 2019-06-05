@@ -13,7 +13,7 @@
 // Only use it when it's actually somewhat beneficial (saves time mostly, as performance is not a super-important factor with this project
 
 
-// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..let..* (like for example "letiables" instead of "variables") that was because I changed all my 'let' into 'let' halfway into the project.
+// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..var..* (like for example "letiables" instead of "variables") that was because I changed all my 'var' into 'let' halfway into the project.
 
 
 // Some 'less than ideal' things:
@@ -92,6 +92,7 @@ function GetNextZIndex() {
 }
 
 function DragStart(e) {
+    
         // If it's not left button (meaning right-button, middle click etc..), return.
         // Only allow dragging with left-click
     if (!IsLeftButton(e)) return;
@@ -100,6 +101,7 @@ function DragStart(e) {
         // If you're not holding a note, return.
     if (activeDragNote == null) return;
     e.preventDefault();
+    SetNoteDefaultPositionValues(activeDragNote, e);
 
     let tempPos = GetMousePosition(e);
     
@@ -158,11 +160,12 @@ function DragEnd(e) {
 }
 
 function Drag(e) {
+   
     // If you're "dragging" (ie. moving the mouse) and you're not holding a note, return.
     if (activeDragNote === null) return;
     e.preventDefault();
 
-    aboveTrashCan = CheckIfAboveTrashCan(e);
+    aboveTrashCan = CheckIfAboveTrashCan(e)
     aboveApprovalBox = CheckIfAboveApprovalBox(e);
     if (aboveTrashCan) {
             // Do not move the note if you're over the trashCan. This is to ensure the animation moves smoothly
@@ -230,7 +233,7 @@ function SetNotePosition(note, xPos, yPos) {
  * @param {event} e Event from the eventhandler
  */
 function ResetNoteStyling(note) {
-    let jqnote = $(note);
+    var jqnote = $(note);
     note.currentlyAnimating = false;
     let oldStyle = jqnote.attr("oldStyle");
     jqnote.removeAttr("oldStyle");
@@ -292,28 +295,67 @@ function CreateNewNoteOnPageWithEvent(task, event) {
     StorePositionDataInTask(task, newPos.left, newPos.top);
 }
 
-function CreateNewNoteOnPage(task, pos) {
-    let newNote = document.createElement("div");
-    newNote.setAttribute("taskID", task.id);
-    container.append(newNote);
-    newNote.setAttribute("class", "note");
-    newNote.setAttribute("id", "note" + task.id);
-    let titleString = "<p class = noteName id = 'note" + task.id + "Name'>" + task.name + "</p>";
-    // let descriptionString = "<p class = noteDescription id = 'note" + task.id + "Description'>" + task.description + "</p>";
-    // newDiv.innerHTML = titleString + "\n" + descriptionString;
-    newNote.innerHTML = titleString;
-    
-    newNote.currentlyAnimating = false;
-    newNote.readyToBeDeleted = false;
-    newNote.readyToBeApproved = false;
 
-    let left = pos.left - ($(newNote).width()  / 2);
-    let top = pos.top   - ($(newNote).height() / 2);
-    
-    SetNotePosition(newNote, left, top);
 
-    return pos;
+let noteNumb = 0;
+function noteNumberGenerator(){
+    noteNumb ++;
+    return noteNumb;
 }
+
+
+function CreateNewNoteOnPage(task, pos) {
+    let noteNumber = 0;
+    let newDiv = document.createElement("div"),
+    textareaEl = document.createElement('textarea');
+    newDiv.setAttribute("taskID", task.id);
+    container.append(newDiv);
+    newDiv.setAttribute("class", "note");
+    newDiv.setAttribute("id", "note" + task.id);
+    textareaEl.setAttribute("class", "textarea");
+    let titleString = "<p class = noteName id = 'note" + task.id + "Name'>" + "Note #" + noteNumberGenerator()  + "</p>";
+    let descriptionString = "<p class = noteDescription id = 'note" + task.id + "Description'>" + task.description + "</p>";
+    newDiv.innerHTML = titleString + "\n" + descriptionString;
+    newDiv.append(textareaEl);
+    if(noteNumber == noteNumber){
+        noteNumber ++;
+    }
+
+    newDiv.currentlyAnimating = false;
+    newDiv.readyToBeDeleted = false;
+    newDiv.readyToBeApproved = false;
+
+    // Setting the position
+
+
+    let left = pos.left - ($(newDiv).width() / 2);
+    let top = pos.top - ($(newDiv).height() / 2);
+    SetTranslate(left, top, newDiv);
+    newDiv.xOffset = left;
+    newDiv.yOffset = top;
+    
+    return {left: left, top: top};
+}
+
+// function CreateNewNoteOnPageNew(task, pos) {
+//     let newDiv = document.createElement("div");
+//     newDiv.setAttribute("taskID", task.id);
+//     container.append(newDiv);
+//     newDiv.setAttribute("class", "note");
+//     newDiv.setAttribute("id", "note" + task.id);
+//     let titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
+//     let descriptionString = "<p>" + task.description + "</p>"
+//     newDiv.innerHTML = titleString + "\n" + descriptionString;
+    
+//     newDiv.currentlyAnimating = false;
+//     newDiv.readyToBeDeleted = false;
+//     newDiv.readyToBeApproved = false;
+
+//     SetTranslate(pos.left, pos.top, newDiv);
+//     newDiv.xOffset = pos.left;
+//     newDiv.yOffset = pos.top;
+//     return pos;
+// }
 
 function StorePositionDataInTask(task, left, top) {
     task.boardPosition.left = left;
@@ -328,7 +370,10 @@ function StorePositionDataInTask(task, left, top) {
 function GetNoteDiv(inputElement) {
     let noteDiv = null;
 
-    if (inputElement.className === 'note') {
+    if (inputElement.className === 'textarea'){
+    }
+
+    else if (inputElement.className === 'note') {
         noteDiv = inputElement;
     }
     else if (inputElement.parentElement.className === 'note') {
@@ -356,6 +401,11 @@ function PlaceAllNotesOnPage() {
         CreateNewNoteOnPage(task, task.boardPosition);
     });
 }
+
+
+
+
+
 // Context Menu
 
 // Trigger action when the contexmenu is about to be shown
@@ -402,11 +452,12 @@ $(".custom-menu li").click(function(event){
 
             // If you click the "New Task" 'data-action', then this will happen..
         case "newTask":
+        // var noteIDToString = noteID.to
                 // Create a new task with the name corresponding to the currend DateTime // Temporary
-            let newTask = CreateAndPushTask(new Date().toString());
+            let newTask = CreateAndPushTask("");
                 // Add said task(specifically its id) to the incubator Board)
             AddTaskIDToBoard(newTask.id, incubatorBoard);
-                // Ccreate a new note on the page with the newly created task as the information (Also bring in the event call in order to know where, on the screen, to place it) 
+                // Create a new note on the page with the newly created task as the information (Also bring in the event call in order to know where, on the screen, to place it) 
             CreateNewNoteOnPageWithEvent(newTask, event)
             break;
     }
@@ -589,6 +640,20 @@ function AnimateNotePreDeletion(noteEle, duration) {
         SetNotePosition(noteEle, xPos, yPos);
     }
 }
+/**
+ * 
+ * @param {jquery<HTMLElement>} element 
+ * @param {jquery<HTMLElement>} [relativeTo] Which, if applicable, element to set it relative to - if unset it is relative to parent; 
+ */
+function GetMiddlePosOfElement(element, relativeTo) {
+    let elementPositionData = GetPositionData(element);
+    let relativeElementPositionData;
+    if (relativeTo !== undefined) {
+        relativeElementPositionData = GetPositionDataRelative(relativeTo);
+    }
+}
+
+
 function animateNotePreApproval(noteEle, duration) {
     if (animateNoteBaseline(noteEle)) return;
 
@@ -655,10 +720,10 @@ function GetPositionDataRelative(dom, relDom) {
     let domMiddlePos = GetPositionData(dom);
     let relDomMiddlePos = GetPositionData(relDom);
 
-    // let newStart = {
-    //     x: relDomMiddlePos.start.x + domMiddlePos.start.x,
-    //     y: relDomMiddlePos.start.y + domMiddlePos.start.y
-    // }
+    let newStart = {
+        x: relDomMiddlePos.start.x + domMiddlePos.start.x,
+        y: relDomMiddlePos.start.y + domMiddlePos.start.y
+    };
 
     let newEnd = {
         x: relDomMiddlePos.end.x /* + domMiddlePos.end.x */,
@@ -714,8 +779,8 @@ PlaceAllNotesOnPage();
 // [???] - Don't actually delete the following lines. (DO DELETE THIS THOUGH!!), as it makes it seem we have fun doing this.
 
 // Fun things -- if this is in the final product.. I did an oopsie
- // min and max included 
-function LimitedRandom(min,max){
+function LimitedRandom(min,max) // min and max included
+{
     return Math.floor( Math.random() * (max-min+1)+min );
 }
 
