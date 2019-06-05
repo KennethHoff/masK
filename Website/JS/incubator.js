@@ -316,6 +316,7 @@ function CreateNewNoteOnPage(task, pos) {
 }
 
 function StorePositionDataInTask(task, left, top) {
+    console.warn(task.boardPosition);
     task.boardPosition.left = left;
     task.boardPosition.top = top;
 }
@@ -655,10 +656,10 @@ function GetPositionDataRelative(dom, relDom) {
     let domMiddlePos = GetPositionData(dom);
     let relDomMiddlePos = GetPositionData(relDom);
 
-    // let newStart = {
-    //     x: relDomMiddlePos.start.x + domMiddlePos.start.x,
-    //     y: relDomMiddlePos.start.y + domMiddlePos.start.y
-    // }
+    let newStart = {
+        x: relDomMiddlePos.start.x + domMiddlePos.start.x,
+        y: relDomMiddlePos.start.y + domMiddlePos.start.y
+    }
 
     let newEnd = {
         x: relDomMiddlePos.end.x /* + domMiddlePos.end.x */,

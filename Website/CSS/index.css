@@ -1,10 +1,13 @@
+/* * {
+    box-sizing: border-box;
+    margin:0px;
+    padding:0px;
+} */
+
+
 
 #container {
     padding: 40px;
-    left: 600px;
-    width: 600px;
-    top: 50px;
-    position: absolute;
     max-width: 600px;
     width: 570px;
     height: 500px;
@@ -145,8 +148,4 @@ input:focus{
 ::placeholder{
     color: #202424;
     text-shadow: -0.1px -0.1px #000, 0.1px -0.1px #000, -0.1px 0.1px #000;
-}
-
-#loginBtn{
-    text-align: center;
 }
