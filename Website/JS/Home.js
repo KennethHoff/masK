@@ -34,10 +34,10 @@ var startNumberID = 0;
 addNewColumn();
 
 
-for (board of boards){
-    createColumnContainer((parseInt(board.id)), board.name, document.getElementById(board.columnContainerId));
-    document.getElementById((parseInt(board.id))+"addNewListButton").style.display ='none';
-}
+// for (board of boards){
+//     createColumnContainer((parseInt(board.id)), board.name, document.getElementById(board.columnContainerId));
+//     document.getElementById((parseInt(board.id))+"addNewListButton").style.display ='none';
+// }
 
 
 
