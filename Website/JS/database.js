@@ -47,7 +47,7 @@ let incubatorBoard;
  * @param {Number} pageOrder Which order the board is relative to other boards (Lower comes earliest) [For things like the Main Page]
  */
 
-let boards = [
+let boards = [{id:"0cardContainer", name:"blablah", columnContainerId:"0columnContainer"}
     // {
     //     id: (random),
     //     name: "Test Board",

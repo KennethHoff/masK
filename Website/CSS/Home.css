@@ -171,7 +171,7 @@ body{
     position: relative;
     display: none;
     width: 240px;
-    height: 80px;
+    height: 44px;
     background-color: #c4765a;
     border-radius: 3px;
 }
@@ -191,23 +191,36 @@ body{
 }
 
 .acceptListButton{
-    display: block;
-    width:85px;
-    height: 30px;
+    position: absolute;
+    top:4px;
+    right: 20px;
+    display: inline-block;
+    width:40px;
+    height: 28px;
     margin-top:3px;
     margin-left:6px;
+    border: 2px solid #c4765a;
+    color: #c4765a;
     border-radius: 3px;
+    transition: all 0.3s;
+    outline: none;
+}
+
+.acceptListButton:hover{
+    color:#FFF;
+    background-color: #c4765a;
 }
 
 .declineButton {
     position: absolute;
-    top: 42px;
-    left:94px;
-    width: 18px;
-    height: 18px;
-    background: none;
+    top: 4px;
+    right:2px;
+    width: 14px;
+    height: 14px;
+    background: black;
     border: 1px solid black;
     border-radius: 50%;
+    color:#fff;
     
 }
 
