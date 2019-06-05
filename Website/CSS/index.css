@@ -67,6 +67,14 @@ button:hover {
     color: #ffffff;
 }
 
+
+.deleteImage{
+    transform: scale(0.1);
+}
+
+
+
+
 #login{
     display: none;
 }

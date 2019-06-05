@@ -13,6 +13,16 @@ body{
     cursor:pointer;
 }
 
+
+
+.editListButton{
+    max-width: 10px;
+}
+
+.deleteImage{
+    width: 15px;
+}
+
 .container{
     display: flex; 
     flex-direction: row;
@@ -30,7 +40,7 @@ body{
 .cardContainer{  /*change name into section */
     display:  inline-block;
     width: 240px;
-    min-height: 83px;
+    min-height: 200px;
     background-color: #c4765a;
     text-align: left;
     border-radius: 5px;
@@ -80,7 +90,7 @@ body{
 
 .addCardButton{
     display: block;
-    margin-top: 14px;
+    margin-top: 18px;
     margin-left:12px;
     margin-bottom: 15px;
     width: 45px;
@@ -162,7 +172,7 @@ body{
 .editListButton{
     border: none;
     background: none;
-    
+    width: 10px; 
 }
 
 
@@ -211,6 +221,7 @@ body{
     background-color: #c4765a;
 }
 
+
 .declineButton {
     position: absolute;
     top: 4px;
@@ -251,32 +262,121 @@ body{
     right: 0;
     top:100px;
     width:400px;
-    height: 500px;
+    height: 400px;
     background-color: white;
     z-index: 2;   
+    border-radius:5px;
 }
 
-.cardMenuMainArea{
-    position: relative;
+
+
+.addMemberButton{
+    margin-left: 10px;
+}
+
+.availableMember{
+    transition: all 0.3s;
+}
+
+.availableMember:hover{
+    background-color: #e6dfdf;
+}
+
+#addNewMemberList{
+    position: absolute;
+    display: none;
+    background-color: #f1eeee;
+    margin-top:5px;
+    margin-left: 100px;
+    min-height: 100px;
+    width: 200px;
+    overflow-wrap: break-word;
+    white-space: normal;
+    padding: 5px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    z-index:2;
+    border-radius: 3px;
+    font-size: 15px;
+}
+
+#cancelAddNewMemberList{
+    display: block;
+    margin-left: 170px;
 }
 
 #cardMenuX{
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    display: block;
+    margin-left: 380px;
+    margin-top: 5px;
+    margin-bottom: 10px;
 }
 
 #cardMenuTextArea{
-    position: absolute;
+    display: block;
     width: 300px;
-    top: 10px;
-    left: 10px;
+    height: 70px;
+    margin-left: 50px;
     resize: none;
     font-size: 16px;
+    padding:5px;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
+#assignedMembers{
+    display: block;
+    margin-left: 50px;
+    font-size: 11px;
+    width: 300px;
+    height:50px;
+    margin-top:10px;
+    overflow-x:hidden;
+    overflow-y:auto;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.memberAssigned{
+    display: inline-block;
+    min-width:10px;
+    max-width: 100px;
+    height: 12px;
+    margin-top: 2px;
+    margin-right:10px;
+}
+
+#addMember{
+    display: block;
+    margin-left: 50px;
+    margin-top: 10px;
+    width: 300px;
+    height: 40px; 
+    border-radius: 3px;
+    outline: none;
+}
+
+#taskDescription{
+    display: block;
+    resize:none;
+    width: 300px;
+    height:100px;
+    margin-left: 50px;
+    margin-top:10px;
+    border-radius: 3px;
+    padding: 5px;
+    box-sizing: border-box;
 }
 
 #deleteCard{
-    position: absolute;
-    top: 100px; 
-    left:10px;
+    display: block;
+    margin-left: 50px;
+    margin-top: 10px;
+    margin-bottom: 40px;
+    width: 300px;
+    height: 40px; 
+    z-index:1;
+    border-radius: 3px;
+    
+    
 }

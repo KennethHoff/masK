@@ -1,9 +1,6 @@
 
 
 
-// //////////////// lists database///////////////not in use yet
-var arrayOfLists=[];
-
 ////// to do
 //          make some animations while dragging/ kinda done
 //          
@@ -31,7 +28,19 @@ var startNumberID = 0;
 
 
 
+
 addNewColumn();
+
+for (user of users){
+    var itemDiv = document.createElement("div");
+    itemDiv.innerText = user.name;
+    itemDiv.classList.add("availableMember");
+    itemDiv.id = idGenerator()+"availableMember";
+    document.getElementById("addNewMemberList").appendChild(itemDiv); 
+}
+
+
+
 
 
 // for (board of boards){
@@ -55,14 +64,8 @@ window.addEventListener('mouseup', e=>{
         activeAddNewList = parseInt(e.target.id);
         activeAddNewListStarter = true;
         createInput(e.target.id);
-        var test = document.getElementById(activeAddNewList+"addNewListButton");
-        var box = document.getElementById(activeAddNewList+"buttonAcceptList");
-        var box2 =document.getElementById(activeAddNewList+"valueAcceptList");
-        if(event.target != test && event.target != box && event.target != box2 && event.target.parentNode != box){
-        document.getElementById(parseInt(event.target.id)+"addNewListInput").style.display = 'none';
-        box2.value="";
-        document.getElementById(parseInt(event.target.id)+"addNewListButton").style.display = 'block';
-    } }
+       
+     }
 });
 
 // window.addEventListener("mouseup", function(event){
@@ -113,7 +116,7 @@ containerCatalogue.addEventListener("click",e =>{
     //as a name of the newly created list
     if((e.target.id).includes("buttonAcceptList")){
         acceptNewList(e.target.id); 
-        boards.push({id:boardsId, name:boardsName});
+        boards.push({id:boardsId, name:boardsName, columnContainer:(parseInt(e.target.id)+"columnContainer")});
 
     }
 
@@ -176,6 +179,8 @@ containerCatalogue.addEventListener("dragover", e =>{
     e.dataTransfer.dropEffect = "move";
     e.preventDefault();
 });
+
+
 
 
 
@@ -254,6 +259,26 @@ document.getElementById("deleteCard").addEventListener("click",function(){
 
 });
 
+document.getElementById("addMember").addEventListener("click", function(){
+    document.getElementById("addNewMemberList").style.display="block";
+});
+
+document.getElementById("cancelAddNewMemberList").addEventListener("click", function(){
+    document.getElementById("addNewMemberList").style.display="none";
+})
+
+cardMenu.addEventListener("click", e =>{
+    if((e.target.id).includes("availableMember")){
+        var member = document.getElementById(e.target.id);
+        var itemDiv = document.createElement("div");
+        itemDiv.classList.add("memberAssigned");
+        itemDiv.textContent = member.textContent
+        document.getElementById("assignedMembers").appendChild(itemDiv);
+    }
+});
+
+
+
 
 
 function cardMenuOn(id){
@@ -327,7 +352,10 @@ function createColumnContainer(containerID, value, columnContainer){
     itemDiv.appendChild(nameOfClass);
     var itemEditButton = document.createElement("button");
     itemEditButton.classList.add("editListButton");
-    itemEditButton.textContent = "X";
+    var image = document.createElement("img");
+    image.src = "../Images/trashCan-white.withCap-wide.png";
+    image.classList.add("deleteImage");
+    itemEditButton.appendChild(image);
     itemEditButton.id = containerID + "editListButton";
     itemDiv.appendChild(itemEditButton)
     boardsId = itemDiv.id;
