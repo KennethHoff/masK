@@ -713,7 +713,7 @@ function GetPositionData(dom) {
         end: end,
         difference: difference,
         middle: middle
-    };
+    }
 }
 
 function GetPositionDataRelative(dom, relDom) {
@@ -772,15 +772,11 @@ PlaceAllNotesOnPage();
 
 
 
-
-
-
-
 // [???] - Don't actually delete the following lines. (DO DELETE THIS THOUGH!!), as it makes it seem we have fun doing this.
 
 // Fun things -- if this is in the final product.. I did an oopsie
-function LimitedRandom(min,max) // min and max included
-{
+ // min and max included 
+ function LimitedRandom(min,max){
     return Math.floor( Math.random() * (max-min+1)+min );
 }
 
