@@ -1,9 +1,17 @@
+
+
+
 // //////////////// lists database///////////////not in use yet
 var arrayOfLists=[];
 
 ////// to do
-//          make some animations while dragging
-
+//          make some animations while dragging/ kinda done
+//          
+//          maybe add some animations in class changes
+//          fix the input on cardContainer so it wraps down
+//          remove x and do window click reset
+//          change add new list input field
+//          use database to move columns
 
 // this is container that holds everything. it will be used to target id of objects
 //on the site
@@ -11,33 +19,99 @@ var containerCatalogue = document.getElementById("container");
 var cardMenuBackground = document.getElementById("cardMenuBackground");
 var cardMenu = document.getElementById("cardMenu");
 var currentCard;
+var activeAddNewList;
+var activeAddNewListStarter = false;
+var boardsId;
+var boardsName;
+var tasksId;
+var tasksName;
+var startNumberID = 0;
 
 
 
+
+addNewColumn();
+
+
+// for (board of boards){
+//     createColumnContainer((parseInt(board.id)), board.name, board.columnContainerId)
+// }
+
+
+
+
+document.addEventListener("keyup", function(event){
+    if (event.keyCode === 13 ) {
+        if (event.target.className === "valueAcceptList") {
+            acceptNewList(event.target.id); 
+        }
+    }
+});
+
+window.addEventListener('mouseup', e=>{
+    if((e.target.id).includes("addNewListButton") ){
+        activeAddNewList = parseInt(e.target.id);
+        activeAddNewListStarter = true;
+        createInput(e.target.id);
+        var test = document.getElementById(activeAddNewList+"addNewListButton");
+        var box = document.getElementById(activeAddNewList+"buttonAcceptList");
+        var box2 =document.getElementById(activeAddNewList+"valueAcceptList");
+        if(event.target != test && event.target != box && event.target != box2 && event.target.parentNode != box){
+        document.getElementById(parseInt(event.target.id)+"addNewListInput").style.display = 'none';
+        box2.value="";
+        document.getElementById(parseInt(event.target.id)+"addNewListButton").style.display = 'block';
+    } }
+});
+
+// window.addEventListener("mouseup", function(event){
+//     var box = document.getElementById(activeAddNewList+"buttonAcceptList");
+//     var box2 =document.getElementById(activeAddNewList+"valueAcceptList");
+//     if(event.target != box && event.target != box2 && event.target.parentNode != box){
+//         document.getElementById(parseInt(event.target.id)+"addNewListInput").style.display = 'none';
+//         box2.value="";
+//         document.getElementById(parseInt(event.target.id)+"addNewListButton").style.display = 'block';
+//     } 
+// });
 //her the container directory is used. whenever we click on sth inside this 
 //container it fetches id of anything.
 containerCatalogue.addEventListener("click",e =>{
-    
-console.log(e.target.id)
+     console.log(e.target.id);    
+    //  console.log(e.target.id)
     //if we click on an object that has addNewListButton in id then new input
     //is implemented. 
     //function createInput() make that button Add new list changes so the 
     // user can write the name of a new list
-    if((e.target.id).includes("addNewListButton") ){
-        createInput(e.target.id);
+    // if((e.target.id).includes("addNewListButton") ){
+    //     activeAddNewList = parseInt(e.target.id);
+    //     activeAddNewListStarter = true;
+    //     createInput(e.target.id);
+    //     var test = document.getElementById(activeAddNewList+"addNewListButton");
+    //     var box = document.getElementById(activeAddNewList+"buttonAcceptList");
+    //     var box2 =document.getElementById(activeAddNewList+"valueAcceptList");
+    //     if(event.target != test && event.target != box && event.target != box2 && event.target.parentNode != box){
+    //     document.getElementById(parseInt(event.target.id)+"addNewListInput").style.display = 'none';
+    //     box2.value="";
+    //     document.getElementById(parseInt(event.target.id)+"addNewListButton").style.display = 'block';
+    // } 
+    //     console.log(activeAddNewList);
         
-        document.getElementById(parseInt(e.target.id)+"valueAcceptList").addEventListener("keyup", function(event){
-            event.preventDefault();
-            if (event.keyCode === 13) {
-                document.getElementById(parseInt(e.target.id)+"buttonAcceptList").click();
-            }});
+
+        
+    //     // document.getElementById(parseInt(e.target.id)+"valueAcceptList").addEventListener("keyup", function(event){
+    //     //     event.preventDefault();
+    //     //     if (event.keyCode === 13) {
+    //     //         document.getElementById(parseInt(e.target.id)+"buttonAcceptList").click();
+    //     //     }});
        
-    }
+    // }
+
+
 
     //this function takes value from input and saves it 
     //as a name of the newly created list
     if((e.target.id).includes("buttonAcceptList")){
         acceptNewList(e.target.id); 
+        boards.push({id:boardsId, name:boardsName});
 
     }
 
@@ -73,8 +147,14 @@ console.log(e.target.id)
     //column
     if((e.target.id).includes("button2")){
         addNewCard(e.target.id);
-    }
+        tasks.push({id:tasksId, name:tasksName});
+    } 
 
+   
+      
+        
+    
+     
 
     if((e.target.id).includes("buttonDeclineList")){
         defaultState(e.target.id);
@@ -82,8 +162,12 @@ console.log(e.target.id)
     
 });
 
+var currentTarget;
+
 containerCatalogue.addEventListener("dragstart", e =>{
     e.dataTransfer.setData("text", e.target.id);
+    currentTarget = e.target;
+    console.log(document.getElementById(currentTarget.parentNode.id));
 });
 
 containerCatalogue.addEventListener("dragover", e =>{
@@ -91,21 +175,60 @@ containerCatalogue.addEventListener("dragover", e =>{
     e.preventDefault();
 });
 
-containerCatalogue.addEventListener("drop", e =>{
+
+
+containerCatalogue.addEventListener("drop", e => {
     if(e.target.id.includes("cardInhold")){
         var data = e.dataTransfer.getData("text");
         var target = e.target;
         target.appendChild(document.getElementById(data));
-    }
+        document.getElementById(parseInt(e.target.id)+"cardContainer").style.backgroundColor = "#c4765a";
+    } 
+    else if(e.target.id.includes("cardCreated")){
+        //parentNode
+        var data = e.dataTransfer.getData("text");
+        var target = document.getElementById(e.target.parentNode.id);
+        target.appendChild(document.getElementById(data));
+        document.getElementById(parseInt(e.target.parentNode.id)+"cardContainer").style.backgroundColor = "#c4765a";
+    } 
+    // else if(e.target.id.includes("cardContainer")){
+    //     var data = e.dataTransfer.getData("text");
+    //     var target = e.target.parentNode;
+    //     target.appendChild(document.getElementById(data));
+    //     e.dataTransfer.clearData();
+    //     e.dataTransfer.setData("text2", e.target.it);
+    //     var data2 = e.dataTransfer.getData("text2");
+    //     console.log(data2);
+    //     // document.getElementById(currentTarget.parentNode.id).appendChild(data2);
+    //     // e.target.parentNode.removeChild(e.target);
+        
+    // }
     else{
         e.preventDefault();
     }
+
     
 });
 
+containerCatalogue.addEventListener("dragenter", e =>{
+    if(e.target.id.includes("cardInhold")){
+        document.getElementById(parseInt(e.target.id)+"cardContainer").style.backgroundColor = "#e78f6f";
+    } 
+    
+    // if(e.target.id.includes("cardCreated")){
+        
+        
+    //      document.getElementById(parseInt(e.target.parentNode.id)+"cardContainer").style.backgroundColor = "#e78f6f";
+    // }
+});
+
+containerCatalogue.addEventListener("dragleave", e =>{
+    if(e.target.id.includes("cardInhold")){
+        document.getElementById(parseInt(e.target.id)+"cardContainer").style.backgroundColor = "#c4765a";
+    }
+});
+
 document.getElementById("cardMenuX").addEventListener("click", function(){
-    // make value of txtarea the same as on the card
-    //make a button to delete card
     var value = document.getElementById("cardMenuTextArea").value;
     document.getElementById(currentCard).textContent = value;
     cardMenuBackground.style.display = "none";
@@ -163,7 +286,6 @@ function acceptNewList(id){
     //id that starts with the same number
     var containerID = parseInt(id);
     var columnContainer = document.getElementById(containerID + "columnContainer");
-    var acceptNewListButton = document.getElementById(containerID + "buttonAcceptList");
     var value = document.getElementById(containerID+"valueAcceptList").value;
   
     
@@ -173,26 +295,38 @@ function acceptNewList(id){
         var addNewListInput = document.getElementById(containerID + "addNewListInput");
         addNewListButton.style.display ='none';
         addNewListInput.style.display = 'none';
-        var itemDiv = document.createElement("div");
-        itemDiv.classList.add("cardContainer");
-        itemDiv.id = containerID + "cardContainer";
-        itemDiv.setAttribute("draggable", true);
-        columnContainer.appendChild(itemDiv);
-        var nameOfClass = document.createElement("p");
-        nameOfClass.innerText = value;
-        itemDiv.appendChild(nameOfClass);
-        var itemEditButton = document.createElement("button");
-        itemEditButton.classList.add("editListButton");
-        itemEditButton.id = containerID + "editListButton";
-        itemDiv.appendChild(itemEditButton)
-        
-        createCardContainer(containerID,itemDiv);
+        createColumnContainer(containerID, value, columnContainer);
+
 
     }
 
 
 
 }
+
+function createColumnContainer(containerID, value, columnContainer){
+    var itemDiv = document.createElement("div");
+    itemDiv.classList.add("cardContainer");
+    itemDiv.id = containerID + "cardContainer";
+    itemDiv.setAttribute("draggable", true);
+    columnContainer.appendChild(itemDiv);
+    var nameOfClass = document.createElement("p");
+    nameOfClass.innerText = value;
+    itemDiv.appendChild(nameOfClass);
+    var itemEditButton = document.createElement("button");
+    itemEditButton.classList.add("editListButton");
+    itemEditButton.textContent = "X";
+    itemEditButton.id = containerID + "editListButton";
+    itemDiv.appendChild(itemEditButton)
+    boardsId = itemDiv.id;
+    boardsName = nameOfClass.innerText;
+
+    createCardContainer(containerID,itemDiv);
+}
+
+
+
+
 // in this function div cardInhold is created. cardInhold holds all cards on the list
 // it is attached to. this function creates also textarea that will be used when
 // user wants to add new card. function adds also buttons both to start
@@ -264,6 +398,7 @@ function addNewButton(id,nextColumnDiv){
     createInputField.type = "text";
     createInputField.placeholder = "Enter list title";
     createInputField.id = id + "valueAcceptList";
+    createInputField.classList.add("valueAcceptList");
     addNewListInputDiv.appendChild(createInputField);
     var createInputButton = document.createElement("button");
     createInputButton.type = "button";
@@ -320,12 +455,14 @@ function addNewCard(id){
     //cardInhold.setAttribute("ondragover", allowDrop(event));
     document.getElementById(containerID+"implement").style.display = 'block';
     document.getElementById(containerID+"textArea").value =""
+    tasksId = itemDiv.id;
+    tasksName = itemDiv.textContent;
     }
 }
 
 
 // //////////////////// Generate ID for the columns Section //////////////////
-var startNumberID = 1;
+
 
 //function that generates ID number for columns iterating startNumberID;
 function idGenerator(){
