@@ -713,7 +713,7 @@ function GetPositionData(dom) {
         end: end,
         difference: difference,
         middle: middle
-    }
+    };
 }
 
 function GetPositionDataRelative(dom, relDom) {
@@ -723,9 +723,7 @@ function GetPositionDataRelative(dom, relDom) {
     let newStart = {
         x: relDomMiddlePos.start.x + domMiddlePos.start.x,
         y: relDomMiddlePos.start.y + domMiddlePos.start.y
-
-    }
-
+    };
 
     let newEnd = {
         x: relDomMiddlePos.end.x /* + domMiddlePos.end.x */,
