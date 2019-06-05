@@ -316,7 +316,6 @@ function CreateNewNoteOnPage(task, pos) {
 }
 
 function StorePositionDataInTask(task, left, top) {
-    console.warn(task.boardPosition);
     task.boardPosition.left = left;
     task.boardPosition.top = top;
 }
