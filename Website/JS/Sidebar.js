@@ -28,7 +28,7 @@ let memberList = [
     },
     {
         name: "Book",
-        html: "<a href='#'><img class='navi' src='" + imageFolder + "/book-white.png' alt = 'Battleplan'></a>",
+        html: "<a href='../HTML/battleplan.html'><img class='navi' src='" + imageFolder + "/book-logo-white-wide.png' alt = 'Battleplan'></a>",
     },
     {
         name: "Filler",
