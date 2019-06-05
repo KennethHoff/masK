@@ -1,17 +1,25 @@
 .noteName {
-    font-weight: 600; /* bold text */
+    font-weight: bolder; /* bold text */
+    font-family: "Gloria Hallelujah", cursive;
+    font-size: 24px;
+    color: black;
+    top: 1px;
+    position: absolute;
+    left: 10px;
 }
 
 #incubatorContainer {
-    --width: 72px;
-    position: relative;
-    width: calc(100% - var(--width));
+    /* --width: 72px; */
+    position: absolute;
+    /* width: calc(100% - var(--width)); */
     /* left: calc(var(--width ) + 250px); */
-    left: var(--width);
-    height: 100%;
-    background-color:rgb(124, 161, 149);
-    /* border-radius: 1%; */
+    /* left: var(--width); */
+    /* height: 100%;  */
+    background-color: rgba(5, 5, 5, 0.123);
     touch-action: none;
+    min-width: 2000px;
+    min-height: 900px;
+
 }
 
 #trashCan {
@@ -42,17 +50,24 @@
 
 .note {
     position: absolute;
+    /* user-select: none; */
+    padding-top: 20px;
+    position: absolute;
+    border-radius: 2%;
     width: 200px;
-    height: 200px;
-    background-color: rgb(255, 255, 255);
-    border: 10px solid rgba(136, 136, 136, .5);
-    border-radius: 10%;
-    touch-action: none;
-    user-select: none;
+    height: 150px;
+    background-color: #e9df85;
+    box-shadow: 2px 2px 15px black;
+    overflow: hidden;
+    opacity: .9;
+    overflow: visible;
+    text-align: center;
+    border-radius: 5%;
+    font-family: "Gloria Hallelujah", cursive;
 }
 
 .note:active {
-    background-color: rgba(168, 218, 220, 1.00);
+    background-color: rgba(253, 115, 100, 0.726);
 }
 .note:hover {
     cursor: pointer;
@@ -81,4 +96,27 @@
 
 .custom-menu li:hover {
     background-color: #DEF;
+}
+.textarea{
+    position: absolute;
+    top: 50px;
+    left: 0px;
+    resize: none;
+    width: 200px;
+    height: 120px;
+    background-color: #e9df85;
+    border: solid;
+    border: #a9a9a9;
+    font-size: 20px;
+    font-family: "Gloria Hallelujah", cursive;
+    border-bottom-left-radius : 5%;
+    border-bottom-right-radius : 5%;
+}
+
+#testTest{
+    width: 500px;
+    height: 500px;
+    background: red;
+    position: absolute;
+    
 }

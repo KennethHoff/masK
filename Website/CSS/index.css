@@ -9,6 +9,8 @@
 #container {
     padding: 40px;
     max-width: 600px;
+    width: 570px;
+    height: 500px;
     margin: 40px auto;
     border-radius: 4px;
     box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
@@ -145,5 +147,5 @@ input:focus{
 
 ::placeholder{
     color: #202424;
-    text-shadow: -0.1px -0.1px #000, 0.1px -0.1px #000, -0.1px 0.1px #000, 0.1px 0.1px #000;
+    text-shadow: -0.1px -0.1px #000, 0.1px -0.1px #000, -0.1px 0.1px #000;
 }
