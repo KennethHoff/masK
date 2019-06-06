@@ -1,10 +1,11 @@
 <!DOCTYPE html>
     <head>
-        <title>Flextest</title>
+        <title>Manage your tasks and boards</title>
         <meta charset="utf-8">
         <!-- <link rel="stylesheet" type="text/css" href="../CSS/main.css"> -->
         <link rel="stylesheet" type="text/css" href="../CSS/Home.css">
         <link rel="stylesheet" type="text/css" href="../CSS/sidebar.css">
+        <link rel="stylesheet" type="text/css" href="../JS/node_modules/multiselect/css/multi-select.css">
     </head>
     <body>
         <!-- The sidebar div only have the button element here, the rest is created through
@@ -20,12 +21,13 @@
         <div id="cardMenuBackground" class="cardMenuBackground">
         </div>
         <div class="taskInfoPopupBackground"></div> <!-- Make screen less vibrant -->
-        <div id="container" class="container">
-            <div class="taskInfoPopupDiv taskInfoPopup">
-                <p id="taskInfoPopupTitle" class= "taskInfoPopup"></p><!-- Replace with input on click -->
-                <input id="taskInfoPopupTitleEditor" class="taskInfoPopup">
-                <p id="taskInfoPopupDescription" class = "taskInfoPopup"></p> <!-- Replace with textarea on click -->
-                <textarea id="taskInfoPopupDescriptionEditor" class="taskInfoPopup"></textarea>
+        <div id="container" class="container taskInfoPopup">
+            <div class="taskInfoPopupDiv">
+                <p id="taskInfoPopupTitle"></p><!-- Replace with input on click -->
+                <input id="taskInfoPopupTitleEditor">
+                <p id="taskInfoPopupDescription"></p> <!-- Replace with textarea on click -->
+                <textarea id="taskInfoPopupDescriptionEditor"></textarea>
+                <select multiple="multiple" id="memberSelect"></select>
             </div>
         </div>
 
@@ -38,6 +40,9 @@
 
     <!-- Our 'database' - The closest masK comes to having an API -->
     <script src="../JS/database.js"></script>
+
+    <!-- Jquery Multi-select v0.9.12 - "I'm a user-friendlier drop-in replacement for the standard <select> with multiple attribute activated." - basically a framework for more easily implement dropdown menus with multiple selections-->
+    <script src="../JS/node_modules/multiselect/js/jquery.multi-select.js"></script>
 
     <!-- The nagivation 'sidebar' -->
     <script src="../JS/Sidebar.js"></script>
