@@ -19,20 +19,16 @@ const imageFolder = "../Images"
 let memberList = [
     {
         name: "incubator",
-        html: "<a href='../HTML/incubator.html'><img class='navi' src='" + imageFolder + "/incubator-white.wide.png' alt='Incubator'></a>"
+        html: "<a href='../HTML/incubator.html'><img class='navi' src='../Images/incubator-white.wide.png' alt='Incubator'></a>"
     },
     {
         name: "Members",
-        html: "<a href='#'><img class='navi' src='" + imageFolder + "/memberLogo-white.png' alt = 'Memebers'></a>",
+        html: "<a href='#'><img class='navi' src='../Images/memberLogo-white.png' alt = 'Memebers'></a>",
         subMenu: users
     },
     {
         name: "Book",
-        html: "<a href='#'><img class='navi' src='" + imageFolder + "/book-white.png' alt = 'Battleplan'></a>",
-    },
-    {
-        name: "Filler",
-        html: "<a href='#'><img class='navi' src='" + imageFolder + "/calendar-white-extraa.png' alt = 'Calendar' ></a>"
+        html: "<a href='../HTML/battleplan.html'><img class='navi' src='../Images/book-logo-white-wide.png' alt = 'Battleplan'></a>",
     }];
 // ------------------- ARRAY end --------------------
 
@@ -129,17 +125,3 @@ function CreateUl(id, cl, parentElement) {
     return ul;
 }
 /*-----------------FUNCTION FOR LI AND UL end ------------------*/
-
-/*---------------ID GENERATOR----------------------*/
-
-/**
- * Returns the current value of currentIndex, and subsequently increment the value
- * @param {id} IDGenerator a function that generates ID
- * @return {string} return currentIndex returns the current value of currentIndex.
- *  
- */
-function IDGenerator(){
-    return currentIndex++;
-}
-
-//---------------- ID GENERATOR end -----------------
