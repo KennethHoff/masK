@@ -5,25 +5,12 @@ let taskPopUpTitle = taskPopupDiv.children("#taskInfoPopupTitle");
 let taskPopUpTitleEditor = taskPopupDiv.children("#taskInfoPopupTitleEditor")
 let taskPopUpDescription = taskPopupDiv.children("#taskInfoPopupDescription");
 let taskPopUpDescriptionEditor = taskPopupDiv.children("#taskInfoPopupDescriptionEditor");
-
-let pressingShift = false;
-
-
-$(document).on("keydown", function(e) {
-    if (e.shiftKey) {
-        pressingShift = true;
-    }
-});
-
-$(document).on("keyup", function(e) {
-    if (e.shiftKey) {
-        pressingShift = false;
-    }
-});
-
 let taskPopupBackground = $(".taskInfoPopupBackground");
 
+let activeDragElement;
+
 let taskPopupActive = false;
+
 
 PlaceAllBoardsOnPage();
 
@@ -92,9 +79,7 @@ $(document).on("keydown", function(e) {
             CompletedPopupTitleRename(e.target);
         }
         if (target.is("#taskInfoPopupDescriptionEditor")) {
-            if (!pressingShift) {
-                CompletedPopUpDescriptionRename(e.target);
-            }
+            CompletedPopUpDescriptionRename(e.target);
         }
     }
 })
@@ -102,9 +87,7 @@ $(document).on("keydown", function(e) {
 function CreateAddNewBoardButton() {
     let newBoardButtonDiv = document.createElement("div");
     let jqNewBoardButtonDiv = $(newBoardButtonDiv).addClass("addNewBoardDiv");
-    // jqNewBoardButtonDiv.attr("taskID", )
     jqNewBoardButtonDiv.appendTo(container);
-    // jqNewBoardButtonDiv.text("Create New Board");
 
     let newBoardParagraph = document.createElement("p");
     let jqNewBoardParagraph = $(newBoardParagraph).addClass("addNewBoardText");
@@ -145,6 +128,10 @@ function CreateNewtaskOnScreen(task, boardDiv, beforeElement) {
     let jqNewTaskDiv = $(newTaskDiv).addClass("taskDiv");
     jqNewTaskDiv.data("taskid", task.id);
 
+    jqNewTaskDiv.attr("draggable", true);
+
+
+
     if (beforeElement === undefined) {
         jqNewTaskDiv.appendTo(boardDiv);
     }
@@ -152,28 +139,34 @@ function CreateNewtaskOnScreen(task, boardDiv, beforeElement) {
         jqNewTaskDiv.insertBefore(beforeElement);
     }
 
-    let newTaskDivTitleEditor = document.createElement("textarea");
-    let jqNewTaskDivTitleEditor = $(newTaskDivTitleEditor).addClass("taskDivTextArea");
-    jqNewTaskDivTitleEditor.appendTo(jqNewTaskDiv)
-    jqNewTaskDivTitleEditor.focus();
+    if (task.name === "") {
+        let newTaskDivTitleEditor = document.createElement("textarea");
+        let jqNewTaskDivTitleEditor = $(newTaskDivTitleEditor).addClass("taskDivTextArea");
+        jqNewTaskDivTitleEditor.appendTo(jqNewTaskDiv)
+        jqNewTaskDivTitleEditor.focus();
+    }
+    else {
+        let newTaskTitle = NewTaskTitle(newTaskDiv, task.name)
+        $(newTaskTitle).appendTo(jqNewTaskDiv);
+    }
 
 
-    
-    let boardID = GetBoardIDFromBoardDiv(boardDiv);
-    let board = GetBoardFromID(boardID);
+    let board = GetBoardFromBoardDiv(boardDiv);
+
+    AddTaskIDToBoard(task.id, board);
 }
 
 function NewTaskTitle(taskDiv, title) {
     let newTaskDivTitle = document.createElement("p");
     let jqnewTaskDivTitle = $(newTaskDivTitle).addClass("taskDivTitle");
-    let task = GetTaskIDFromTaskDiv(taskDiv);
+    let task = GetTaskFromTaskDiv(taskDiv);
     if (title !== undefined) {
         jqnewTaskDivTitle.text(title);
     }
     else {
         jqnewTaskDivTitle.text(task.name);
     }
-    task.name = jqnewTaskDivTitle.text();
+    task.name = jqnewTaskDivTitle.text(); // This is weirdly placed, but I don't have time to refactor it..
     return jqnewTaskDivTitle;
 }
 
@@ -183,6 +176,7 @@ function CreateNewBoardOnScreen(board, elementToReplace) {
     newBoardDiv.id = "board" + board.id;
     // newBoardDiv.setAttribute("boardid", board.id);
     let jqNewBoardDiv = $(newBoardDiv).addClass("boardDiv");
+    jqNewBoardDiv.addClass("dropzone");
     jqNewBoardDiv.data("boardid", board.id);
     if (elementToReplace !== undefined) {
         $(elementToReplace).replaceWith(jqNewBoardDiv);
@@ -218,7 +212,7 @@ function CreateNewBoardOnScreen(board, elementToReplace) {
 function NewBoardTitle(boardDiv, title) {
     let newBoardDivTitle = document.createElement("p");
     let jqNewBoardDivTitle = $(newBoardDivTitle).addClass("boardDivTitle");
-    let board = GetBoardIDFromBoardDiv(boardDiv);
+    let board = GetBoardFromBoardDiv(boardDiv);
     if (title !== undefined) {
         jqNewBoardDivTitle.text(title);
     }
@@ -236,14 +230,13 @@ function NewBoardTitle(boardDiv, title) {
  */
 function UpdateBoardDiv(boardDiv, boardID) {
     let id;
-    if (typeof(boardID) !== typeof(1)) id = GetBoardIDFromBoardDiv(boardDiv);
+    if (typeof(boardID) !== typeof(1)) id = GetBoardFromBoardDiv(boardDiv);
     else id = boardID;
     let jqBoardDiv = $(boardDiv);
     let board = GetBoardFromID(id);
 
     jqBoardDivTitle = jqBoardDiv.children(".boardDivTitle");
     jqBoardDivTitle.text(board.name);
-    
 }
 
 function AddCreateTaskButtonToBoardDiv(boardDiv) {
@@ -285,7 +278,7 @@ function CompletedTaskTitleRename(inputField) {
     $(inputField).replaceWith(newTaskTitle);
 }
 
-function GetBoardIDFromBoardDiv(boardDiv) {
+function GetBoardFromBoardDiv(boardDiv) {
     var board = boards.find(function(e) {
         boardID = $(boardDiv).data("boardid");
         return e.id === boardID;
@@ -293,7 +286,7 @@ function GetBoardIDFromBoardDiv(boardDiv) {
     return board;
 }
 
-function GetTaskIDFromTaskDiv(taskDiv) {
+function GetTaskFromTaskDiv(taskDiv) {
     var task = tasks.find(function(e) {
         taskID = $(taskDiv).data("taskid");
         return e.id === taskID;
@@ -306,9 +299,10 @@ function GetTaskDivFromTaskID(taskID) {
 }
 
 function AddAllTasksToBoardDiv(boardDiv) {
-    let board = GetBoardIDFromBoardDiv(boardDiv);
-    board.tasks.forEach(task => {
-        
+    let board = GetBoardFromBoardDiv(boardDiv);
+    board.tasks.forEach(taskID => {
+        let task = GetTaskFromID(taskID);
+        CreateNewtaskOnScreen(task, boardDiv);
     });
 }
 
@@ -330,57 +324,131 @@ function ShowTaskInfoPopup(taskDiv) {
     taskPopupBackground.css("display", "block");
     taskPopupActive = true;
 
-    let task = GetTaskIDFromTaskDiv(taskDiv);
+    let task = GetTaskFromTaskDiv(taskDiv);
     taskPopupDiv.data("currentTask", task.id);
 
     taskPopUpTitle.text(task.name);
     taskPopUpDescription.text(task.description);
+
+    
+    taskPopUpDescription.css("display", "block");
+    taskPopUpDescriptionEditor.css("display", "none");
+    taskPopUpTitle.css("display", "block");
+    taskPopUpTitleEditor.css("display", "none");
+
 }
 function HideTaskInfoPopup() {
     taskPopupDiv.css("display", "none");
     taskPopupBackground.css("display", "none");
     taskPopupActive = false;
+
 }
 
 function EnablePopupTitleRename() {
     
     taskPopUpTitle.css("display", "none");
     taskPopUpTitleEditor.css("display", "block");
+    taskPopUpTitleEditor.text(taskPopUpTitle.text());
 
     taskPopUpTitleEditor.focus();
 }
 
 function CompletedPopupTitleRename(inputField) {
-    let newTitle = inputField.value;
+
+    taskPopUpTitle.css("display", "block");
+    taskPopUpTitleEditor.css("display", "none");
+    
     let taskID = taskPopupDiv.data("currentTask");
     let taskDiv = GetTaskDivFromTaskID(taskID);
     let task = GetTaskFromID(taskID);
+
+    let newTitle = (inputField.value.length > 0 ? inputField.value : task.name);
+
 
     task.name = newTitle;
     
     taskDiv.children(".taskDivTitle").text(newTitle);
 
     taskPopUpTitle.text(newTitle);
-
-    taskPopUpTitle.css("display", "block");
-    taskPopUpTitleEditor.css("display", "none");
 }
 
 function EnablePopupDescriptionRename() {
     
     taskPopUpDescription.css("display", "none");
     taskPopUpDescriptionEditor.css("display", "block");
+    taskPopUpDescriptionEditor.text(taskPopUpDescription.text());
 
     taskPopUpDescriptionEditor.focus();
 }
 
 function CompletedPopUpDescriptionRename(inputField) {
-    let newDescription = inputField.value;
+    taskPopUpDescription.css("display", "block");
+    taskPopUpDescriptionEditor.css("display", "none");
+
     let taskID = taskPopupDiv.data("currentTask");
     let taskDiv = GetTaskDivFromTaskID(taskID);
+    let task = GetTaskFromID(taskID);
+
+    let newDescription = (inputField.value.length > 0 ? inputField.value : task.description );
 
     taskPopUpDescription.text(newDescription);
 
-    taskPopUpDescription.css("display", "block");
-    taskPopUpDescriptionEditor.css("display", "none");
+    task.description = newDescription;
 }
+
+let jsContainer = document.getElementById("container");
+
+jsContainer.addEventListener("dragstart", e =>{
+    e.dataTransfer.setData("text", e.target.id);
+});
+
+jsContainer.addEventListener("dragover", e =>{
+    e.dataTransfer.dropEffect = "move";
+    e.preventDefault();
+});
+
+jsContainer.addEventListener("drop", e => {
+    console.log($(e.target))
+    if ($(e.target).hasClass("boardDiv")){
+        var data = e.dataTransfer.getData("text");
+        var target = e.target;
+        var dataMoved = document.getElementById(data)
+
+        //$(target).children(".createTaskButton").before($(dataMoved));
+        target.appendChild(dataMoved);
+        let jqTarget = $(target);
+        let jqButton = jqTarget.children(".createTaskButton");
+        jqButton.before($(dataMoved));
+    }
+    else if ($(e.target).hasClass("boardDivTitle")) {
+        var data = e.dataTransfer.getData("text");
+        var target = e.target.parentNode;
+        var dataMoved = document.getElementById(data)
+
+        //$(target).children(".createTaskButton").before($(dataMoved));
+        target.appendChild(dataMoved);
+        let jqTarget = $(target);
+        let jqButton = jqTarget.children(".createTaskButton");
+        jqButton.before($(dataMoved));
+    }
+    else if ($(e.target).hasClass("taskDiv")) {
+        var data = e.dataTransfer.getData("text");
+        var target = e.target.parentNode;
+        var dataMoved = document.getElementById(data)
+
+        //$(target).children(".createTaskButton").before($(dataMoved));
+        target.appendChild(dataMoved);
+        let jqTarget = $(target);
+        let jqButton = jqTarget.children(".createTaskButton");
+        jqButton.before($(dataMoved));
+    }
+    else{
+        e.preventDefault;
+    }
+
+        // index = tasks.findIndex(x => x.id=dataMoved.id);
+        // tasks[index].parentID = target.id;
+
+    // } else{
+    //     e.preventDefault();
+});
