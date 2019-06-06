@@ -788,3 +788,23 @@ function NumberOfIntegersNeededForRandom(min, max, checkNum) {
     }
     return "It took: " + iterations.toLocaleString('en') + " iterations to get " + checkNum.toLocaleString('en') + " with the min of " + min.toLocaleString('en') + " and the max of " + max.toLocaleString('en') + ".";
 }
+
+
+
+// just a test for Radio buttons 
+
+
+function check(){
+    
+    if(document.getElementById("black").checked == true){
+        document.getElementById("testdummy").style.backgroundColor = "black";
+    }
+    else if(document.getElementById("blue").checked == true){
+        document.getElementById("testdummy").style.backgroundColor = "blue";
+    } 
+    else if (document.getElementById("green").checked == true) {
+        document.getElementById("testdummy").style.backgroundColor = "green";
+    }
+    
+}
+
