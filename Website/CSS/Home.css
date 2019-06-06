@@ -15,12 +15,14 @@ body{
 
 
 
-.editListButton{
-    max-width: 10px;
-}
 
 .deleteImage{
     width: 15px;
+    transition: all 0.2s;
+}
+
+.deleteImage:hover{
+    transform: rotate(-20deg);
 }
 
 .container{
@@ -34,12 +36,12 @@ body{
     flex-shrink: 0;
     width:250px;
     min-height: 200px;
-    margin:10px;    
+    margin:5px;    
 }
 
 .cardContainer{  /*change name into section */
     display:  inline-block;
-    width: 240px;
+    width: 220px;
     min-height: 200px;
     background-color: #c4765a;
     text-align: left;
@@ -50,8 +52,8 @@ body{
     display: inline-block;
     font-size: 18px;
     height: 10px;
-    min-width: 180px;
-    max-width: 180px;
+    width: 170px;
+    max-width: 170px;
     margin-top:10px;
     margin-bottom: 20px;
     margin-left: 21px;
@@ -129,7 +131,7 @@ body{
     background-color: rgb(255, 255, 255);
     border-radius: 5px;
     margin-bottom: 5px;
-    margin-left: 19px;
+    margin-left: 9px;
     padding-bottom: 10px;
     box-shadow: 0px 3px #a3644d;
     transition: background-color 0.2s;
@@ -170,9 +172,11 @@ body{
 }
 
 .editListButton{
+    display: inline-block;
+    max-width: 10px;
+    margin-right: 5px;
     border: none;
     background: none;
-    width: 10px; 
 }
 
 
@@ -235,7 +239,7 @@ body{
     
 }
 
-.wrapper{
+.popUpMenuWrapper{
     position: relative;
     width: calc(100% - 72px);
     /* left: 72px; */
@@ -253,7 +257,7 @@ body{
     
 }
 
-.cardMenu{
+.popUpCardMenu{
     position: absolute;
     display: none;
     margin-left: auto;
@@ -262,75 +266,107 @@ body{
     right: 0;
     top:100px;
     width:400px;
-    height: 400px;
-    background-color: white;
+    height: 410px;
+    background-color: rgb(243, 240, 240);
     z-index: 2;   
     border-radius:5px;
 }
 
-
-
-.addMemberButton{
-    margin-left: 10px;
-}
-
 .availableMember{
-    transition: all 0.3s;
+    margin-bottom: 2px;
+    transition: all 0.3s; 
+    box-sizing: border-box;  
 }
 
 .availableMember:hover{
-    background-color: #e6dfdf;
+    background-color: #f7f5f5;
 }
 
-#addNewMemberList{
+.availableMember:active{
+    background-color: #e6e6e6; 
+}
+
+#availableMembersList{
     position: absolute;
     display: none;
-    background-color: #f1eeee;
+    background-color: #ffffff;
     margin-top:5px;
     margin-left: 100px;
     min-height: 100px;
     width: 200px;
     overflow-wrap: break-word;
     white-space: normal;
-    padding: 5px;
+    padding: 10px;
     overflow-y: auto;
     box-sizing: border-box;
     z-index:2;
     border-radius: 3px;
-    font-size: 15px;
+    font-size: 14px;
 }
 
-#cancelAddNewMemberList{
+#cancelAvailableMembersList{
     display: block;
-    margin-left: 170px;
+    margin-left: 160px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50% 50%;
+    border:none;
+    background-color: #ffffff;
+    transition: all 0.3s;
 }
 
-#cardMenuX{
+#cancelAvailableMembersList:hover{
+    background-color: #f7f5f5;
+}
+
+#cancelAvailableMembersList:active{
+    background-color: #e6e6e6;
+    outline: none;
+}
+
+
+
+#popUpCardMenuXButton{
     display: block;
-    margin-left: 380px;
+    margin-left: 370px;
     margin-top: 5px;
+    width: 20px;
+    height: 20px;
     margin-bottom: 10px;
+    border-radius: 50% 50%;
+    border:none;
+    background-color:rgb(243, 240, 240);
+    transition: all 0.3s;
 }
 
-#cardMenuTextArea{
+#popUpCardMenuXButton:hover{
+    background-color: rgb(221, 219, 219)
+}
+
+#popUpCardMenuXButton:active{
+    background-color: rgb(199, 194, 194);
+    outline: none;
+}
+
+#popUpCardMenuCardName{
     display: block;
     width: 300px;
     height: 70px;
     margin-left: 50px;
     resize: none;
-    font-size: 16px;
+    font-size: 14px;
     padding:5px;
     box-sizing: border-box;
     border-radius: 3px;
+    background-color: rgb(248, 246, 246);
 }
 
-#assignedMembers{
+#membersAssignedToTask{
     display: block;
     margin-left: 50px;
     font-size: 11px;
     width: 300px;
     height:50px;
-    margin-top:10px;
     overflow-x:hidden;
     overflow-y:auto;
     overflow-wrap: break-word;
@@ -346,15 +382,37 @@ body{
     margin-right:10px;
 }
 
-#addMember{
+.membersHeader{
+    font-size: 14px;
+    margin-left: 50px;
+    margin-bottom: 2px;
+    margin-top:5px;
+    color: rgb(136, 134, 134);
+}
+
+#addMemberToTaskButton{
     display: block;
     margin-left: 50px;
     margin-top: 10px;
     width: 300px;
     height: 40px; 
     border-radius: 3px;
+    border: none;
+    font-size: 14px;
+    outline: none;
+    background-color: rgb(224, 219, 219);
+    transition: all 0.3s;
+}
+
+#addMemberToTaskButton:hover{
+    background-color: rgb(207, 204, 204);
+}
+
+#addMemberToTaskButton:active{
+    background-color: rgb(184, 180, 180);
     outline: none;
 }
+
 
 #taskDescription{
     display: block;
@@ -365,7 +423,9 @@ body{
     margin-top:10px;
     border-radius: 3px;
     padding: 5px;
+    font-size: 14px;
     box-sizing: border-box;
+    background-color: rgb(248, 246, 246);
 }
 
 #deleteCard{
@@ -377,6 +437,17 @@ body{
     height: 40px; 
     z-index:1;
     border-radius: 3px;
-    
-    
+    border:none;
+    font-size: 14px;  
+    background-color: rgb(224, 219, 219);
+    transition: all 0.3s;
+}
+
+#deleteCard:hover{
+    background-color: rgb(207, 204, 204); 
+}
+
+#deleteCard:active{
+    background-color: rgb(184, 180, 180);
+    outline: none;
 }

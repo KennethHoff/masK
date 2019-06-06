@@ -14,7 +14,7 @@
 //on the site
 var containerCatalogue = document.getElementById("container");
 var cardMenuBackground = document.getElementById("cardMenuBackground");
-var cardMenu = document.getElementById("cardMenu");
+var cardMenu = document.getElementById("popUpCardMenu");
 var currentCard;
 var activeAddNewList;
 var activeAddNewListStarter = false;
@@ -36,7 +36,7 @@ for (user of users){
     itemDiv.innerText = user.name;
     itemDiv.classList.add("availableMember");
     itemDiv.id = idGenerator()+"availableMember";
-    document.getElementById("addNewMemberList").appendChild(itemDiv); 
+    document.getElementById("availableMembersList").appendChild(itemDiv); 
 }
 
 
@@ -241,8 +241,8 @@ containerCatalogue.addEventListener("dragleave", e =>{
     }
 });
 
-document.getElementById("cardMenuX").addEventListener("click", function(){
-    var value = document.getElementById("cardMenuTextArea").value;
+document.getElementById("popUpCardMenuXButton").addEventListener("click", function(){
+    var value = document.getElementById("popUpCardMenuCardName").value;
     document.getElementById(currentCard).textContent = value;
     cardMenuBackground.style.display = "none";
     cardMenu.style.display = "none";
@@ -259,12 +259,12 @@ document.getElementById("deleteCard").addEventListener("click",function(){
 
 });
 
-document.getElementById("addMember").addEventListener("click", function(){
-    document.getElementById("addNewMemberList").style.display="block";
+document.getElementById("addMemberToTaskButton").addEventListener("click", function(){
+    document.getElementById("availableMembersList").style.display="block";
 });
 
-document.getElementById("cancelAddNewMemberList").addEventListener("click", function(){
-    document.getElementById("addNewMemberList").style.display="none";
+document.getElementById("cancelAvailableMembersList").addEventListener("click", function(){
+    document.getElementById("availableMembersList").style.display="none";
 })
 
 cardMenu.addEventListener("click", e =>{
@@ -273,7 +273,10 @@ cardMenu.addEventListener("click", e =>{
         var itemDiv = document.createElement("div");
         itemDiv.classList.add("memberAssigned");
         itemDiv.textContent = member.textContent
-        document.getElementById("assignedMembers").appendChild(itemDiv);
+        document.getElementById("membersAssignedToTask").appendChild(itemDiv);
+    }
+    else{
+        return null;
     }
 });
 
@@ -286,7 +289,7 @@ function cardMenuOn(id){
     cardMenuBackground.style.display = "block";
     cardMenu.style.display = "block";
     var value = document.getElementById(id).textContent;
-    document.getElementById("cardMenuTextArea").value = value;
+    document.getElementById("popUpCardMenuCardName").value = value;
 
 }
 
@@ -356,7 +359,7 @@ function createColumnContainer(containerID, value, columnContainer){
     image.src = "../Images/trashCan-white.withCap-wide.png";
     image.classList.add("deleteImage");
     itemEditButton.appendChild(image);
-    itemEditButton.id = containerID + "editListButton";
+    image.id = containerID + "editListButton";
     itemDiv.appendChild(itemEditButton)
     boardsId = itemDiv.id;
     boardsName = nameOfClass.innerText;
