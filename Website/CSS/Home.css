@@ -34,7 +34,7 @@ body{
 }
 
 .cardContainer{  /*change name into section */
-    display:  inline-block;
+    display: inline-block;
     width: 240px;
     min-height: 83px;
     background-color: #c4765a;
@@ -314,7 +314,7 @@ body{
     transition: background-color 0.3s;
 }
 
-.addNewBoardDiv :hover {
+.addNewBoardDiv:hover {
     background-color: rgb(54, 54, 54);  
 }
 
@@ -325,13 +325,7 @@ body{
     user-select: none;
 }
 
-
 .boardDiv {
-    /* flex-shrink: 0;
-    width:250px;
-    min-height: 200px;
-    margin:10px; */
-
     display: inline-block;
     width: 240px;
     min-height: 200px;
@@ -344,4 +338,71 @@ body{
     font-size: 1.25em;
     text-align: center;
     line-height: 40px;
+}
+
+.taskDiv {
+    display: block;
+    font-size: 16px;
+    max-width:190px;
+    min-height:100px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 5px;
+    margin-bottom: 5px;
+    margin-left: 19px;
+    padding-bottom: 10px;
+    box-shadow: 0px 3px #a3644d;
+    transition: background-color 0.2s;
+    padding: 5px;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.taskInfoPopupDiv {
+    position: absolute;
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    left:0;
+    right: 0;
+    top:100px;
+    width:400px;
+    height: 400px;
+    background-color: white;
+    z-index: 2;   
+    border-radius:5px;
+}
+
+.taskInfoPopupBackground {
+    position: absolute;
+    display: none;
+    margin-top: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: black;
+    opacity: 0.5;
+    z-index: 1;
+}
+
+#taskInfoPopupTitle {
+    display: block;
+    font-size: 1.25em;
+    text-align: center;
+}
+
+#taskInfoPopupTitleEditor {
+    display: none;
+    font-size: 1.25em;
+    text-align: center;
+}
+
+#taskInfoPopupDescription {
+    display: block;
+    font-size: 2em;
+    text-align: center;
+}
+
+#taskInfoPopupDescriptionEditor {
+    display: none;
+    font-size: 2em;
+    text-align: center;
 }

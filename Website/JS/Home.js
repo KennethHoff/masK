@@ -399,14 +399,85 @@ var cardMenu = document.getElementById("cardMenu");
 
 // Kenneth Rework
 
+let taskPopupDiv = $(".taskInfoPopupDiv");
+let taskPopUpTitle = taskPopupDiv.children("#taskInfoPopupTitle");
+let taskPopUpTitleEditor = taskPopupDiv.children("#taskInfoPopupTitleEditor")
+let taskPopUpDescription = taskPopupDiv.children("#taskInfoPopupDescription");
+let taskPopUpDescriptionEditor = taskPopupDiv.children("#taskInfoPopupDescriptionEditor");
 
-CreateAddNewBoardButton();
+let taskPopupBackground = $(".taskInfoPopupBackground");
 
-$(".addNewBoardDiv").on("click", function(e) {
-    CreateNewBoardOnScreen(e);
+let taskPopupActive = false;
+
+PlaceAllBoardsOnPage();
+
+// 
+$(document).on("click", function(e) {
+
+    let target = $(e.target);
+
+    if (taskPopupActive) {
+        if (!target.hasClass("taskInfoPopup") ) {
+            HideTaskInfoPopup();
+            return;
+        }
+        if (target.is("#taskInfoPopupTitle")) {
+            EnablePopupTitleRename();
+            return;
+        }
+        if (target.is("#taskInfoPopupDescription")) {
+            EnablePopupDescriptionRename();
+            return;
+        }
+    }
+
+    if (target.hasClass("boardDivTitle")) {
+        EnableBoardTitleRename(e.target);
+    }
+
+    else if (target.hasClass("addNewBoardDiv")) {
+        CreateNewBoardOnScreenWithEvent(e);
+    }
+    else if (target.parent().hasClass("addNewBoardDiv")) {
+        CreateNewBoardOnScreenWithEvent(e);
+    }
+
+    else if (target.hasClass("createTaskButton")) {
+        CreateNewTaskOnScreenWithEvent(e);
+    }
+
+        // The following two ifs are there to see if the 'textarea' is active or not. 
+        // If it is active, return. Otherwise, open the popup.
+    else if ( target.parent().hasClass("taskDiv") ) {
+        let targetParent = target.parent();
+        if (targetParent.children("textarea").length > 0) return;
+        // alert("Clicked on task without a text area");
+        ShowTaskInfoPopup(targetParent);
+    }
+    else if (target.hasClass("taskDiv")) {
+        if (target.children("textarea").length > 0) return;
+        // alert("clicked on task without a text area");
+        ShowTaskInfoPopup(target);
+    }
+
+    // TODO: Add 'click somewhere except on a board, disable all inputs' function
+
 });
 
-
+$(document).on("keydown", function(e) {
+    let target = $(e.target);
+    if (e.keyCode === 13) {
+        if (target.hasClass("replaceBoardTitleRename")) {
+            CompletedBoardTitleRename(e.target);
+        }
+        if (target.hasClass("taskDivTextArea")) {
+            CompletedTaskTitleRename(e.target);
+        }
+        if (target.hasClass("taskInfoPopupTitleEditor")) {
+            completedPopupTitleRename(e.target);
+        }
+    }
+})
 
 function CreateAddNewBoardButton() {
     let newBoardButtonDiv = document.createElement("div");
@@ -431,31 +502,97 @@ function CreateNewBoardOnScreenWithEvent(e) {
         buttonDiv = jqTarget.parent();
     }
 
-    CreateNewBoardOnScreen(buttonDiv);
+    
+    let newlyCreatedBoard = CreateAndPushBoard("Board #" + currentIndexForIDGenerator);
+    CreateNewBoardOnScreen(newlyCreatedBoard, buttonDiv);
+
+    CreateAddNewBoardButton();
 }
 
-function CreateNewBoardOnScreen(elementToReplace) {
+function CreateNewTaskOnScreenWithEvent(e) {
+    let boardDiv = $(e.target).parent()
 
-    let newlyCreatedBoard = CreateAndPushBoard("Board #" + currentIndexForIDGenerator);
-    let newBoardDiv = document.createElement("div");
-    newBoardDiv.id = "board" + newlyCreatedBoard.id;
-    newBoardDiv.setAttribute("boardID", newlyCreatedBoard.id);
-    let jqNewBoardDiv = $(newBoardDiv).addClass("boardDiv");
-    if (elementToReplace !== undefined) {
-        $(buttonDiv).after(jqNewBoardDiv);
-        $(buttonDiv).remove();
+    let task = CreateAndPushTask("");
+
+    CreateNewtaskOnScreen(task, boardDiv, e.target);
+}
+
+function CreateNewtaskOnScreen(task, boardDiv, beforeElement) {
+    
+    let newTaskDiv = document.createElement("div");
+    newTaskDiv.id = "task" + task.id;
+
+    let jqNewTaskDiv = $(newTaskDiv).addClass("taskDiv");
+    jqNewTaskDiv.data("taskid", task.id);
+
+    if (beforeElement === undefined) {
+        jqNewTaskDiv.appendTo(boardDiv);
     }
     else {
-        jqNewBoardDiv.appendTo(container);
+        jqNewTaskDiv.insertBefore(beforeElement);
     }
 
-    let newBoardDivTitle = document.createElement("p");
-    let jqNewBoardDivTitle = $(newBoardDivTitle).addClass("boardDivTitle");
+    let newTaskDivTitleEditor = document.createElement("textarea");
+    let jqNewTaskDivTitleEditor = $(newTaskDivTitleEditor).addClass("taskDivTextArea");
+    jqNewTaskDivTitleEditor.appendTo(jqNewTaskDiv)
+    jqNewTaskDivTitleEditor.focus();
 
-    UpdateBoardDiv(newBoardDiv, newlyCreatedBoard.id);
-    jqNewBoardDivTitle.text(newlyCreatedBoard.name);
-    jqNewBoardDivTitle.appendTo(jqNewBoardDiv);
-    /// TASK ARRAY 
+
+    
+    let boardID = GetBoardIDFromBoardDiv(boardDiv);
+    let board = GetBoardFromID(boardID);
+}
+
+function NewTaskTitle(taskDiv, title) {
+    let newTaskDivTitle = document.createElement("p");
+    let jqnewTaskDivTitle = $(newTaskDivTitle).addClass("taskDivTitle");
+    let task = GetTaskIDFromTaskDiv(taskDiv);
+    if (title !== undefined) {
+        jqnewTaskDivTitle.text(title);
+    }
+    else {
+        jqnewTaskDivTitle.text(task.name);
+    }
+    task.name = jqnewTaskDivTitle.text();
+    return jqnewTaskDivTitle;
+}
+
+function CreateNewBoardOnScreen(board, elementToReplace) {
+
+    let newBoardDiv = document.createElement("div");
+    newBoardDiv.id = "board" + board.id;
+    // newBoardDiv.setAttribute("boardid", board.id);
+    let jqNewBoardDiv = $(newBoardDiv).addClass("boardDiv");
+    jqNewBoardDiv.data("boardid", board.id);
+    if (elementToReplace !== undefined) {
+        $(elementToReplace).replaceWith(jqNewBoardDiv);
+    }
+    else {
+        // Loops through the boards array, if the PageOrder is greater than the new Div's PageOrder,
+        // then get the new div with the jquery selector and place it before it, and leave the for-loop.
+        for(var i = 0; i < boards.length; i++) {
+            var boardElement = boards[i];
+            if (boardElement.pageOrder >= board.pageOrder) {
+                let boardElementDiv = "div[boardid=" + boardElement.id +"]"
+                let divToInsertBefore = $(boardElementDiv);
+                if (divToInsertBefore.length !== 0) {
+                    divToInsertBefore.before(newBoardDiv);
+                }
+                else {
+                    jqNewBoardDiv.appendTo(container);
+                }
+                break;
+            }
+        }
+    }
+        // Create a new title [p] and append it to the div (First element)
+    jqNewBoardDiv.append(NewBoardTitle(newBoardDiv));
+
+    UpdateBoardDiv(newBoardDiv, board.id);
+    
+    AddAllTasksToBoardDiv(newBoardDiv);
+
+    AddCreateTaskButtonToBoardDiv(newBoardDiv);
 
 
 
@@ -471,6 +608,20 @@ function CreateNewBoardOnScreen(elementToReplace) {
             //  => Button for submitting (Enter works)
 }
 
+function NewBoardTitle(boardDiv, title) {
+    let newBoardDivTitle = document.createElement("p");
+    let jqNewBoardDivTitle = $(newBoardDivTitle).addClass("boardDivTitle");
+    let board = GetBoardIDFromBoardDiv(boardDiv);
+    if (title !== undefined) {
+        jqNewBoardDivTitle.text(title);
+    }
+    else {
+        jqNewBoardDivTitle.text(board.name);
+    }
+    board.name = jqNewBoardDivTitle.text();
+    return jqNewBoardDivTitle;
+}
+
 /**
  * 
  * @param {jquery<HTMLElement>} boardDiv The div that contains the Board
@@ -482,14 +633,75 @@ function UpdateBoardDiv(boardDiv, boardID) {
     else id = boardID;
     let jqBoardDiv = $(boardDiv);
     let board = GetBoardFromID(id);
-    jqBoardDiv.text(board.name);
+
+    jqBoardDivTitle = jqBoardDiv.children(".boardDivTitle");
+    jqBoardDivTitle.text(board.name);
+}
+
+function AddCreateTaskButtonToBoardDiv(boardDiv) {
+    let createTaskButton = document.createElement("button");
+    let jqCreateTaskButton = $(createTaskButton).addClass("createTaskButton");
+    jqCreateTaskButton.text("Create Task");
+
+    jqCreateTaskButton.appendTo(boardDiv);
+}
+
+function EnableBoardTitleRename(boardTitle) {
+
+    let replaceTitleInputField = document.createElement("input");
+    $(replaceTitleInputField).addClass("replaceBoardTitleRename");
+
+    $(boardTitle).replaceWith(replaceTitleInputField);
+
+    $(replaceTitleInputField).focus();
+
+}
+
+function CompletedBoardTitleRename(inputField) {
+    let newTitle = inputField.value;
+    let boardDiv = $(inputField).parent();
+    $(inputField).replaceWith(NewBoardTitle(boardDiv, newTitle));
+}
+
+function CancelBoardTitleRename(inputField) {
+    boardDiv = $(inputField).parent();
+    NewBoardTitle(boardDiv);
+
+    $(inputField).remove();
+}
+
+function CompletedTaskTitleRename(inputField) {
+    newTitle = inputField.value;
+    let taskDiv = $(inputField).parent();
+    let newTaskTitle = NewTaskTitle(taskDiv, newTitle);
+    $(inputField).replaceWith(newTaskTitle);
 }
 
 function GetBoardIDFromBoardDiv(boardDiv) {
-    var index = boards.find(function(e) {
-        return e.id === boardDiv.boardID;
+    var board = boards.find(function(e) {
+        boardID = $(boardDiv).data("boardid");
+        return e.id === boardID;
     });
-    return boards[index];
+    return board;
+}
+
+function GetTaskIDFromTaskDiv(taskDiv) {
+    var task = tasks.find(function(e) {
+        taskID = $(taskDiv).data("taskid");
+        return e.id === taskID;
+    })
+    return task;
+}
+
+function GetTaskDivFromTaskID(taskID) {
+    return $("#task" + taskID);
+}
+
+function AddAllTasksToBoardDiv(boardDiv) {
+    let board = GetBoardIDFromBoardDiv(boardDiv);
+    board.tasks.forEach(task => {
+        
+    });
 }
 
 function PlaceAllBoardsOnPage() {
@@ -497,8 +709,60 @@ function PlaceAllBoardsOnPage() {
     boards.forEach(function(e) {
         let board = e;
         if (board === undefined) return;
-        CreateNewBoardOnScreen();
+            // Don't show 'Incubator' - This is bad practice, but ran out of time.
+        if (board.name === "Incubator") return;
+        CreateNewBoardOnScreen(board);
     });
+
+    CreateAddNewBoardButton();
 }
 
-PlaceAllBoardsOnPage();
+function ShowTaskInfoPopup(taskDiv) {
+    taskPopupDiv.css("display", "block");
+    taskPopupBackground.css("display", "block");
+    taskPopupActive = true;
+
+    let task = GetTaskIDFromTaskDiv(taskDiv);
+    taskPopupDiv.data("currentTask", task.id);
+
+    taskPopUpTitle.text(task.name);
+    taskPopUpDescription.text(task.description);
+}
+function HideTaskInfoPopup() {
+    taskPopupDiv.css("display", "none");
+    taskPopupBackground.css("display", "none");
+    taskPopupActive = false;
+}
+
+function EnablePopupTitleRename() {
+    
+    // let replaceTitleInputField = document.createElement("input");
+    // $(replaceTitleInputField).addClass("replacePopupTitleInput taskInfoPopup");
+
+    taskPopUpTitle.css("display", "none");
+    taskPopUpTitleEditor.css("display", "block");
+
+    taskPopUpTitleEditor.focus();
+
+
+    // $(taskPopUpTitle).replaceWith(replaceTitleInputField);
+
+    // $(replaceTitleInputField).focus();
+    // alert("Editing Title..");
+}
+
+function completedPopupTitleRename(inputField) {
+    newTitle = inputField.value;
+    let taskID = taskPopupDiv.data("currentTask");
+    let taskDiv = GetTaskDivFromTaskID(taskID);
+    let newTaskTitle = NewTaskTitle(taskDiv, newTitle);
+
+    taskPopUpTitle.text(newTitle);
+
+    taskPopUpTitle.css("display", "block");
+    taskPopUpTitleEditor.css("display", "none");
+}
+
+function EnablePopupDescriptionRename() {
+    alert("Editing description");
+}

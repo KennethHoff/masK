@@ -34,7 +34,7 @@
 let currentIndexForIDGenerator = 0;
 
 // For board creation
-let currentPageOrder = 0;
+let currentPageOrderIndex = 0;
 /**
  * Which board to put new tasks into if you don't specify
  * 
@@ -206,8 +206,8 @@ function CreateTask(_name, _description, _deadlineDate) {
 /**
  * Creates a new task, pushes it to the array(and saves Cookies), and returns the task.
  * @param {string} _name What the name of the task will be
- * @param {string} _description What the description of the task will be
- * @param {Date} _deadlineDate What the deadline of the task will be
+ * @param {string} [_description] What the description of the task will be
+ * @param {Date} [_deadlineDate] What the deadline of the task will be
  * @returns {task} returns the task object (id, name, description, user[], deadlineDate, creationDate, completionDate)
  */
 function CreateAndPushTask(_name, _description, _deadlineDate) {
@@ -568,6 +568,7 @@ function GetRoleFromId(id) {
 
 
 function CreateDefaultBoards() {
+    if (boards.length >= 4) return; // Running out of time, had a small bug (Renaming a default board will make it re-create the original board)
     let newIncubatorBoard = CreateAndPushBoard("Incubator", true);
     let newTodoBoard = CreateAndPushBoard("ToDo", true);
         newTodoBoard.pageOrder = 0;
@@ -582,7 +583,7 @@ function CreateDefaultBoards() {
 }
 
 function PageOrderGenerator() {
-    return currentPageOrder++;
+    return currentPageOrderIndex++;
 }
 
 /* --- Array Manipulation END --- */
@@ -599,6 +600,7 @@ function SaveAllToCookies(duration) {
     Cookies.set("Users",  users , {expires: duration});
     Cookies.set("Roles",  roles , {expires: duration});
     Cookies.set("currentIndexForIDGenerator", currentIndexForIDGenerator, {expires: 7});
+    Cookies.set("currentPageOrderIndex", currentPageOrderIndex, {expires: duration});
 }
 
 
@@ -617,14 +619,21 @@ function LoadFromCookies() {
     users = (tempUsers === undefined ? [] : tempUsers);
     roles = (tempRoles === undefined ? [] : tempRoles);
 
-    let tempIndex = Cookies.getJSON("currentIndexForIDGenerator");
-    currentIndexForIDGenerator = (tempIndex >= 0 ? tempIndex : 0);
+    let tempIDGeneratorIndex = Cookies.getJSON("currentIndexForIDGenerator");
+        // If the value is not greater than zero, then set it to 0 otherwise,
+        // set it to the cookies value // This is to make it so it works without any cookies
+        // This is the same for the one underneath.
+    currentIndexForIDGenerator = (tempIDGeneratorIndex >= 0 ? tempIDGeneratorIndex : 0);
+
+
+    let tempPageOrderIndex = Cookies.getJSON("currentPageOrderIndex");
+    currentPageOrderIndex = (tempPageOrderIndex >= 0 ? tempPageOrderIndex : 0);
 }
 
 
 // Just before the page unloads, save all information to cookies.
 $(window).on("beforeunload", function () {
-    SaveAllToCookies(7);
+    // SaveAllToCookies(7);
 });
 
 

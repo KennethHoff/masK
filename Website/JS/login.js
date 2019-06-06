@@ -29,14 +29,14 @@ function loginMenu() {
  */
 function login() {
 
-    var username = document.getElementById("username").value;
+    var username = document.getElementById("username").value.toLowerCase();
     var password = document.getElementById("password").value;
     
     var found = users.find(function(e) {
         return e.username === username && e.password === password;
     });
     if (found) {
-        location.href = "../HTML/incubator.html";
+        location.href = "../HTML/home.html";
     }
     else {
         alert("Wrong password or username");
@@ -54,7 +54,7 @@ function signup() {
     var signupPassword = document.getElementById("signupPassword").value;
 
     var name = signupFirstname + " " + signupLastname;
-    var username = signupUser;
+    var username = signupUser.toLowerCase();
     var password = signupPassword;
 
     if (name.length     <= 1 || name     === undefined || name     === null) {
