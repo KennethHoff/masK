@@ -2,10 +2,8 @@
 <head>
     <title>Hatch good ideas!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" lang="en" />
-
     <link rel="stylesheet" type="text/css" href="../CSS/main.css">
     <link rel="stylesheet" type="text/css" href="../css/sidebar.css">
-
     <link rel="stylesheet" type="text/css" href="../css/incubator.css">
 
 </head>
@@ -17,19 +15,87 @@
         </div>
         <button id="contact"><a href="#"><img id="info" class="navi" src="../Images/info-white.png"></a></button>
     </div>
+    
 
     <div id = "incubatorContainer">
+
+        <!--******************************************
+        **********************************************
+                    Incubator / approval box
+        **********************************************
+        *******************************************-->
+
+        <div id ="approvalBox">
+                <p id="incubatorText">Store your ideas inn here, and watch the magic </p>
+            <div class="approvalB" id="ApprovalBoxTop">
+                    <p id="approvalTopText">Incubator</p>
+            </div> <!-- End ApprovalBoxTop -->
+
+            <div class="approvalB" id="ApprovalBoxBottom">
+                <p id="approvalBottomText">Everything begins with <br> an idea</p>
+            </div>
+            <div class="approvalB" id="approvalBoxLeft"></div>
+            <div class="approvalB" id="approvalBoxRight"></div>
+            <!-- <div id="egg"></div> -->
+
+        </div><!-- End ApprovalBody -->
+       
+
+
+        <!--******************************************
+        **********************************************
+                        TrashCan
+        **********************************************
+        *******************************************-->
+        <div id ="trashCan">
+            <p id="trashText">I trash your bad notes. give them to mee! </p>
+                <div class="trashB" id="trashBoxTop">
+                        <p id="trashTopText">Trash</p>
+                </div> <!-- End ApprovalBoxTop -->
+    
+                <div class="trashB" id="trashBoxBottom">
+                    <p id="trashBottomText">Thats was a stupid<br>idea's</p>
+                </div>
+                <div class="trashB" id="trashBoxLeft"></div>
+                <div class="trashB" id="trashBoxRight"></div>
+                <!-- <div id="egg"></div> -->
+    
+            </div><!-- End ApprovalBody -->
+
         <ul class='custom-menu'>
-            <li data-action = "newTask">New Task</li>
-        </ul>
-        <div id="trashCan">
-            <img id="trashCanCover" src="../Images/TrashCan-cover-white.png">
-            <img id="trashCanBody"  src="../Images/TrashCan-body-white.png">
-        </div>
-        <div id="approvalBox">
-            <img id="approvalBoxImg" src="../Images/incubator-white-extra.png">
-        </div>
-    </div>
+            <li data-action = "newTask">Create New Note</li>
+        </ul> 
+    </div><!-- End incubatorContainer -->
+    
+             <!--******************************************
+             **********************************************
+                just a test !!!!! remove before commit!!!
+             **********************************************
+             *******************************************-->
+    <label id="RB">Radio buttons</label>            
+    <input type = "radio"
+           name = "radSize"
+           class ="RB"
+           id = "black"
+           value = "black"
+           checked = "checked" />
+    <label for = "sizeSmall">black</label>
+    <input type = "radio"
+           name = "radSize"
+           class ="RB"
+           id = "blue"
+           value = "blue" />
+    <label for = "sizeMed">Blue</label>
+    <input type = "radio"
+           name = "radSize"
+           class ="RB"
+           id = "green"
+           value = "green" />
+    <label for = "sizeLarge">Green</label>
+    
+    <div id="testdummy"></div>
+    <button id="buttonTest" type="button" onclick="check()">click me to confirm</button>
+
 </body>
     <!-- jquery v3.4.1 "jQuery is a fast, small, and feature-rich JavaScript library" - it's a hugely popular JS library that, if notthing else, is used in a lot of answers on StackOverFlow-->
     <script src = "../JS/node_modules/jquery/dist/jquery.js"></script>
@@ -42,6 +108,8 @@
 
     <!-- The nagivation 'sidebar' -->
     <script src="../JS/Sidebar.js"></script>
+
+
 
     <script src="../JS/incubator.js"></script>
 </html>

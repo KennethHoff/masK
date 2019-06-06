@@ -723,9 +723,7 @@ function GetPositionDataRelative(dom, relDom) {
     let newStart = {
         x: relDomMiddlePos.start.x + domMiddlePos.start.x,
         y: relDomMiddlePos.start.y + domMiddlePos.start.y
-
-    }
-
+    };
 
     let newEnd = {
         x: relDomMiddlePos.end.x /* + domMiddlePos.end.x */,
@@ -774,15 +772,11 @@ PlaceAllNotesOnPage();
 
 
 
-
-
-
-
 // [???] - Don't actually delete the following lines. (DO DELETE THIS THOUGH!!), as it makes it seem we have fun doing this.
 
 // Fun things -- if this is in the final product.. I did an oopsie
-function LimitedRandom(min,max) // min and max included
-{
+ // min and max included 
+ function LimitedRandom(min,max){
     return Math.floor( Math.random() * (max-min+1)+min );
 }
 
@@ -794,3 +788,23 @@ function NumberOfIntegersNeededForRandom(min, max, checkNum) {
     }
     return "It took: " + iterations.toLocaleString('en') + " iterations to get " + checkNum.toLocaleString('en') + " with the min of " + min.toLocaleString('en') + " and the max of " + max.toLocaleString('en') + ".";
 }
+
+
+
+// just a test for Radio buttons 
+
+
+function check(){
+    
+    if(document.getElementById("black").checked == true){
+        document.getElementById("testdummy").style.backgroundColor = "black";
+    }
+    else if(document.getElementById("blue").checked == true){
+        document.getElementById("testdummy").style.backgroundColor = "blue";
+    } 
+    else if (document.getElementById("green").checked == true) {
+        document.getElementById("testdummy").style.backgroundColor = "green";
+    }
+    
+}
+
