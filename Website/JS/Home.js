@@ -405,13 +405,26 @@ let taskPopUpTitleEditor = taskPopupDiv.children("#taskInfoPopupTitleEditor")
 let taskPopUpDescription = taskPopupDiv.children("#taskInfoPopupDescription");
 let taskPopUpDescriptionEditor = taskPopupDiv.children("#taskInfoPopupDescriptionEditor");
 
+let pressingShift = false;
+
+$(document).on("keydown", function(e) {
+    if (e.shiftKey) {
+        pressingShift = true;
+    }
+});
+
+$(document).on("keyup", function(e) {
+    if (e.shiftKey) {
+        pressingShift = false;
+    }
+});
+
 let taskPopupBackground = $(".taskInfoPopupBackground");
 
 let taskPopupActive = false;
 
 PlaceAllBoardsOnPage();
 
-// 
 $(document).on("click", function(e) {
 
     let target = $(e.target);
@@ -473,8 +486,13 @@ $(document).on("keydown", function(e) {
         if (target.hasClass("taskDivTextArea")) {
             CompletedTaskTitleRename(e.target);
         }
-        if (target.hasClass("taskInfoPopupTitleEditor")) {
-            completedPopupTitleRename(e.target);
+        if (target.is("#taskInfoPopupTitleEditor")) {
+            CompletedPopupTitleRename(e.target);
+        }
+        if (target.is("#taskInfoPopupDescriptionEditor")) {
+            if (!pressingShift) {
+                CompletedPopUpDescriptionRename(e.target);
+            }
         }
     }
 })
@@ -593,19 +611,6 @@ function CreateNewBoardOnScreen(board, elementToReplace) {
     AddAllTasksToBoardDiv(newBoardDiv);
 
     AddCreateTaskButtonToBoardDiv(newBoardDiv);
-
-
-
-
-
-
-
-    // Div 
-        // Title
-        // Task[]
-        // Add task button
-            // => Input field for name
-            //  => Button for submitting (Enter works)
 }
 
 function NewBoardTitle(boardDiv, title) {
@@ -736,26 +741,17 @@ function HideTaskInfoPopup() {
 
 function EnablePopupTitleRename() {
     
-    // let replaceTitleInputField = document.createElement("input");
-    // $(replaceTitleInputField).addClass("replacePopupTitleInput taskInfoPopup");
-
     taskPopUpTitle.css("display", "none");
     taskPopUpTitleEditor.css("display", "block");
 
     taskPopUpTitleEditor.focus();
-
-
-    // $(taskPopUpTitle).replaceWith(replaceTitleInputField);
-
-    // $(replaceTitleInputField).focus();
-    // alert("Editing Title..");
 }
 
-function completedPopupTitleRename(inputField) {
-    newTitle = inputField.value;
+function CompletedPopupTitleRename(inputField) {
+    let newTitle = inputField.value;
     let taskID = taskPopupDiv.data("currentTask");
     let taskDiv = GetTaskDivFromTaskID(taskID);
-    let newTaskTitle = NewTaskTitle(taskDiv, newTitle);
+    NewTaskTitle(taskDiv, newTitle);
 
     taskPopUpTitle.text(newTitle);
 
@@ -764,5 +760,20 @@ function completedPopupTitleRename(inputField) {
 }
 
 function EnablePopupDescriptionRename() {
-    alert("Editing description");
+    
+    taskPopUpDescription.css("display", "none");
+    taskPopUpDescriptionEditor.css("display", "block");
+
+    taskPopUpDescriptionEditor.focus();
+}
+
+function CompletedPopUpDescriptionRename(inputField) {
+    let newDescription = inputField.value;
+    let taskID = taskPopupDiv.data("currentTask");
+    let taskDiv = GetTaskDivFromTaskID(taskID);
+
+    taskPopUpDescription.text(newDescription);
+
+    taskPopUpDescription.css("display", "block");
+    taskPopUpDescriptionEditor.css("display", "none");
 }
