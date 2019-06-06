@@ -5,11 +5,12 @@ let taskPopUpTitle = taskPopupDiv.children("#taskInfoPopupTitle");
 let taskPopUpTitleEditor = taskPopupDiv.children("#taskInfoPopupTitleEditor")
 let taskPopUpDescription = taskPopupDiv.children("#taskInfoPopupDescription");
 let taskPopUpDescriptionEditor = taskPopupDiv.children("#taskInfoPopupDescriptionEditor");
-
-
 let taskPopupBackground = $(".taskInfoPopupBackground");
 
+let activeDragElement;
+
 let taskPopupActive = false;
+
 
 PlaceAllBoardsOnPage();
 
@@ -171,6 +172,7 @@ function CreateNewBoardOnScreen(board, elementToReplace) {
     newBoardDiv.id = "board" + board.id;
     // newBoardDiv.setAttribute("boardid", board.id);
     let jqNewBoardDiv = $(newBoardDiv).addClass("boardDiv");
+    jqNewBoardDiv.addClass("dropzone");
     jqNewBoardDiv.data("boardid", board.id);
     if (elementToReplace !== undefined) {
         $(elementToReplace).replaceWith(jqNewBoardDiv);

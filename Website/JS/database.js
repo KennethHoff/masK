@@ -189,7 +189,7 @@ function CreateTask(_name, _description, _deadlineDate) {
         id: IDGenerator(),
         name: _name,
         // if description is undefined, set it to "No description", otherwise set it to the input
-        description: (_description == undefined ? "No description" : _description),
+        description: (_description == undefined ? "" : _description),
         users: [],
         // if deadline is undefined, set it to null, otherwise set it to the input
         deadlineDate: (_deadlineDate == undefined ? null : _deadlineDate),
