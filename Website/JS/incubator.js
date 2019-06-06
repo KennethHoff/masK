@@ -304,6 +304,7 @@ function noteNumberGenerator(){
 }
 
 
+
 function CreateNewNoteOnPage(task, pos) {
     let noteNumber = 0;
     let newDiv = document.createElement("div"),
@@ -314,8 +315,7 @@ function CreateNewNoteOnPage(task, pos) {
     newDiv.setAttribute("id", "note" + task.id);
     textareaEl.setAttribute("class", "textarea");
     let titleString = "<p class = noteName id = 'note" + task.id + "Name'>" + "Note #" + noteNumberGenerator()  + "</p>";
-    let descriptionString = "<p class = noteDescription id = 'note" + task.id + "Description'>" + task.description + "</p>";
-    newDiv.innerHTML = titleString + "\n" + descriptionString;
+    newDiv.innerHTML = titleString;
     newDiv.append(textareaEl);
     if(noteNumber == noteNumber){
         noteNumber ++;
@@ -336,27 +336,6 @@ function CreateNewNoteOnPage(task, pos) {
     
     return {left: left, top: top};
 }
-
-// function CreateNewNoteOnPageNew(task, pos) {
-//     let newDiv = document.createElement("div");
-//     newDiv.setAttribute("taskID", task.id);
-//     container.append(newDiv);
-//     newDiv.setAttribute("class", "note");
-//     newDiv.setAttribute("id", "note" + task.id);
-//     let titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
-//     let descriptionString = "<p>" + task.description + "</p>"
-//     newDiv.innerHTML = titleString + "\n" + descriptionString;
-    
-//     newDiv.currentlyAnimating = false;
-//     newDiv.readyToBeDeleted = false;
-//     newDiv.readyToBeApproved = false;
-
-//     SetTranslate(pos.left, pos.top, newDiv);
-//     newDiv.xOffset = pos.left;
-//     newDiv.yOffset = pos.top;
-//     return pos;
-// }
-
 function StorePositionDataInTask(task, left, top) {
     task.boardPosition.left = left;
     task.boardPosition.top = top;
@@ -397,7 +376,6 @@ function PlaceAllNotesOnPage() {
     incubatorBoard.tasks.forEach(noteID => {
         let task = GetTaskFromID(noteID);
         if (task === undefined) return;
-        // CreateNewNoteOnPage(task, task.boardPosition);
         CreateNewNoteOnPage(task, task.boardPosition);
     });
 }

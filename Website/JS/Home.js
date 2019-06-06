@@ -151,28 +151,34 @@ function CreateNewtaskOnScreen(task, boardDiv, beforeElement) {
         jqNewTaskDiv.insertBefore(beforeElement);
     }
 
-    let newTaskDivTitleEditor = document.createElement("textarea");
-    let jqNewTaskDivTitleEditor = $(newTaskDivTitleEditor).addClass("taskDivTextArea");
-    jqNewTaskDivTitleEditor.appendTo(jqNewTaskDiv)
-    jqNewTaskDivTitleEditor.focus();
+    if (task.name === "") {
+        let newTaskDivTitleEditor = document.createElement("textarea");
+        let jqNewTaskDivTitleEditor = $(newTaskDivTitleEditor).addClass("taskDivTextArea");
+        jqNewTaskDivTitleEditor.appendTo(jqNewTaskDiv)
+        jqNewTaskDivTitleEditor.focus();
+    }
+    else {
+        let newTaskTitle = NewTaskTitle(newTaskDiv, task.name)
+        $(newTaskTitle).appendTo(jqNewTaskDiv);
+    }
 
 
-    
-    let boardID = GetBoardIDFromBoardDiv(boardDiv);
-    let board = GetBoardFromID(boardID);
+    let board = GetBoardFromBoardDiv(boardDiv);
+
+    AddTaskIDToBoard(task.id, board);
 }
 
 function NewTaskTitle(taskDiv, title) {
     let newTaskDivTitle = document.createElement("p");
     let jqnewTaskDivTitle = $(newTaskDivTitle).addClass("taskDivTitle");
-    let task = GetTaskIDFromTaskDiv(taskDiv);
+    let task = GetTaskFromTaskDiv(taskDiv);
     if (title !== undefined) {
         jqnewTaskDivTitle.text(title);
     }
     else {
         jqnewTaskDivTitle.text(task.name);
     }
-    task.name = jqnewTaskDivTitle.text();
+    task.name = jqnewTaskDivTitle.text(); // This is weirdly placed, but I don't have time to refactor it..
     return jqnewTaskDivTitle;
 }
 
@@ -217,7 +223,7 @@ function CreateNewBoardOnScreen(board, elementToReplace) {
 function NewBoardTitle(boardDiv, title) {
     let newBoardDivTitle = document.createElement("p");
     let jqNewBoardDivTitle = $(newBoardDivTitle).addClass("boardDivTitle");
-    let board = GetBoardIDFromBoardDiv(boardDiv);
+    let board = GetBoardFromBoardDiv(boardDiv);
     if (title !== undefined) {
         jqNewBoardDivTitle.text(title);
     }
@@ -235,7 +241,7 @@ function NewBoardTitle(boardDiv, title) {
  */
 function UpdateBoardDiv(boardDiv, boardID) {
     let id;
-    if (typeof(boardID) !== typeof(1)) id = GetBoardIDFromBoardDiv(boardDiv);
+    if (typeof(boardID) !== typeof(1)) id = GetBoardFromBoardDiv(boardDiv);
     else id = boardID;
     let jqBoardDiv = $(boardDiv);
     let board = GetBoardFromID(id);
@@ -283,7 +289,7 @@ function CompletedTaskTitleRename(inputField) {
     $(inputField).replaceWith(newTaskTitle);
 }
 
-function GetBoardIDFromBoardDiv(boardDiv) {
+function GetBoardFromBoardDiv(boardDiv) {
     var board = boards.find(function(e) {
         boardID = $(boardDiv).data("boardid");
         return e.id === boardID;
@@ -291,7 +297,7 @@ function GetBoardIDFromBoardDiv(boardDiv) {
     return board;
 }
 
-function GetTaskIDFromTaskDiv(taskDiv) {
+function GetTaskFromTaskDiv(taskDiv) {
     var task = tasks.find(function(e) {
         taskID = $(taskDiv).data("taskid");
         return e.id === taskID;
@@ -304,9 +310,10 @@ function GetTaskDivFromTaskID(taskID) {
 }
 
 function AddAllTasksToBoardDiv(boardDiv) {
-    let board = GetBoardIDFromBoardDiv(boardDiv);
-    board.tasks.forEach(task => {
-        
+    let board = GetBoardFromBoardDiv(boardDiv);
+    board.tasks.forEach(taskID => {
+        let task = GetTaskFromID(taskID);
+        CreateNewtaskOnScreen(task, boardDiv);
     });
 }
 
@@ -328,7 +335,7 @@ function ShowTaskInfoPopup(taskDiv) {
     taskPopupBackground.css("display", "block");
     taskPopupActive = true;
 
-    let task = GetTaskIDFromTaskDiv(taskDiv);
+    let task = GetTaskFromTaskDiv(taskDiv);
     taskPopupDiv.data("currentTask", task.id);
 
     taskPopUpTitle.text(task.name);
@@ -377,7 +384,10 @@ function CompletedPopUpDescriptionRename(inputField) {
     let taskID = taskPopupDiv.data("currentTask");
     let taskDiv = GetTaskDivFromTaskID(taskID);
 
+    let task = GetTaskFromID(taskID);
     taskPopUpDescription.text(newDescription);
+
+    task.description = newDescription;
 
     taskPopUpDescription.css("display", "block");
     taskPopUpDescriptionEditor.css("display", "none");
