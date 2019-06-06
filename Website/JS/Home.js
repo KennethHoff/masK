@@ -6,19 +6,6 @@ let taskPopUpTitleEditor = taskPopupDiv.children("#taskInfoPopupTitleEditor")
 let taskPopUpDescription = taskPopupDiv.children("#taskInfoPopupDescription");
 let taskPopUpDescriptionEditor = taskPopupDiv.children("#taskInfoPopupDescriptionEditor");
 
-let pressingShift = false;
-
-$(document).on("keydown", function(e) {
-    if (e.shiftKey) {
-        pressingShift = true;
-    }
-});
-
-$(document).on("keyup", function(e) {
-    if (e.shiftKey) {
-        pressingShift = false;
-    }
-});
 
 let taskPopupBackground = $(".taskInfoPopupBackground");
 
@@ -91,9 +78,7 @@ $(document).on("keydown", function(e) {
             CompletedPopupTitleRename(e.target);
         }
         if (target.is("#taskInfoPopupDescriptionEditor")) {
-            if (!pressingShift) {
-                CompletedPopUpDescriptionRename(e.target);
-            }
+            CompletedPopUpDescriptionRename(e.target);
         }
     }
 })
@@ -101,9 +86,7 @@ $(document).on("keydown", function(e) {
 function CreateAddNewBoardButton() {
     let newBoardButtonDiv = document.createElement("div");
     let jqNewBoardButtonDiv = $(newBoardButtonDiv).addClass("addNewBoardDiv");
-    // jqNewBoardButtonDiv.attr("taskID", )
     jqNewBoardButtonDiv.appendTo(container);
-    // jqNewBoardButtonDiv.text("Create New Board");
 
     let newBoardParagraph = document.createElement("p");
     let jqNewBoardParagraph = $(newBoardParagraph).addClass("addNewBoardText");
@@ -340,55 +323,69 @@ function ShowTaskInfoPopup(taskDiv) {
 
     taskPopUpTitle.text(task.name);
     taskPopUpDescription.text(task.description);
+
+    
+    taskPopUpDescription.css("display", "block");
+    taskPopUpDescriptionEditor.css("display", "none");
+    taskPopUpTitle.css("display", "block");
+    taskPopUpTitleEditor.css("display", "none");
+
 }
 function HideTaskInfoPopup() {
     taskPopupDiv.css("display", "none");
     taskPopupBackground.css("display", "none");
     taskPopupActive = false;
+
 }
 
 function EnablePopupTitleRename() {
     
     taskPopUpTitle.css("display", "none");
     taskPopUpTitleEditor.css("display", "block");
+    taskPopUpTitleEditor.text(taskPopUpTitle.text());
 
     taskPopUpTitleEditor.focus();
 }
 
 function CompletedPopupTitleRename(inputField) {
-    let newTitle = inputField.value;
+
+    taskPopUpTitle.css("display", "block");
+    taskPopUpTitleEditor.css("display", "none");
+    
     let taskID = taskPopupDiv.data("currentTask");
     let taskDiv = GetTaskDivFromTaskID(taskID);
     let task = GetTaskFromID(taskID);
+
+    let newTitle = (inputField.value.length > 0 ? inputField.value : task.name);
+
 
     task.name = newTitle;
     
     taskDiv.children(".taskDivTitle").text(newTitle);
 
     taskPopUpTitle.text(newTitle);
-
-    taskPopUpTitle.css("display", "block");
-    taskPopUpTitleEditor.css("display", "none");
 }
 
 function EnablePopupDescriptionRename() {
     
     taskPopUpDescription.css("display", "none");
     taskPopUpDescriptionEditor.css("display", "block");
+    taskPopUpDescriptionEditor.text(taskPopUpDescription.text());
 
     taskPopUpDescriptionEditor.focus();
 }
 
 function CompletedPopUpDescriptionRename(inputField) {
-    let newDescription = inputField.value;
+    taskPopUpDescription.css("display", "block");
+    taskPopUpDescriptionEditor.css("display", "none");
+
     let taskID = taskPopupDiv.data("currentTask");
     let taskDiv = GetTaskDivFromTaskID(taskID);
-
     let task = GetTaskFromID(taskID);
+
+    let newDescription = (inputField.value.length > 0 ? inputField.value : task.description );
+
     taskPopUpDescription.text(newDescription);
 
     task.description = newDescription;
-
-    taskPopUpDescription.css("display", "block");
-    taskPopUpDescriptionEditor.css("display", "none");
 }
