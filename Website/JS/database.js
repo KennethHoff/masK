@@ -633,7 +633,7 @@ function LoadFromCookies() {
 
 // Just before the page unloads, save all information to cookies.
 $(window).on("beforeunload", function () {
-    // SaveAllToCookies(7);
+    SaveAllToCookies(7);
 });
 
 

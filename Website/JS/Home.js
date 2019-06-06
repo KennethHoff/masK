@@ -8,6 +8,7 @@ let taskPopUpDescriptionEditor = taskPopupDiv.children("#taskInfoPopupDescriptio
 
 let pressingShift = false;
 
+
 $(document).on("keydown", function(e) {
     if (e.shiftKey) {
         pressingShift = true;
@@ -242,6 +243,7 @@ function UpdateBoardDiv(boardDiv, boardID) {
 
     jqBoardDivTitle = jqBoardDiv.children(".boardDivTitle");
     jqBoardDivTitle.text(board.name);
+    
 }
 
 function AddCreateTaskButtonToBoardDiv(boardDiv) {
