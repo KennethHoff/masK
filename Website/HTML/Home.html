@@ -17,32 +17,32 @@
             <button id="contact"><a href="#"><img id="info" class="navi" src="../Images/info-white.png"></a></button>
         </div>
         
-        <div class="wrapper">
-            <div id="cardMenu" class="cardMenu">
-                <div class="cardMenuMainArea">
-                    <textarea id="cardMenuTextArea"></textarea>
-                    <button id="cardMenuX">X</button>
-                    <button id="deleteCard">Delete this card</button>
-                </div>
-            </div> 
-        </div>
         <div id="cardMenuBackground" class="cardMenuBackground">
-        </div> 
-            <div id="container" class="container">
-                <!-- <div id="0columnContainer" class="columnContainer">
-                    <button id="0addNewListButton" class="addNewListButton">Add new list</button>
-                    <div id="0addNewListInput" class="addNewListInput">
-                        <input id="0valueAcceptList" class = "valueAcceptList" type="text" placeholder="Enter list title">
-                        <button id="0buttonAcceptList" class="acceptListButton" type="button">Add List</button>
-                        <button id="0buttonDeclineList" class="declineButton" type="button">X</button>
-                    </div>
-                </div> -->
+        </div>  -->
+        <div id="container" class="container">
+            <div class="taskInfoPopupBackground"> <!-- Make screen less vibrant -->
+                
             </div>
-       
+            <div class="taskInfoPopupDiv taskInfoPopup">
+                <p id="taskInfoPopupTitle" class= "taskInfoPopup"></p><!-- Replace with input on click -->
+                <input id="taskInfoPopupTitleEditor" class="taskInfoPopup">
+                <p id="taskInfoPopupDescription" class = "taskInfoPopup"></p> <!-- Replace with textarea on click -->
+                <textarea id="taskInfoPopupDescriptionEditor" class="taskInfoPopup"></textarea>
+            </div>
+        </div>
 
     </body>
+    <!-- jquery v3.4.1 "jQuery is a fast, small, and feature-rich JavaScript library" - it's a hugely popular JS library that, if notthing else, is used in a lot of answers on StackOverFlow-->
+    <script src = "../JS/node_modules/jquery/dist/jquery.js"></script>
 
+    <!-- JS cookie v2.2.0 - "A simple, lightweight javascript API for handling cookies" - quite self-explanatory -->
+    <script src="../JS/node_modules/js-cookie/src/js.cookie.js"></script>
+
+    <!-- Our 'database' - The closest masK comes to having an API -->
     <script src="../JS/database.js"></script>
+
+    <!-- The nagivation 'sidebar' -->
     <script src="../JS/Sidebar.js"></script>
+
     <script src="../JS/Home.js"></script>
 </html>

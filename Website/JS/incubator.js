@@ -36,9 +36,13 @@
 // container.addEventListener("mouseup", DragEnd);
 // container.addEventListener("mousemove", Drag);
 
+// TODO: Fix the misaligned dragging
+
 const container = $("#incubatorContainer");
 const trashCan = $("#trashCan");
 const approvalBox = $("#approvalBox");
+const sidebar = $("#sidebar");
+const sidebarWidth = sidebar.width();
 
     // which item you are dragging
 let activeDragNote = null;
@@ -88,20 +92,26 @@ function GetNextZIndex() {
 }
 
 function DragStart(e) {
-    e.preventDefault();
+    
         // If it's not left button (meaning right-button, middle click etc..), return.
         // Only allow dragging with left-click
     if (!IsLeftButton(e)) return;
     
     activeDragNote = GetNoteDiv(e.target);
+        // If you're not holding a note, return.
     if (activeDragNote == null) return;
-    
+    e.preventDefault();
     SetNoteDefaultPositionValues(activeDragNote, e);
+
+    let tempPos = GetMousePosition(e);
+    
+    SetNoteDefaultPositionValues(activeDragNote, tempPos);
     
     SetZIndex(activeDragNote, GetNextZIndex());
 }
 
 function DragEnd(e) {
+        // If you're not holding a note, return.
     if (activeDragNote === null) return;
     e.preventDefault();
 
@@ -113,11 +123,21 @@ function DragEnd(e) {
     StorePositionDataInTask(task, position.left, position.top);
 
     if (aboveTrashCan) {
-        if (!requireWaitingUntilDeletionAnimationIsComplete) activeDragNote.DeleteAtEndOfAnimation = true;
+        
+        if (activeDragNote.readyToBeDeleted) {
+            DeleteNote(activeDragNote);
+            return;
+        }
+        if (!requireWaitingUntilDeletionAnimationIsComplete) {
+            activeDragNote.DeleteAtEndOfAnimation = true;
+            // return;
+        } 
 
-        if (activeDragNote.readyToBeDeleted) DeleteNote(activeDragNote);
 
-        else if (requireWaitingUntilDeletionAnimationIsComplete) ResetNoteStyling(activeDragNote);
+        else if (requireWaitingUntilDeletionAnimationIsComplete) {
+            ResetNoteStyling(activeDragNote);
+            // return;
+        }
     }
     if (aboveApprovalBox) {
         if (activeDragNote.readyToBeApproved) {
@@ -127,12 +147,12 @@ function DragEnd(e) {
 
         if (!requireWaitingUntilApprovalAnimationIsComplete) {
             activeDragNote.ApproveAtEndOfAnimation = true;
-            return;
+            // return;
         } 
         
         if (requireWaitingUntilApprovalAnimationIsComplete) {
             ResetNoteStyling(activeDragNote);
-            return;
+            // return;
         } 
     }
 
@@ -140,9 +160,10 @@ function DragEnd(e) {
 }
 
 function Drag(e) {
-    e.preventDefault();
+   
     // If you're "dragging" (ie. moving the mouse) and you're not holding a note, return.
     if (activeDragNote === null) return;
+    e.preventDefault();
 
     aboveTrashCan = CheckIfAboveTrashCan(e)
     aboveApprovalBox = CheckIfAboveApprovalBox(e);
@@ -163,35 +184,26 @@ function Drag(e) {
     SetNotePosition(activeDragNote, pos.x, pos.y);
 }
 
-function SetNoteDefaultPositionValues(note, e) {
+function SetNoteDefaultPositionValues(note, pos) {
     if (!note.xOffset) {
         note.xOffset = 0;
     }
     if (!note.yOffset) {
         note.yOffset = 0;
     }
-    if (e.type === "touchStart") {
-        note.initialX = e.touches[0].clientX - note.xOffset;
-        note.initialY = e.touches[0].clientY - note.yOffset;
-    }
-    else {
-        note.initialX = e.clientX - note.xOffset;
-        note.initialY = e.clientY - note.yOffset;
-    }
+    note.initialX = pos.x - note.xOffset;
+    note.initialY = pos.y - note.yOffset;
 }
 /**
  * Set the current position variables (not the actual positions) to be the difference between where you clicked and where you started dragging
  */
 function GetNotePosWithEvent(note, e) {
-    let tempNotePos;
 
-    if (e.type === "touchMove") {
-        tempNotePos = GetNotePos(note, e.touches[0].pageX, e.touches[0].pageY);
-    }
-    // Otherwise.. (Which should only be if you are clicking with the mouse)
-    else {
-        tempNotePos = GetNotePos(note, e.pageX, e.pageY);
-    }
+    let mousePos = GetMousePosition(e);
+
+    let tempNotePos = GetNotePos(note, mousePos.x, mousePos.y);
+
+    // return { x: tempNotePos.x, y: tempNotePos.y };
     return { x: tempNotePos.x, y: tempNotePos.y };
 }
 
@@ -204,11 +216,6 @@ function GetNotePos(note, xPos, yPos) {
 }
 
 function SetNotePosition(note, xPos, yPos) {
-
-    // let currentMiddle = GetMiddlePosition(note);
-
-    // note.currentX = xPos + (currentMiddle.difference.x / 2);
-    // note.currentY = yPos + (currentMiddle.difference.y / 2);
 
     note.currentX = xPos;
     note.currentY = yPos;
@@ -246,14 +253,14 @@ function SetTranslate(xPos, yPos, el) {
 
 // Thanks to https://www.kirupa.com/html5/drag.htm for the "boilerplate"
 
-function GetPosition(event, containerString) {
+function GetPosition(mousePos, containerString) {
     // TODO: Low-Medium Add touch support
 
     let offset = $(containerString).offset();
 
     let vector2Offset = {
-        left: event.pageX - offset.left,
-        top: event.pageY - offset.top
+        left: mousePos.x - offset.left,
+        top: mousePos.y - offset.top
     }
     return vector2Offset;
 }
@@ -262,14 +269,12 @@ function GetPosition(event, containerString) {
 function GetNotePosition(note) {
 
     let matrix = $(note).css('transform');
-    let newMatrix = decodeMatrix(matrix)
+    let newMatrix = decodeMatrix(matrix);
 
     let newPos = {
         left: newMatrix[4],
         top: newMatrix[5]
     }
-
-    
     return newPos;
 }
 
@@ -282,28 +287,46 @@ function IsLeftButton(evt) {
 }
 
 function CreateNewNoteOnPageWithEvent(task, event) {
-    let pos = GetPosition(event, container);
+    let mousePos = GetMousePosition(event);
+    let pos = GetPosition(mousePos, container);
     let newPos = CreateNewNoteOnPage(task, pos);
 
     // Storing the position on the Task (Should only be called on: Initial creation, and on "DragEnd");
     StorePositionDataInTask(task, newPos.left, newPos.top);
 }
 
+
+
+let noteNumb = 0;
+function noteNumberGenerator(){
+    noteNumb ++;
+    return noteNumb;
+}
+
+
 function CreateNewNoteOnPage(task, pos) {
-    let newDiv = document.createElement("div");
+    let noteNumber = 0;
+    let newDiv = document.createElement("div"),
+    textareaEl = document.createElement('textarea');
     newDiv.setAttribute("taskID", task.id);
     container.append(newDiv);
     newDiv.setAttribute("class", "note");
     newDiv.setAttribute("id", "note" + task.id);
-    let titleString = "<p class = noteName id = 'note" + task.id + "Name'>" + task.name + "</p>";
-    let descriptionString = "<p class = noteDescription id = 'note" + task.id + "Description'>" + task.description + "</p>"
+    textareaEl.setAttribute("class", "textarea");
+    let titleString = "<p class = noteName id = 'note" + task.id + "Name'>" + "Note #" + noteNumberGenerator()  + "</p>";
+    let descriptionString = "<p class = noteDescription id = 'note" + task.id + "Description'>" + task.description + "</p>";
     newDiv.innerHTML = titleString + "\n" + descriptionString;
+    newDiv.append(textareaEl);
+    if(noteNumber == noteNumber){
+        noteNumber ++;
+    }
 
     newDiv.currentlyAnimating = false;
     newDiv.readyToBeDeleted = false;
     newDiv.readyToBeApproved = false;
 
     // Setting the position
+
 
     let left = pos.left - ($(newDiv).width() / 2);
     let top = pos.top - ($(newDiv).height() / 2);
@@ -314,25 +337,25 @@ function CreateNewNoteOnPage(task, pos) {
     return {left: left, top: top};
 }
 
-function CreateNewNoteOnPageNew(task, pos) {
-    let newDiv = document.createElement("div");
-    newDiv.setAttribute("taskID", task.id);
-    container.append(newDiv);
-    newDiv.setAttribute("class", "note");
-    newDiv.setAttribute("id", "note" + task.id);
-    let titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
-    let descriptionString = "<p>" + task.description + "</p>"
-    newDiv.innerHTML = titleString + "\n" + descriptionString;
+// function CreateNewNoteOnPageNew(task, pos) {
+//     let newDiv = document.createElement("div");
+//     newDiv.setAttribute("taskID", task.id);
+//     container.append(newDiv);
+//     newDiv.setAttribute("class", "note");
+//     newDiv.setAttribute("id", "note" + task.id);
+//     let titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
+//     let descriptionString = "<p>" + task.description + "</p>"
+//     newDiv.innerHTML = titleString + "\n" + descriptionString;
     
-    newDiv.currentlyAnimating = false;
-    newDiv.readyToBeDeleted = false;
-    newDiv.readyToBeApproved = false;
+//     newDiv.currentlyAnimating = false;
+//     newDiv.readyToBeDeleted = false;
+//     newDiv.readyToBeApproved = false;
 
-    SetTranslate(pos.left, pos.top, newDiv);
-    newDiv.xOffset = pos.left;
-    newDiv.yOffset = pos.top;
-    return pos;
-}
+//     SetTranslate(pos.left, pos.top, newDiv);
+//     newDiv.xOffset = pos.left;
+//     newDiv.yOffset = pos.top;
+//     return pos;
+// }
 
 function StorePositionDataInTask(task, left, top) {
     task.boardPosition.left = left;
@@ -347,7 +370,10 @@ function StorePositionDataInTask(task, left, top) {
 function GetNoteDiv(inputElement) {
     let noteDiv = null;
 
-    if (inputElement.className === 'note') {
+    if (inputElement.className === 'textarea'){
+    }
+
+    else if (inputElement.className === 'note') {
         noteDiv = inputElement;
     }
     else if (inputElement.parentElement.className === 'note') {
@@ -372,7 +398,7 @@ function PlaceAllNotesOnPage() {
         let task = GetTaskFromID(noteID);
         if (task === undefined) return;
         // CreateNewNoteOnPage(task, task.boardPosition);
-        CreateNewNoteOnPageNew(task, task.boardPosition);
+        CreateNewNoteOnPage(task, task.boardPosition);
     });
 }
 
@@ -384,6 +410,8 @@ function PlaceAllNotesOnPage() {
 
 // Trigger action when the contexmenu is about to be shown
 $(container).on("contextmenu", function (event) {
+
+    let mousePos = GetMousePosition(event);
     
     // Avoid the real one
     event.preventDefault();
@@ -393,8 +421,9 @@ $(container).on("contextmenu", function (event) {
     
     // In the right position (the mouse)
     css({
-        top: event.pageY + "px",
-        left: event.pageX + "px"
+        left: mousePos.x + "px",
+        top: mousePos.y + "px"
+        
     });
 });
 
@@ -423,11 +452,12 @@ $(".custom-menu li").click(function(event){
 
             // If you click the "New Task" 'data-action', then this will happen..
         case "newTask":
+        // var noteIDToString = noteID.to
                 // Create a new task with the name corresponding to the currend DateTime // Temporary
-            let newTask = CreateAndPushTask(new Date().toString());
+            let newTask = CreateAndPushTask("");
                 // Add said task(specifically its id) to the incubator Board)
             AddTaskIDToBoard(newTask.id, incubatorBoard);
-                // Ccreate a new note on the page with the newly created task as the information (Also bring in the event call in order to know where, on the screen, to place it) 
+                // Create a new note on the page with the newly created task as the information (Also bring in the event call in order to know where, on the screen, to place it) 
             CreateNewNoteOnPageWithEvent(newTask, event)
             break;
     }
@@ -503,11 +533,27 @@ function ApproveNote(note) {
 }
 
 
+function GetMousePosition(event) {
+    let x, y;
+
+    if ( event.type === "mousedown" || event.type === "mouseup" || event.type === "mousemove" || event.type === "contextmenu" || event.type === "click") {
+        x = event.pageX - sidebarWidth;
+        y = event.pageY;
+    }
+    else {
+        x = event.touches[0].x - sidebarWidth;
+        y = event.touches[0].y;
+    }
+
+    return {x: x, y: y};
+}
+
 function CheckIfAboveElement(e, otherEle) {
     let otherElePos = GetJQueryPosition(otherEle);
+    let mousePos = GetMousePosition(e);
 
     // Only returns true if both are true (true + true = true | true + false = false (vice versa) | false + false = false)
-    return comparePositions([e.pageX], otherElePos[0]) && comparePositions([e.pageY], otherElePos[1]);
+    return comparePositions([mousePos.x], otherElePos[0]) && comparePositions([mousePos.y], otherElePos[1]);
 }
 
 function CheckIfAboveTrashCan(e) {
@@ -542,15 +588,24 @@ function comparePositions(pos1, pos2) {
 function animateNoteBaseline(noteEle) {
     if (noteEle.currentlyAnimating) return true;
     noteEle.currentlyAnimating = true;
-    var jqNote = $(noteEle);
+    let jqNote = $(noteEle);
     jqNote.attr("oldStyle", jqNote.attr("style"));
 }
 
 /**
- * It doesn't seem to be perfectly aligned, but it's close enough so that you understand the idea.
- *
- * I don't have enough time to find out why it's not aligned perfectly in the middle, and this is a low-priority issue.
+ * 
+ * @param {jquery<HTMLElement>} element 
+ * @param {jquery<HTMLElement>} [relativeTo] Which, if applicable, element to set it relative to - if unset it is relative to parent; 
  */
+function GetMiddlePosOfElement(element, relativeTo) {
+    let elementPositionData = GetPositionData(element);
+    let relativeElementPositionData;
+    if (relativeTo !== undefined) {
+        relativeElementPositionData = GetPositionDataRelative(relativeTo);
+    }
+}
+
+
 function AnimateNotePreDeletion(noteEle, duration) {
     if (animateNoteBaseline(noteEle)) return;
 
@@ -597,7 +652,6 @@ function GetMiddlePosOfElement(element, relativeTo) {
         relativeElementPositionData = GetPositionDataRelative(relativeTo);
     }
 }
-
 
 
 function animateNotePreApproval(noteEle, duration) {
@@ -669,12 +723,12 @@ function GetPositionDataRelative(dom, relDom) {
     let newStart = {
         x: relDomMiddlePos.start.x + domMiddlePos.start.x,
         y: relDomMiddlePos.start.y + domMiddlePos.start.y
-    }
+    };
 
     let newEnd = {
         x: relDomMiddlePos.end.x /* + domMiddlePos.end.x */,
         y: relDomMiddlePos.end.y /* + domMiddlePos.end.y*/
-    }
+    };
 
     let newDifference = {
         // x: $(dom).width()
@@ -682,14 +736,14 @@ function GetPositionDataRelative(dom, relDom) {
         y: newEnd.y - newStart.y
         // x: relDomMiddlePos.difference.x + domMiddlePos.difference.x,
         // y: relDomMiddlePos.difference.y + domMiddlePos.difference.y
-    }
+    };
 
     let newMiddle = {
         x: newStart.x + ( newDifference.x / 2),
         y: newStart.y + ( newDifference.y / 2)
         // x: relDomMiddlePos.middle.x + domMiddlePos.middle.x,
         // y: relDomMiddlePos.middle.y + domMiddlePos.middle.y
-    }
+    };
 
     return {
         start: newStart,
@@ -718,15 +772,11 @@ PlaceAllNotesOnPage();
 
 
 
-
-
-
-
 // [???] - Don't actually delete the following lines. (DO DELETE THIS THOUGH!!), as it makes it seem we have fun doing this.
 
 // Fun things -- if this is in the final product.. I did an oopsie
-function LimitedRandom(min,max) // min and max included
-{
+ // min and max included 
+ function LimitedRandom(min,max){
     return Math.floor( Math.random() * (max-min+1)+min );
 }
 
@@ -734,7 +784,27 @@ function NumberOfIntegersNeededForRandom(min, max, checkNum) {
     let iterations = 0;
     if (checkNum >= max) return "Number you are looking for is higher than the possible value";
     while (LimitedRandom(min, max) !== checkNum) {
-        iterations++
+        iterations++;
     }
     return "It took: " + iterations.toLocaleString('en') + " iterations to get " + checkNum.toLocaleString('en') + " with the min of " + min.toLocaleString('en') + " and the max of " + max.toLocaleString('en') + ".";
 }
+
+
+
+// just a test for Radio buttons 
+
+
+function check(){
+    
+    if(document.getElementById("black").checked == true){
+        document.getElementById("testdummy").style.backgroundColor = "black";
+    }
+    else if(document.getElementById("blue").checked == true){
+        document.getElementById("testdummy").style.backgroundColor = "blue";
+    } 
+    else if (document.getElementById("green").checked == true) {
+        document.getElementById("testdummy").style.backgroundColor = "green";
+    }
+    
+}
+

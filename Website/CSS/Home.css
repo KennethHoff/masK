@@ -8,7 +8,6 @@ body{
     white-space: nowrap;
 }
 
-
 #home {
     cursor:pointer;
 }
@@ -27,8 +26,15 @@ body{
     margin:10px;    
 }
 
+.CreateBoardButton {
+    width: 250px;
+    min-height: 200px;
+    flex-shrink: 0;
+    margin: 10px;
+}
+
 .cardContainer{  /*change name into section */
-    display:  inline-block;
+    display: inline-block;
     width: 240px;
     min-height: 83px;
     background-color: #c4765a;
@@ -279,4 +285,124 @@ body{
     position: absolute;
     top: 100px; 
     left:10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Kenneth Rework */
+
+.addNewBoardDiv {
+    display: inline-block;
+    border: none;
+    font-size: 14px;
+    width: 240px;
+    height: 40px;
+    padding-left: 15px;
+    color: white;
+    background-color: rgb(86, 83, 88);   
+    opacity: 0.7;
+    text-align: left;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
+
+.addNewBoardDiv:hover {
+    background-color: rgb(54, 54, 54);  
+}
+
+.addNewBoardDiv p {
+    text-align: center;
+    line-height: 40px;
+    font-size: 1.25em;
+    user-select: none;
+}
+
+.boardDiv {
+    display: inline-block;
+    width: 240px;
+    min-height: 200px;
+    background-color: #c4765a;
+    text-align: left;
+    border-radius: 5px;
+}
+
+.boardDivTitle {
+    font-size: 1.25em;
+    text-align: center;
+    line-height: 40px;
+}
+
+.taskDiv {
+    display: block;
+    font-size: 16px;
+    max-width:190px;
+    min-height:100px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 5px;
+    margin-bottom: 5px;
+    margin-left: 19px;
+    padding-bottom: 10px;
+    box-shadow: 0px 3px #a3644d;
+    transition: background-color 0.2s;
+    padding: 5px;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.taskInfoPopupDiv {
+    position: absolute;
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    left:0;
+    right: 0;
+    top:100px;
+    width:400px;
+    height: 400px;
+    background-color: white;
+    z-index: 2;   
+    border-radius:5px;
+}
+
+.taskInfoPopupBackground {
+    position: absolute;
+    display: none;
+    margin-top: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: black;
+    opacity: 0.5;
+    z-index: 1;
+}
+
+#taskInfoPopupTitle {
+    display: block;
+    font-size: 1.25em;
+    text-align: center;
+}
+
+#taskInfoPopupTitleEditor {
+    display: none;
+    font-size: 1.25em;
+    text-align: center;
+}
+
+#taskInfoPopupDescription {
+    display: block;
+    font-size: 2em;
+    text-align: center;
+}
+
+#taskInfoPopupDescriptionEditor {
+    display: none;
+    font-size: 2em;
+    text-align: center;
 }

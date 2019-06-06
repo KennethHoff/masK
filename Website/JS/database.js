@@ -10,13 +10,14 @@
 // Example: function CreateUser(_name) [...] user.name = _name;
 
 
-// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..var..* (like for example "letiables" instead of "variables") that was because I changed all my 'var' into 'let' halfway into the project.
+// If there are some weird things where the naming makes absolutely no sense and it says *..let..* where it clearly should say *..let..* (like for example "letiables" instead of "variables") that was because I changed all my 'let' into 'let' halfway into the project.
 
 
 // [???] Means it is temporary and/or needs to be rewritten (.. or I forgot to remove it :>)
 
 
 // Some 'less than ideal' things:
+
 // When you delete something (eg. Task) it will not be removed from its respective 'parent' array (eg. Board). so:
 // Create Task > Add Task.id to Board "tasks" array > Delete Task > board "tasks" array still has the .id value.
 // This is an incredibly minor thing, so I don't think I will bother working on it.
@@ -31,6 +32,9 @@
 // TODO: Fix animation not stopping when I move it out of the trashcan / approval box
 
 let currentIndexForIDGenerator = 0;
+
+// For board creation
+let currentPageOrderIndex = 0;
 /**
  * Which board to put new tasks into if you don't specify
  * 
@@ -47,7 +51,7 @@ let incubatorBoard;
  * @param {Number} pageOrder Which order the board is relative to other boards (Lower comes earliest) [For things like the Main Page]
  */
 
-let boards = [{id:"0cardContainer", name:"blablah", columnContainerId:"0columnContainer"}
+let boards = [
     // {
     //     id: (random),
     //     name: "Test Board",
@@ -87,6 +91,8 @@ let tasks = [
  * @param {string} name What you see
  * @param {boolean} visibleInSidebar Whether or not this is displayed in the sidebar
  * @param {role[]} roles All roles assigned to this user
+ * @param {String} username The username you sign in with.
+ * @param {String} password This is stored in raw text in your cookies so it's clearly not fault
  */
 let users = [
     // {
@@ -94,6 +100,8 @@ let users = [
     //     name: "Test Name",
     //     visibleInSidebar,
     //     roles: [],
+    //     username: String,
+    //     password: String
     // }
 ];
 /**
@@ -124,7 +132,7 @@ function CreateBoard(_name) {
         id: IDGenerator(),
         name: _name,
         tasks: [],
-        pageOrder: 0
+        pageOrder: PageOrderGenerator()
     };
     return newBoard;
 }
@@ -134,9 +142,9 @@ function CreateBoard(_name) {
  * @param {string} _name What the name of the board will be
  * @returns {board} returns the board object (id, name, tasks[])
  */
-function CreateAndPushBoard(_name) {
+function CreateAndPushBoard(_name, disallowSameName) {
     let tempBoard = CreateBoard(_name)
-    let newBoard = PushGenericElementToArray(boards, tempBoard);
+    let newBoard = PushGenericElementToArray(boards, tempBoard, disallowSameName);
     return newBoard;
 }
 /**
@@ -198,8 +206,8 @@ function CreateTask(_name, _description, _deadlineDate) {
 /**
  * Creates a new task, pushes it to the array(and saves Cookies), and returns the task.
  * @param {string} _name What the name of the task will be
- * @param {string} _description What the description of the task will be
- * @param {Date} _deadlineDate What the deadline of the task will be
+ * @param {string} [_description] What the description of the task will be
+ * @param {Date} [_deadlineDate] What the deadline of the task will be
  * @returns {task} returns the task object (id, name, description, user[], deadlineDate, creationDate, completionDate)
  */
 function CreateAndPushTask(_name, _description, _deadlineDate) {
@@ -227,7 +235,6 @@ function UpdateTask(task, newName, newDescription, newDeadline) {
  */
 function DeleteTask(task, reason) {
     RemoveGenericElementFromArray(tasks, task.id, reason);
-    
 }
 
 
@@ -240,13 +247,16 @@ function DeleteTask(task, reason) {
  * @param {string} _name What the name of the user will be
  * @returns {user} returns the user object (id, name, role[])
  */
-function CreateUser(_name) {
+function CreateUser(_name, _username, _password) {
     if (_name == undefined) return null;
     let newUser = {
         id: IDGenerator(),
         name: _name,
         roles: [],
-    }
+        username: _username,
+        password: _password
+    };
+
     console.log("New user created: " + newUser.name);
     return newUser;
 }
@@ -255,8 +265,8 @@ function CreateUser(_name) {
  * @param {string} _name What the name of the user will be
  * @returns {user} returns the user object (id, name, role[])
  */
-function CreateAndPushUser(_name, _role) {
-    let tempUser = CreateUser(_name, _role);
+function CreateAndPushUser(_name, _username, _password) {
+    let tempUser = CreateUser(_name, _username, _password);
     let newUser = PushGenericElementToArray(users, tempUser);
     return newUser;
 }
@@ -265,8 +275,10 @@ function CreateAndPushUser(_name, _role) {
  * @param {user} user The user you want to update
  * @param {string} newName The new name of the user
  */
-function UpdateUser(user, newName) {
-    user.name = newName;
+function UpdateUser(user, newName, newUsername, newPasword) {
+    if (newName !== undefined) user.name = newName;
+    if (newUser !== undefined) user.username = newUsername;
+    if (newPasword !== undefined) user.password = newPasword;
 }
 
 /**
@@ -409,9 +421,9 @@ function MoveRoleFromOneUserToAnother(oldUser, newUser, roleID) {
  * Input any array and any element and the element will be pushed into the array
  * @param {array} arr An array object (Array.IsArray())
  * @param {(Object|number)} ele the element (arr[?]) *or* the ID
- * @param {string} [reason] [Optional] The reason it was deleted
+ * @param {Boolean} disallowSameName if you allow the same name for multipe elements in the array (It's generally okay for tasks, but bad for boards). Undefined or a falsy value means you can have multiple with same name 
  */
-function PushGenericElementToArray(arr, ele) {
+function PushGenericElementToArray(arr, ele, disallowSameName) {
 
     let returnEle, found
 
@@ -426,6 +438,10 @@ function PushGenericElementToArray(arr, ele) {
 
         // returns the element if it exists, false if element does not exist, or undefined is array is empty. #JustJavascriptThings
         found = arr.find(function (e) {
+            if (!disallowSameName) {
+                return e.id === ele.id;
+            }
+
             let sameID = e.id === ele.id;
             let sameName = e.name === ele.name;
             if (sameID || sameName) return e;
@@ -552,30 +568,39 @@ function GetRoleFromId(id) {
 
 
 function CreateDefaultBoards() {
-    var newIncubatorBoard = CreateAndPushBoard("Incubator");
-    var newTodoBoard = CreateAndPushBoard("ToDo");
-    var newInProgressBoard = CreateAndPushBoard("InProgress");
-    var newCompletedBoard = CreateAndPushBoard("Completed");
+    if (boards.length >= 4) return; // Running out of time, had a small bug (Renaming a default board will make it re-create the original board)
+    let newIncubatorBoard = CreateAndPushBoard("Incubator", true);
+    let newTodoBoard = CreateAndPushBoard("ToDo", true);
+        newTodoBoard.pageOrder = 0;
+    let newInProgressBoard = CreateAndPushBoard("InProgress", true);
+        newInProgressBoard.pageOrder = 1;
+    let newCompletedBoard = CreateAndPushBoard("Completed", true);
+        newCompletedBoard.pageOrder = 2;
 
     incubatorBoard = newIncubatorBoard;
     defaultBoard = newTodoBoard;
 
 }
 
+function PageOrderGenerator() {
+    return currentPageOrderIndex++;
+}
 
 /* --- Array Manipulation END --- */
 
 
 /* ------- Cookies START ------- */
 /**
- * Save all to cookies that will delete itself after 7 days. (You're welcome, sensor ;) )
+ * Save all to cookies that will delete itself after [Default: 7] days. (You're welcome, sensor ;) )
+ * @param {Number} duration how long the cookies will last
  */
-function SaveAllToCookies() {
-    Cookies.set("Boards", boards, {expires: 7});
-    Cookies.set("Tasks",  tasks , {expires: 7});
-    Cookies.set("Users",  users , {expires: 7});
-    Cookies.set("Roles",  roles , {expires: 7});
+function SaveAllToCookies(duration) {
+    Cookies.set("Boards", boards, {expires: duration});
+    Cookies.set("Tasks",  tasks , {expires: duration});
+    Cookies.set("Users",  users , {expires: duration});
+    Cookies.set("Roles",  roles , {expires: duration});
     Cookies.set("currentIndexForIDGenerator", currentIndexForIDGenerator, {expires: 7});
+    Cookies.set("currentPageOrderIndex", currentPageOrderIndex, {expires: duration});
 }
 
 
@@ -594,14 +619,21 @@ function LoadFromCookies() {
     users = (tempUsers === undefined ? [] : tempUsers);
     roles = (tempRoles === undefined ? [] : tempRoles);
 
-    let tempIndex = Cookies.getJSON("currentIndexForIDGenerator");
-    currentIndexForIDGenerator = (tempIndex >= 0 ? tempIndex : 0);
+    let tempIDGeneratorIndex = Cookies.getJSON("currentIndexForIDGenerator");
+        // If the value is not greater than zero, then set it to 0 otherwise,
+        // set it to the cookies value // This is to make it so it works without any cookies
+        // This is the same for the one underneath.
+    currentIndexForIDGenerator = (tempIDGeneratorIndex >= 0 ? tempIDGeneratorIndex : 0);
+
+
+    let tempPageOrderIndex = Cookies.getJSON("currentPageOrderIndex");
+    currentPageOrderIndex = (tempPageOrderIndex >= 0 ? tempPageOrderIndex : 0);
 }
 
 
 // Just before the page unloads, save all information to cookies.
 $(window).on("beforeunload", function () {
-    SaveAllToCookies();
+    // SaveAllToCookies(7);
 });
 
 
