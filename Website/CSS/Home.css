@@ -67,6 +67,18 @@ body{
     box-shadow: 0px 2px #a3644d;
 }
 
+.createTaskButton{
+    display:block;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 65px;
+    width: 120px;
+    height: 25px;
+    border: none;
+    border-radius:3px;
+    background: #FFF;
+}
+
 
 .textArea{
     position: absolute;
@@ -300,10 +312,12 @@ body{
 /* Kenneth Rework */
 
 .addNewBoardDiv {
-    display: inline-block;
+    flex-shrink: 0;
+    width:250px;
+    margin-right: 50px;
+    width:250px;
     border: none;
     font-size: 14px;
-    width: 240px;
     height: 40px;
     padding-left: 15px;
     color: white;
@@ -326,18 +340,30 @@ body{
 }
 
 .boardDiv {
-    display: inline-block;
-    width: 240px;
-    min-height: 200px;
+    flex-shrink: 0;
+    width:250px;
+    min-height: 130px;
+    margin:10px; 
     background-color: #c4765a;
     text-align: left;
     border-radius: 5px;
+    margin-right: 30px;
 }
 
 .boardDivTitle {
     font-size: 1.25em;
     text-align: center;
     line-height: 40px;
+}
+
+.replaceBoardTitleRename{
+    font-size: 1.25em;
+    text-align: center;
+    max-width: 200px;
+    display: block;
+    height: 30px;
+    margin-left: 25px;
+    margin-top: 10px;
 }
 
 .taskDiv {
