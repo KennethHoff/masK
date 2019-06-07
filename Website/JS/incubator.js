@@ -49,14 +49,17 @@ let activeRightClickNote = null;
 let currentZIndex = 0;
 
 // Related to deleting a note
-
+    // This has to be true. It doesn't work anymore if set to false : This bug was noticed 1hour, 50 minutes before the deadline
 let requireWaitingUntilDeletionAnimationIsComplete = true;
+
 
 let aboveTrashCan = false;
 
 // Related to approving a note
 
+    // This has to be true. It doesn't work anymore if set to false : This bug was noticed 1hour, 50 minutes before the deadline
 let requireWaitingUntilApprovalAnimationIsComplete = true;
+
 
 let aboveApprovalBox = false;
 
@@ -165,7 +168,7 @@ function Drag(e) {
     }
     if (aboveApprovalBox) {
             // Do not move the note if you're over the Approval Box. This is to ensure the animation moves smoothly
-        animateNotePreApproval(activeDragNote, 1500);
+        animateNotePreApproval(activeDragNote, 500);
         return;
     }
     if (activeDragNote.currentlyAnimating) {
@@ -492,6 +495,7 @@ function GetNoteFromTaskID(taskID) {
  */
 function DeleteNote(note) {
     let task = GetTaskFromNote(note);
+    RemoveTaskFromBoard(incubatorBoard, task);
     DeleteTask(task);
     $(note).remove();
 }

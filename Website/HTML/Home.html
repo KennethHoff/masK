@@ -23,11 +23,16 @@
         <div class="taskInfoPopupBackground"></div> <!-- Make screen less vibrant -->
         <div id="container" class="container">
             <div class="taskInfoPopupDiv">
-                <p id="taskInfoPopupTitle"></p><!-- Replace with input on click -->
-                <textarea id="taskInfoPopupTitleEditor">
-                <p id="taskInfoPopupDescription"></p> <!-- Replace with textarea on click -->
+                <p id="taskInfoPopupTitle"></p>
+                <textarea id="taskInfoPopupTitleEditor"></textarea>
+                <div id="taskInfoPopupImportanceDropdownDiv" class="dropdown" >
+                    <button id="taskInfoPopupImportanceDropdownButton">Select Importance</button>
+                    <div id="taskInfoPopupImportanceDropdownContainer" class="dropdown-content"></div>
+                </div>
+                <p id="taskInfoPopupDescription"></p>
                 <textarea id="taskInfoPopupDescriptionEditor"></textarea>
                 <select multiple="multiple" id="memberSelect"></select>
+                <img id="taskInfoPopupDeleteButton" src="../Images/trashCan-white-withCap-widee.png">
             </div>
         </div>
 
