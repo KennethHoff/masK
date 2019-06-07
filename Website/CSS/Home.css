@@ -199,10 +199,12 @@ body{
 }
 
 #taskInfoPopupDeleteButton {
+    position: absolute;
     color: #a3644d;
     width: 200px;
     height: auto;
     filter: invert(100%);
+    left: 20%;
 }
 #deleteCard{
     margin-top:20px;
@@ -210,4 +212,8 @@ body{
     width: 300px;
     height: 30px;
     border-radius: 3px;
+}
+
+body {
+    color: #56e432
 }

@@ -116,6 +116,13 @@ let roles = [
     // }
 ];
 
+let importanceColours = {
+    0: "#ffffff",
+    1: "#c90b0b",
+    2: "#e4c332",
+    3: "#56e432"
+}
+
 
 /* --- Object Manipulation START --- */
 
@@ -199,8 +206,8 @@ function CreateTask(_name, _description, _deadlineDate) {
         // Where, relative to other tasks, it sits on the board [If the board supports it - main page mostly] (if same number (which should never happen), be based on ID)
         boardOrder: 0,
         // Where on the board it sits [If the board supports it - incubator mostly]
-        boardPosition: {left: 0, top: 0}
-
+        boardPosition: {left: 0, top: 0},
+        importance: 0
     }
     return newTask;
 }
