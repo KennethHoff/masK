@@ -7,6 +7,8 @@ let taskPopUpDescription = taskPopupDiv.children("#taskInfoPopupDescription");
 let taskPopUpDescriptionEditor = taskPopupDiv.children("#taskInfoPopupDescriptionEditor");
 let taskPopupBackground = $(".taskInfoPopupBackground");
 
+let memberSelect = $("#memberSelect");
+
 let activeDragElement;
 
 let taskPopupActive = false;
@@ -15,6 +17,7 @@ let taskPopupActive = false;
 PlaceAllBoardsOnPage();
 
 PopulateMemberSelect();
+
     // If you click anywhere...
 $(document).on("click", function(e) {
 
@@ -25,8 +28,10 @@ $(document).on("click", function(e) {
     if (taskPopupActive) {
 
             // If any parent, grandparent, great grandparents etc... has the class 'taskInfoPopup' then hide the popup
-        let parents = target.parents(".taskInfoPopup");
+        let parents = target.parents(".taskInfoPopupDiv");
         if (parents.length === 0)   {
+                // If no parents are, but it itself is, return..
+            if (target.is(".taskInfoPopupDiv")) return;
             HideTaskInfoPopup();
             return;
         }
@@ -141,7 +146,7 @@ function CreateNewtaskOnScreen(task, boardDiv, beforeElement) {
     newTaskDiv.id = "task" + task.id;
 
     let jqNewTaskDiv = $(newTaskDiv).addClass("taskDiv");
-    jqNewTaskDiv.data("taskid", task.id);
+    jqNewTaskDiv.data("taskID", task.id);
     jqNewTaskDiv.attr("draggable", true);
 
     if (beforeElement === undefined) {
@@ -302,7 +307,7 @@ function GetBoardFromBoardDiv(boardDiv) {
 
 function GetTaskFromTaskDiv(taskDiv) {
     var task = tasks.find(function(e) {
-        taskID = $(taskDiv).data("taskid");
+        taskID = $(taskDiv).data("taskID");
         return e.id === taskID;
     })
     return task;
@@ -339,10 +344,10 @@ function ShowTaskInfoPopup(taskDiv) {
     taskPopupActive = true;
 
     let task = GetTaskFromTaskDiv(taskDiv);
-    taskPopupDiv.data("currentTask", task.id);
-
     taskPopUpTitle.text(task.name);
     taskPopUpDescription.text(task.description);
+
+    taskPopupDiv.data("taskID", task.id);
 
     
     taskPopUpDescription.css("display", "block");
@@ -350,12 +355,16 @@ function ShowTaskInfoPopup(taskDiv) {
     taskPopUpTitle.css("display", "block");
     taskPopUpTitleEditor.css("display", "none");
 
+    SelectApplicableUser();
+
 }
 function HideTaskInfoPopup() {
     taskPopupDiv.css("display", "none");
     taskPopupBackground.css("display", "none");
     taskPopupActive = false;
+    taskPopupDiv.removeData("taskID");
 
+    DeselectAllUsers();
 }
 
 function EnablePopupTitleRename() {
@@ -372,7 +381,7 @@ function CompletedPopupTitleRename(inputField) {
     taskPopUpTitle.css("display", "block");
     taskPopUpTitleEditor.css("display", "none");
     
-    let taskID = taskPopupDiv.data("currentTask");
+    let taskID = taskPopupDiv.data("taskID");
     let taskDiv = GetTaskDivFromTaskID(taskID);
     let task = GetTaskFromID(taskID);
 
@@ -399,7 +408,7 @@ function CompletedPopUpDescriptionRename(inputField) {
     taskPopUpDescription.css("display", "block");
     taskPopUpDescriptionEditor.css("display", "none");
 
-    let taskID = taskPopupDiv.data("currentTask");
+    let taskID = taskPopupDiv.data("taskID");
     let taskDiv = GetTaskDivFromTaskID(taskID);
     let task = GetTaskFromID(taskID);
 
@@ -411,33 +420,78 @@ function CompletedPopUpDescriptionRename(inputField) {
 }
 
 function PopulateMemberSelect() {
-    let memberSelect = $("#memberSelect");
 
     for (let i = 0; i < users.length; i++) {
         const user = users[i];
 
         let newOption = document.createElement("option");
-        newOption.value = "elem_" + i;
+        newOption.value = "elem_" + user.id;
+        newOption.id = "elem_" + user.id;
+        $(newOption).data("userID", user.id);
         let jqNewOption = $(newOption);
         jqNewOption.text(user.name);
         jqNewOption.appendTo(memberSelect);
     }
 }
 
+function SelectApplicableUser() {
+    let taskID = $(taskPopupDiv).data("taskID");
+    let task = GetTaskFromID(taskID);
+
+    let applicableUsers = [];
+
+    for (let i = 0; i < task.users.length; i++) {
+        const user = task.users[i];
+
+        let userOptionID = "elem_" + user;
+        applicableUsers.push(userOptionID);
+    }
+    $("#memberSelect").multiSelect('select', applicableUsers);
+}
+
+function DeselectAllUsers() {
+    $("#memberSelect").multiSelect('deselect_all');
+}
+
+
+
+    // http://loudev.com/
 $("#memberSelect").multiSelect({
+    selectableHeader: "<div class='custom-header'>Unassigned users</div>",
+    selectionHeader: "<div class='custom-header'>Assigned user</div>",
     keepOrder: true,
     dblClick: true,
-    afterDeselect: 
+    afterSelect: AddUserToTaskPopup,
+    afterDeselect: RemoveUserFromTaskPopup
 });
 
+function AddUserToTaskPopup(elem) {
+    let jqElem = $("#" + elem);
+    let userID = jqElem.data("userID");
 
+    let parents = jqElem.parents(".taskInfoPopupDiv");
 
+    let taskID = parents.data("taskID");
 
+    let task = GetTaskFromID(taskID);
 
+    AddUserIDToTask(userID, task);
+}
 
+function RemoveUserFromTaskPopup(elem) {
+    if (!taskPopupDiv.data("taskID") ) return;
 
+    let jqElem = $("#" + elem);
+    let userID = jqElem.data("userID");
 
+    let parents = jqElem.parents(".taskInfoPopupDiv");
 
+    let taskID = parents.data("taskID");
+
+    let task = GetTaskFromID(taskID);
+
+    RemoveUserFromTask(userID, task);
+}
 
 let jsContainer = document.getElementById("container");
 

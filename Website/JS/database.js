@@ -292,6 +292,15 @@ function DeleteUser(user, reason) {
     RemoveGenericElementFromArray(users, user.id, reason);
 }
 
+/**
+ * Removes a userID from a task
+ * @param {user|Number} user user object or user ID
+ * @param {task} task task object
+ */
+function RemoveUserFromTask(user, task) {
+    RemoveGenericElementFromArray(task.users, user);
+}
+
 
 /* --------- USER END -------- */
 /* --------- ROLE START -------- */
