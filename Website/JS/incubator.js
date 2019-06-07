@@ -492,6 +492,7 @@ function GetNoteFromTaskID(taskID) {
  */
 function DeleteNote(note) {
     let task = GetTaskFromNote(note);
+    RemoveTaskFromBoard(incubatorBoard, task);
     DeleteTask(task);
     $(note).remove();
 }

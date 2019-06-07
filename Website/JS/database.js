@@ -372,6 +372,14 @@ function AddTaskIDToBoard(taskID, board) {
 function MoveTaskFromOneBoardToAnother(oldBoard, newBoard, taskID) {
     MoveGenericElementFromOneArrayToAnother(oldBoard.tasks, newBoard.tasks, taskID);
 }
+/**
+ * Removes the task id from the board array
+ * @param {board} board board object
+ * @param {task} task task object
+ */
+function RemoveTaskFromBoard(board, task) {
+    RemoveGenericElementFromArray(board.tasks, task);
+}
 
 /* --------- TASK END -------- */
 /* --------- USER START -------- */

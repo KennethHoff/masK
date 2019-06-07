@@ -5,6 +5,7 @@ let taskPopUpTitle = taskPopupDiv.children("#taskInfoPopupTitle");
 let taskPopUpTitleEditor = taskPopupDiv.children("#taskInfoPopupTitleEditor")
 let taskPopUpDescription = taskPopupDiv.children("#taskInfoPopupDescription");
 let taskPopUpDescriptionEditor = taskPopupDiv.children("#taskInfoPopupDescriptionEditor");
+let taskPopDeleteButton = taskPopupDiv.children("#taskInfoPopupDeleteButton");
 let taskPopupBackground = $(".taskInfoPopupBackground");
 
 let memberSelect = $("#memberSelect");
@@ -36,10 +37,9 @@ $(document).on("click", function(e) {
             return;
         }
 
-        // if (!target.hasClass("taskInfoPopup") ) {
-        //     HideTaskInfoPopup();
-        //     return;
-        // }
+            // Should've used the jquery eventhandler on the specific elements,
+            // but I didn't have a lot of time, and I added that after this.
+
             // If you click on the title, allow title renaming
         if (target.is("#taskInfoPopupTitle")) {
             EnablePopupTitleRename();
@@ -49,6 +49,9 @@ $(document).on("click", function(e) {
         if (target.is("#taskInfoPopupDescription")) {
             EnablePopupDescriptionRename();
             return;
+        }
+        if (target.is("#taskInfoPopupDeleteButton")) {
+            DeleteTaskFromPopup();
         }
     }
         // If you click on the title of a board, allow title renaming of said board.
@@ -123,7 +126,6 @@ function CreateNewBoardOnScreenWithEvent(e) {
     else if (jqTarget.parent().hasClass("addNewBoardDiv")) {
         buttonDiv = jqTarget.parent();
     }
-
     
     let newlyCreatedBoard = CreateAndPushBoard("Board #" + currentIndexForIDGenerator);
     CreateNewBoardOnScreen(newlyCreatedBoard, buttonDiv);
@@ -190,11 +192,9 @@ function CreateNewBoardOnScreen(board, elementToReplace) {
 
     let newBoardDiv = document.createElement("div");
     newBoardDiv.id = "board" + board.id;
-    // newBoardDiv.setAttribute("boardid", board.id);
     let jqNewBoardDiv = $(newBoardDiv).addClass("boardDiv");
     jqNewBoardDiv.addClass("dropzone");
     jqNewBoardDiv.data("boardid", board.id);
-    // jqNewBoardDiv.attr("draggable", true);
 
 
     if (elementToReplace !== undefined) {
@@ -226,6 +226,8 @@ function CreateNewBoardOnScreen(board, elementToReplace) {
     AddAllTasksToBoardDiv(newBoardDiv);
 
     AddCreateTaskButtonToBoardDiv(newBoardDiv);
+
+    AddDeleteBoardButtonToBoardDiv(newBoardDiv);
 }
 
 function NewBoardTitle(boardDiv, title) {
@@ -266,6 +268,10 @@ function AddCreateTaskButtonToBoardDiv(boardDiv) {
     jqCreateTaskButton.appendTo(boardDiv);
 }
 
+function AddDeleteBoardButtonToBoardDiv(boardDiv) {
+
+}
+
 function EnableBoardTitleRename(boardTitle) {
 
     let replaceTitleInputField = document.createElement("input");
@@ -278,8 +284,13 @@ function EnableBoardTitleRename(boardTitle) {
 }
 
 function CompletedBoardTitleRename(inputField) {
-    let newTitle = inputField.value;
     let boardDiv = $(inputField).parent();
+
+    let board = GetBoardFromBoardDiv(boardDiv);
+
+    
+    let newTitle = (inputField.value.length > 0 ? inputField.value : board.name);
+
     $(inputField).replaceWith(NewBoardTitle(boardDiv, newTitle));
 }
 
@@ -493,6 +504,37 @@ function RemoveUserFromTaskPopup(elem) {
     RemoveUserFromTask(userID, task);
 }
 
+
+
+function DeleteTaskFromPopup() {
+    let taskID = taskPopupDiv.data("taskID");
+
+    let task = GetTaskFromID(taskID);
+    let taskDiv = GetTaskDivFromTaskID(taskID);
+
+    let boardDiv = GetBoardDivFromTaskDiv(taskDiv);
+    let board = GetBoardFromBoardDiv(boardDiv);
+
+
+
+    RemoveTaskFromBoard(board, task);
+    DeleteTask(task, "clicked on the 'Delete Task' button");
+
+    RemoveTaskFromScreen(task);
+
+    HideTaskInfoPopup();
+}
+
+function RemoveTaskFromScreen(task) {
+    var taskDiv = GetTaskDivFromTaskID(task.id);
+    taskDiv.remove();
+}
+
+function GetBoardDivFromTaskDiv(taskDiv) {
+    return $(taskDiv).parent();
+}
+// Drag & Drop
+
 let jsContainer = document.getElementById("container");
 
 jsContainer.addEventListener("dragstart", e =>{
@@ -537,12 +579,13 @@ jsContainer.addEventListener("drop", e => {
         e.preventDefault();
         return;
     }
+
     let newBoard = GetBoardFromBoardDiv(newBoardDiv);
 
-    let dataMoved = document.getElementById(data);
-    let task = GetTaskFromTaskDiv(dataMoved);
-    let oldBoardDiv = $(dataMoved).parent();
+    let taskDiv = document.getElementById(data);
+    let task = GetTaskFromTaskDiv(taskDiv);
+    let oldBoardDiv = GetBoardDivFromTaskDiv(taskDiv);
     let oldBoard = GetBoardFromBoardDiv(oldBoardDiv);
     MoveTaskFromOneBoardToAnother(oldBoard, newBoard, task.id);
-    relativeElement.before($(dataMoved));
+    relativeElement.before($(taskDiv));
 });
