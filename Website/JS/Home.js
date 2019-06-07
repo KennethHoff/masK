@@ -118,7 +118,7 @@ $(document).on("keydown", function(e) {
 
 function CreateAddNewBoardButton() {
 
-    // if ((".addNewBoardDiv").length !== 0) return;
+    if ($(".addNewBoardDiv").length !== 0) return;
     let newBoardButtonDiv = document.createElement("div");
     let jqNewBoardButtonDiv = $(newBoardButtonDiv).addClass("addNewBoardDiv");
     jqNewBoardButtonDiv.appendTo(container);
