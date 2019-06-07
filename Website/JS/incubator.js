@@ -42,7 +42,6 @@ const container = $("#incubatorContainer");
 const trashCan = $("#trashCan");
 const approvalBox = $("#approvalBox");
 const sidebar = $("#sidebar");
-const sidebarWidth = sidebar.width();
 
     // which item you are dragging
 let activeDragNote = null;
@@ -71,17 +70,7 @@ container.on("mousedown", DragStart);
 container.on("mouseup", DragEnd);
 container.on("mousemove", Drag);
 
-// $(".note").on("mouseenter", NoteMouseEnter).on("mouseleave", NoteMouseLeave)
-
-// function NoteMouseEnter(e) {
-//     console.log("LOL");
-//     e.target.css("cursor", "pointer");
-//     e.target.css("border-width", "20px");
-// }
-
-// function NoteMouseLeave(e) {
-
-// }
+container.on("focusout", SaveNoteTextToTask);
 
 /**
  * Not a super-fan of this implementation, as it's an ever-increasing index, but it works
@@ -163,6 +152,8 @@ function Drag(e) {
    
     // If you're "dragging" (ie. moving the mouse) and you're not holding a note, return.
     if (activeDragNote === null) return;
+    // console.log(GetMousePosition(e));
+
     e.preventDefault();
 
     aboveTrashCan = CheckIfAboveTrashCan(e)
@@ -304,19 +295,20 @@ function noteNumberGenerator(){
 }
 
 
+
 function CreateNewNoteOnPage(task, pos) {
     let noteNumber = 0;
-    let newDiv = document.createElement("div"),
-    textareaEl = document.createElement('textarea');
+    let newDiv = document.createElement("div");
+    let newTextarea = document.createElement('textarea');
     newDiv.setAttribute("taskID", task.id);
     container.append(newDiv);
     newDiv.setAttribute("class", "note");
     newDiv.setAttribute("id", "note" + task.id);
-    textareaEl.setAttribute("class", "textarea");
+    newTextarea.setAttribute("class", "textarea");
     let titleString = "<p class = noteName id = 'note" + task.id + "Name'>" + "Note #" + noteNumberGenerator()  + "</p>";
-    let descriptionString = "<p class = noteDescription id = 'note" + task.id + "Description'>" + task.description + "</p>";
-    newDiv.innerHTML = titleString + "\n" + descriptionString;
-    newDiv.append(textareaEl);
+    $(newTextarea).text(task.name);
+    newDiv.innerHTML = titleString;
+    newDiv.append(newTextarea);
     if(noteNumber == noteNumber){
         noteNumber ++;
     }
@@ -336,27 +328,6 @@ function CreateNewNoteOnPage(task, pos) {
     
     return {left: left, top: top};
 }
-
-// function CreateNewNoteOnPageNew(task, pos) {
-//     let newDiv = document.createElement("div");
-//     newDiv.setAttribute("taskID", task.id);
-//     container.append(newDiv);
-//     newDiv.setAttribute("class", "note");
-//     newDiv.setAttribute("id", "note" + task.id);
-//     let titleString = "<p class = noteHeaders id = " + "note" + task.id + "Header>" + task.name + "</p>";
-//     let descriptionString = "<p>" + task.description + "</p>"
-//     newDiv.innerHTML = titleString + "\n" + descriptionString;
-    
-//     newDiv.currentlyAnimating = false;
-//     newDiv.readyToBeDeleted = false;
-//     newDiv.readyToBeApproved = false;
-
-//     SetTranslate(pos.left, pos.top, newDiv);
-//     newDiv.xOffset = pos.left;
-//     newDiv.yOffset = pos.top;
-//     return pos;
-// }
-
 function StorePositionDataInTask(task, left, top) {
     task.boardPosition.left = left;
     task.boardPosition.top = top;
@@ -397,7 +368,6 @@ function PlaceAllNotesOnPage() {
     incubatorBoard.tasks.forEach(noteID => {
         let task = GetTaskFromID(noteID);
         if (task === undefined) return;
-        // CreateNewNoteOnPage(task, task.boardPosition);
         CreateNewNoteOnPage(task, task.boardPosition);
     });
 }
@@ -537,11 +507,11 @@ function GetMousePosition(event) {
     let x, y;
 
     if ( event.type === "mousedown" || event.type === "mouseup" || event.type === "mousemove" || event.type === "contextmenu" || event.type === "click") {
-        x = event.pageX - sidebarWidth;
+        x = event.pageX;
         y = event.pageY;
     }
     else {
-        x = event.touches[0].x - sidebarWidth;
+        x = event.touches[0].x;
         y = event.touches[0].y;
     }
 
@@ -549,8 +519,8 @@ function GetMousePosition(event) {
 }
 
 function CheckIfAboveElement(e, otherEle) {
-    let otherElePos = GetJQueryPosition(otherEle);
     let mousePos = GetMousePosition(e);
+    let otherElePos = GetJQueryPosition(otherEle);
 
     // Only returns true if both are true (true + true = true | true + false = false (vice versa) | false + false = false)
     return comparePositions([mousePos.x], otherElePos[0]) && comparePositions([mousePos.y], otherElePos[1]);
@@ -629,14 +599,15 @@ function AnimateNotePreDeletion(noteEle, duration) {
         
         // let trashCanBody = $("#trashCanBody");
 
-        let trashCanBodyPositionData = GetPositionDataRelative(trashCanBody, trashCan);
+        // let trashCanBodyPositionData = GetPositionDataRelative(trashCanBody, trashCan);
+        let trashCanPositionData = GetPositionData(trashCan);
 
         let xOffset = $(noteEle).width() / 2;
         let yOffset = $(noteEle).height() / 2;
 
             // You get the position
-        let xPos = trashCanBodyPositionData.middle.x - xOffset;
-        let yPos = trashCanBodyPositionData.middle.y - yOffset;
+        let xPos = trashCanPositionData.middle.x - xOffset;
+        let yPos = trashCanPositionData.middle.y - yOffset;
         SetNotePosition(noteEle, xPos, yPos);
     }
 }
@@ -660,7 +631,8 @@ function animateNotePreApproval(noteEle, duration) {
     RelocateToMiddleOfApprovalBox();
     
     $(noteEle).animate({
-        borderWidth: "0px"
+        // scale: '-=0.8'
+        opacity: 0.25
     }, duration, function () {
 
             // If, at the end of the animation, the 'ApproveAtEndOfAnimation' variable is set (which gets set if you let go of the mouse ontop of the trash can), then approve the task:
@@ -723,9 +695,7 @@ function GetPositionDataRelative(dom, relDom) {
     let newStart = {
         x: relDomMiddlePos.start.x + domMiddlePos.start.x,
         y: relDomMiddlePos.start.y + domMiddlePos.start.y
-
-    }
-
+    };
 
     let newEnd = {
         x: relDomMiddlePos.end.x /* + domMiddlePos.end.x */,
@@ -772,17 +742,24 @@ function decodeMatrix(matrixValue) {
 
 PlaceAllNotesOnPage();
 
+function SaveNoteTextToTask(e) {
+    let target = e.target;
+    let jqTarget = $(target);
+    console.log(jqTarget.parent());
+    let note = jqTarget.parent();
 
-
-
+    let task = GetTaskFromNote(note);
+    let text = e.target.value;
+    task.name = text;
+}
 
 
 
 // [???] - Don't actually delete the following lines. (DO DELETE THIS THOUGH!!), as it makes it seem we have fun doing this.
 
 // Fun things -- if this is in the final product.. I did an oopsie
-function LimitedRandom(min,max) // min and max included
-{
+ // min and max included 
+ function LimitedRandom(min,max){
     return Math.floor( Math.random() * (max-min+1)+min );
 }
 

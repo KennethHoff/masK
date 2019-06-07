@@ -1,51 +1,37 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Manage your tasks and boards</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" lang="en" />
-
-    <!-- <link rel="stylesheet" type="text/css" href="../CSS/main.css"> -->
-    <link rel="stylesheet" type="text/css" href="../CSS/sidebar.css">
-    
-
-    <link rel="stylesheet" type="text/css" href="../CSS/Home.css">
-</head>
-<body>
-    <!-- The sidebar div only have the button element here, the rest is created through
-    DOM manipulation in JS so the sidebar works as a navigator and holds ul and li and a tags
-    that takes you to others sites. -->
-    <div id="sidebar">
-        <div id="logo">
-            <a id="home" onclick = location.reload() ><img id="homeLogo" src="../Images/logoNoBackground.png"></a>
-        </div>
-        <button id="contact"><a href="#"><img id="info" class="navi" src="../Images/info-white.png"></a></button>
-    </div>
-    
-    <div class="wrapper">
-        <div id="cardMenu" class="cardMenu">
-            <div class="cardMenuMainArea">
-                <textarea id="cardMenuTextArea"></textarea>
-                <button id="cardMenuX">X</button>
-                <button id="deleteCard">Delete this card</button>
+    <head>
+        <title>Manage your tasks and boards</title>
+        <meta charset="utf-8">
+        <!-- <link rel="stylesheet" type="text/css" href="../CSS/main.css"> -->
+        <link rel="stylesheet" type="text/css" href="../CSS/Home.css">
+        <link rel="stylesheet" type="text/css" href="../CSS/sidebar.css">
+        <link rel="stylesheet" type="text/css" href="../JS/node_modules/multiselect/css/multi-select.css">
+    </head>
+    <body>
+        <!-- The sidebar div only have the button element here, the rest is created through
+        DOM manipulation in JS so the sidebar works as a navigator and holds ul and li and a tags
+        that takes you to others sites. -->
+        <div id="sidebar">
+            <div id="logo">
+                <a id="home" onclick = location.reload() ><img id="homeLogo" src="../Images/logoNoBackground.png"></a>
             </div>
-        </div> 
-    </div>
-    <div id="cardMenuBackground" class="cardMenuBackground">
-    </div> 
+            <button id="contact"><a href="#"><img id="info" class="navi" src="../Images/info-white.png"></a></button>
+        </div>
+        
+        <div id="cardMenuBackground" class="cardMenuBackground">
+        </div>
+        <div class="taskInfoPopupBackground"></div> <!-- Make screen less vibrant -->
         <div id="container" class="container">
-            <div id="0columnContainer" class="columnContainer">
-                <button id="0addNewListButton" class="addNewListButton">Add new list</button>
-                <div id="0addNewListInput" class="addNewListInput">
-                    <input id="0valueAcceptList" type="text" placeholder="Enter list title">
-                    <button id="0buttonAcceptList" class="acceptListButton" type="button">Add List</button>
-                    <button id="0buttonDeclineList" class="declineButton" type="button">X</button>
-                </div>
+            <div class="taskInfoPopupDiv">
+                <p id="taskInfoPopupTitle"></p><!-- Replace with input on click -->
+                <textarea id="taskInfoPopupTitleEditor">
+                <p id="taskInfoPopupDescription"></p> <!-- Replace with textarea on click -->
+                <textarea id="taskInfoPopupDescriptionEditor"></textarea>
+                <select multiple="multiple" id="memberSelect"></select>
             </div>
         </div>
-    </div>
 
-</body>
-
+    </body>
     <!-- jquery v3.4.1 "jQuery is a fast, small, and feature-rich JavaScript library" - it's a hugely popular JS library that, if notthing else, is used in a lot of answers on StackOverFlow-->
     <script src = "../JS/node_modules/jquery/dist/jquery.js"></script>
 
@@ -54,9 +40,12 @@
 
     <!-- Our 'database' - The closest masK comes to having an API -->
     <script src="../JS/database.js"></script>
+
+    <!-- Jquery Multi-select v0.9.12 - "I'm a user-friendlier drop-in replacement for the standard <select> with multiple attribute activated." - basically a framework for more easily implement dropdown menus with multiple selections-->
+    <script src="../JS/node_modules/multiselect/js/jquery.multi-select.js"></script>
+
     <!-- The nagivation 'sidebar' -->
     <script src="../JS/Sidebar.js"></script>
-
 
     <script src="../JS/Home.js"></script>
 </html>

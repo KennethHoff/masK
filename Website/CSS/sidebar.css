@@ -64,27 +64,7 @@ li a{
     transition: ease-in .45s;
 }
 
-#navigator [id="0"]:hover .navi{
-    /* background: #982342; */
-    transform: scale(1.35);
-    filter: drop-shadow(0px 0px 3px #ffffff);
-    transition: ease-in .10s;
-    /* #4444dd */
-}
- #navigator [id="1"]:hover .navi{
-    /* background: #982342; */
-    transform: scale(1.35);
-    filter: drop-shadow(0px 0px 3px #ffffff);
-    transition: ease-in .10s;
-}
- #navigator [id="12"]:hover .navi{
-    /* background: #982342; */
-    transform: scale(1.35);
-    filter: drop-shadow(0px 0px 3px #ffffff);
-    transition: ease-in .10s;
-}
- #navigator [id="13"]:hover .navi{
-    /* background: #982342; */
+#navigator li :hover .navi {
     transform: scale(1.35);
     filter: drop-shadow(0px 0px 3px #ffffff);
     transition: ease-in .10s;

@@ -32,6 +32,9 @@
 // TODO: Fix animation not stopping when I move it out of the trashcan / approval box
 
 let currentIndexForIDGenerator = 0;
+
+// For board creation
+let currentPageOrderIndex = 0;
 /**
  * Which board to put new tasks into if you don't specify
  * 
@@ -129,7 +132,8 @@ function CreateBoard(_name) {
         id: IDGenerator(),
         name: _name,
         tasks: [],
-        pageOrder: 0
+        pageOrder: PageOrderGenerator(),
+        defaultName: _name
     };
     return newBoard;
 }
@@ -139,9 +143,9 @@ function CreateBoard(_name) {
  * @param {string} _name What the name of the board will be
  * @returns {board} returns the board object (id, name, tasks[])
  */
-function CreateAndPushBoard(_name, disallowSameName) {
+function CreateAndPushBoard(_name, defaultName) {
     let tempBoard = CreateBoard(_name)
-    let newBoard = PushGenericElementToArray(boards, tempBoard, disallowSameName);
+    let newBoard = PushGenericElementToArray(boards, tempBoard, defaultName);
     return newBoard;
 }
 /**
@@ -185,7 +189,7 @@ function CreateTask(_name, _description, _deadlineDate) {
         id: IDGenerator(),
         name: _name,
         // if description is undefined, set it to "No description", otherwise set it to the input
-        description: (_description == undefined ? "No description" : _description),
+        description: (_description == undefined ? "" : _description),
         users: [],
         // if deadline is undefined, set it to null, otherwise set it to the input
         deadlineDate: (_deadlineDate == undefined ? null : _deadlineDate),
@@ -203,8 +207,8 @@ function CreateTask(_name, _description, _deadlineDate) {
 /**
  * Creates a new task, pushes it to the array(and saves Cookies), and returns the task.
  * @param {string} _name What the name of the task will be
- * @param {string} _description What the description of the task will be
- * @param {Date} _deadlineDate What the deadline of the task will be
+ * @param {string} [_description] What the description of the task will be
+ * @param {Date} [_deadlineDate] What the deadline of the task will be
  * @returns {task} returns the task object (id, name, description, user[], deadlineDate, creationDate, completionDate)
  */
 function CreateAndPushTask(_name, _description, _deadlineDate) {
@@ -286,6 +290,15 @@ function UpdateUser(user, newName, newUsername, newPasword) {
  */
 function DeleteUser(user, reason) {
     RemoveGenericElementFromArray(users, user.id, reason);
+}
+
+/**
+ * Removes a userID from a task
+ * @param {user|Number} user user object or user ID
+ * @param {task} task task object
+ */
+function RemoveUserFromTask(user, task) {
+    RemoveGenericElementFromArray(task.users, user);
 }
 
 
@@ -420,8 +433,9 @@ function MoveRoleFromOneUserToAnother(oldUser, newUser, roleID) {
  * @param {(Object|number)} ele the element (arr[?]) *or* the ID
  * @param {Boolean} disallowSameName if you allow the same name for multipe elements in the array (It's generally okay for tasks, but bad for boards). Undefined or a falsy value means you can have multiple with same name 
  */
-function PushGenericElementToArray(arr, ele, disallowSameName) {
+function PushGenericElementToArray(arr, ele, defaultName) {
 
+    // Don't have much time. Sloppy code must do. (defaultName is not an 'official' value, but is used in the 4 default boards regardless)
     let returnEle, found
 
     if (typeof(ele) === typeof(1)) {
@@ -435,13 +449,13 @@ function PushGenericElementToArray(arr, ele, disallowSameName) {
 
         // returns the element if it exists, false if element does not exist, or undefined is array is empty. #JustJavascriptThings
         found = arr.find(function (e) {
-            if (!disallowSameName) {
+            if (!defaultName) {
                 return e.id === ele.id;
             }
 
-            let sameID = e.id === ele.id;
-            let sameName = e.name === ele.name;
-            if (sameID || sameName) return e;
+            let sameID = (e.id === ele.id);
+            let sameDefaultName = (e.defaultName === ele.defaultName);
+            if (sameID || sameDefaultName) return e;
             return false;
         });
     }
@@ -452,6 +466,9 @@ function PushGenericElementToArray(arr, ele, disallowSameName) {
     }
     else {
         returnEle = found;
+    }
+    if (defaultName) {
+        returnEle.defaultName === returnEle.name;
     }
     return returnEle;
 
@@ -567,17 +584,17 @@ function GetRoleFromId(id) {
 function CreateDefaultBoards() {
     let newIncubatorBoard = CreateAndPushBoard("Incubator", true);
     let newTodoBoard = CreateAndPushBoard("ToDo", true);
-        newTodoBoard.pageOrder = 0;
     let newInProgressBoard = CreateAndPushBoard("InProgress", true);
-        newInProgressBoard.pageOrder = 1;
     let newCompletedBoard = CreateAndPushBoard("Completed", true);
-        newCompletedBoard.pageOrder = 2;
-
+    
     incubatorBoard = newIncubatorBoard;
     defaultBoard = newTodoBoard;
 
 }
 
+function PageOrderGenerator() {
+    return currentPageOrderIndex++;
+}
 
 /* --- Array Manipulation END --- */
 
@@ -593,6 +610,7 @@ function SaveAllToCookies(duration) {
     Cookies.set("Users",  users , {expires: duration});
     Cookies.set("Roles",  roles , {expires: duration});
     Cookies.set("currentIndexForIDGenerator", currentIndexForIDGenerator, {expires: 7});
+    Cookies.set("currentPageOrderIndex", currentPageOrderIndex, {expires: duration});
 }
 
 
@@ -611,8 +629,15 @@ function LoadFromCookies() {
     users = (tempUsers === undefined ? [] : tempUsers);
     roles = (tempRoles === undefined ? [] : tempRoles);
 
-    let tempIndex = Cookies.getJSON("currentIndexForIDGenerator");
-    currentIndexForIDGenerator = (tempIndex >= 0 ? tempIndex : 0);
+    let tempIDGeneratorIndex = Cookies.getJSON("currentIndexForIDGenerator");
+        // If the value is not greater than zero, then set it to 0 otherwise,
+        // set it to the cookies value // This is to make it so it works without any cookies
+        // This is the same for the one underneath.
+    currentIndexForIDGenerator = (tempIDGeneratorIndex >= 0 ? tempIDGeneratorIndex : 0);
+
+
+    let tempPageOrderIndex = Cookies.getJSON("currentPageOrderIndex");
+    currentPageOrderIndex = (tempPageOrderIndex >= 0 ? tempPageOrderIndex : 0);
 }
 
 
@@ -633,8 +658,4 @@ CreateDefaultBoards();
  */
 function IDGenerator() {
     return currentIndexForIDGenerator++;
-}
-
-function Test() {
-    MoveTaskFromOneBoardToAnother(incubatorBoard, defaultBoard, incubatorBoard.tasks[incubatorBoard.tasks.length-1]);
 }
