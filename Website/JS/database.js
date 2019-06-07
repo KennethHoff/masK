@@ -132,7 +132,8 @@ function CreateBoard(_name) {
         id: IDGenerator(),
         name: _name,
         tasks: [],
-        pageOrder: PageOrderGenerator()
+        pageOrder: PageOrderGenerator(),
+        defaultName: _name
     };
     return newBoard;
 }
@@ -142,9 +143,9 @@ function CreateBoard(_name) {
  * @param {string} _name What the name of the board will be
  * @returns {board} returns the board object (id, name, tasks[])
  */
-function CreateAndPushBoard(_name, disallowSameName) {
+function CreateAndPushBoard(_name, defaultName) {
     let tempBoard = CreateBoard(_name)
-    let newBoard = PushGenericElementToArray(boards, tempBoard, disallowSameName);
+    let newBoard = PushGenericElementToArray(boards, tempBoard, defaultName);
     return newBoard;
 }
 /**
@@ -188,7 +189,7 @@ function CreateTask(_name, _description, _deadlineDate) {
         id: IDGenerator(),
         name: _name,
         // if description is undefined, set it to "No description", otherwise set it to the input
-        description: (_description == undefined ? "No description" : _description),
+        description: (_description == undefined ? "" : _description),
         users: [],
         // if deadline is undefined, set it to null, otherwise set it to the input
         deadlineDate: (_deadlineDate == undefined ? null : _deadlineDate),
@@ -423,8 +424,9 @@ function MoveRoleFromOneUserToAnother(oldUser, newUser, roleID) {
  * @param {(Object|number)} ele the element (arr[?]) *or* the ID
  * @param {Boolean} disallowSameName if you allow the same name for multipe elements in the array (It's generally okay for tasks, but bad for boards). Undefined or a falsy value means you can have multiple with same name 
  */
-function PushGenericElementToArray(arr, ele, disallowSameName) {
+function PushGenericElementToArray(arr, ele, defaultName) {
 
+    // Don't have much time. Sloppy code must do. (defaultName is not an 'official' value, but is used in the 4 default boards regardless)
     let returnEle, found
 
     if (typeof(ele) === typeof(1)) {
@@ -438,13 +440,13 @@ function PushGenericElementToArray(arr, ele, disallowSameName) {
 
         // returns the element if it exists, false if element does not exist, or undefined is array is empty. #JustJavascriptThings
         found = arr.find(function (e) {
-            if (!disallowSameName) {
+            if (!defaultName) {
                 return e.id === ele.id;
             }
 
-            let sameID = e.id === ele.id;
-            let sameName = e.name === ele.name;
-            if (sameID || sameName) return e;
+            let sameID = (e.id === ele.id);
+            let sameDefaultName = (e.defaultName === ele.defaultName);
+            if (sameID || sameDefaultName) return e;
             return false;
         });
     }
@@ -455,6 +457,9 @@ function PushGenericElementToArray(arr, ele, disallowSameName) {
     }
     else {
         returnEle = found;
+    }
+    if (defaultName) {
+        returnEle.defaultName === returnEle.name;
     }
     return returnEle;
 
@@ -568,15 +573,11 @@ function GetRoleFromId(id) {
 
 
 function CreateDefaultBoards() {
-    if (boards.length >= 4) return; // Running out of time, had a small bug (Renaming a default board will make it re-create the original board)
     let newIncubatorBoard = CreateAndPushBoard("Incubator", true);
     let newTodoBoard = CreateAndPushBoard("ToDo", true);
-        newTodoBoard.pageOrder = 0;
     let newInProgressBoard = CreateAndPushBoard("InProgress", true);
-        newInProgressBoard.pageOrder = 1;
     let newCompletedBoard = CreateAndPushBoard("Completed", true);
-        newCompletedBoard.pageOrder = 2;
-
+    
     incubatorBoard = newIncubatorBoard;
     defaultBoard = newTodoBoard;
 
@@ -648,8 +649,4 @@ CreateDefaultBoards();
  */
 function IDGenerator() {
     return currentIndexForIDGenerator++;
-}
-
-function Test() {
-    MoveTaskFromOneBoardToAnother(incubatorBoard, defaultBoard, incubatorBoard.tasks[incubatorBoard.tasks.length-1]);
 }
