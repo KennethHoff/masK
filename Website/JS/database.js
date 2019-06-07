@@ -116,6 +116,13 @@ let roles = [
     // }
 ];
 
+let importanceColours = {
+    0: "#ffffff",
+    1: "#c90b0b",
+    2: "#e4c332",
+    3: "#56e432"
+}
+
 
 /* --- Object Manipulation START --- */
 
@@ -199,8 +206,8 @@ function CreateTask(_name, _description, _deadlineDate) {
         // Where, relative to other tasks, it sits on the board [If the board supports it - main page mostly] (if same number (which should never happen), be based on ID)
         boardOrder: 0,
         // Where on the board it sits [If the board supports it - incubator mostly]
-        boardPosition: {left: 0, top: 0}
-
+        boardPosition: {left: 0, top: 0},
+        importance: 0
     }
     return newTask;
 }
@@ -292,6 +299,15 @@ function DeleteUser(user, reason) {
     RemoveGenericElementFromArray(users, user.id, reason);
 }
 
+/**
+ * Removes a userID from a task
+ * @param {user|Number} user user object or user ID
+ * @param {task} task task object
+ */
+function RemoveUserFromTask(user, task) {
+    RemoveGenericElementFromArray(task.users, user);
+}
+
 
 /* --------- USER END -------- */
 /* --------- ROLE START -------- */
@@ -362,6 +378,14 @@ function AddTaskIDToBoard(taskID, board) {
 
 function MoveTaskFromOneBoardToAnother(oldBoard, newBoard, taskID) {
     MoveGenericElementFromOneArrayToAnother(oldBoard.tasks, newBoard.tasks, taskID);
+}
+/**
+ * Removes the task id from the board array
+ * @param {board} board board object
+ * @param {task} task task object
+ */
+function RemoveTaskFromBoard(board, task) {
+    RemoveGenericElementFromArray(board.tasks, task);
 }
 
 /* --------- TASK END -------- */
@@ -493,13 +517,11 @@ function RemoveGenericElementFromArray(arr, ele, reason) {
 
     if (typeof(arr[0]) === typeof(1)) {
         index = arr.findIndex(function (eId) {
-            console.log("Looking for ID: " + id + ". Found: " + eId);
             return eId === id;
         });
     }
     else {
         index = arr.findIndex(function (e) {
-            console.log("Looking for ID: " + id + ". Found: " + e.id);
             return e.id === id;
         });
     }
@@ -610,7 +632,6 @@ function SaveAllToCookies(duration) {
  * Loads all cookies related to this website, and parse them as JSON.Parse would (ie. turn them back into Arrays)
  */
 function LoadFromCookies() {
-    // console.log(Cookies.get("Boards"));
     let tempBoards = Cookies.getJSON("Boards");
     let tempTasks = Cookies.getJSON("Tasks");
     let tempUsers = Cookies.getJSON("Users");

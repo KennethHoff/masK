@@ -1,42 +1,73 @@
 let container = $("#container");
 
 let taskPopupDiv = $(".taskInfoPopupDiv");
-let taskPopUpTitle = taskPopupDiv.children("#taskInfoPopupTitle");
-let taskPopUpTitleEditor = taskPopupDiv.children("#taskInfoPopupTitleEditor")
-let taskPopUpDescription = taskPopupDiv.children("#taskInfoPopupDescription");
-let taskPopUpDescriptionEditor = taskPopupDiv.children("#taskInfoPopupDescriptionEditor");
+let taskPopupTitle = taskPopupDiv.children("#taskInfoPopupTitle");
+let taskPopupitleEditor = taskPopupDiv.children("#taskInfoPopupTitleEditor")
+let taskPopupDescription = taskPopupDiv.children("#taskInfoPopupDescription");
+let taskPopupDescriptionEditor = taskPopupDiv.children("#taskInfoPopupDescriptionEditor");
+let taskPopupDeleteButton = taskPopupDiv.children("#taskInfoPopupDeleteButton");
+let taskInfoPopupImportanceDropdownDiv = taskPopupDiv.children("#taskInfoPopupImportanceDropdownDiv");
+let taskInfoPopupImportanceDropdownButton = taskPopupDiv.children("#taskInfoPopupImportanceDropdownButton");
+let taskInfoPopupImportanceDropdownContainer = $("#taskInfoPopupImportanceDropdownContainer");
+
 let taskPopupBackground = $(".taskInfoPopupBackground");
+
+let memberSelect = $("#memberSelect");
 
 let activeDragElement;
 
 let taskPopupActive = false;
 
+let maxBoards = 10; // incubator + x
+let finalMaxBoards = 1 + maxBoards;
+
 
 PlaceAllBoardsOnPage();
 
+PopulateMemberSelect();
+
+PopulateImportanceDropDown();
+
+    // If you click anywhere...
 $(document).on("click", function(e) {
 
+        
     let target = $(e.target);
 
+        // if the popup is active, then:
     if (taskPopupActive) {
-        if (!target.hasClass("taskInfoPopup") ) {
+
+            // If any parent, grandparent, great grandparents etc... has the class 'taskInfoPopup' then hide the popup
+        let parents = target.parents(".taskInfoPopupDiv");
+        if (parents.length === 0)   {
+                // If no parents are, but it itself is, return..
+            if (target.is(".taskInfoPopupDiv")) return;
             HideTaskInfoPopup();
             return;
         }
+
+            // Should've used the jquery eventhandler on the specific elements,
+            // but I didn't have a lot of time, and I added that after this.
+
+            // If you click on the title, allow title renaming
         if (target.is("#taskInfoPopupTitle")) {
             EnablePopupTitleRename();
             return;
         }
+        // If you click on the description, allow description renaming
         if (target.is("#taskInfoPopupDescription")) {
             EnablePopupDescriptionRename();
             return;
         }
+        if (target.is("#taskInfoPopupDeleteButton")) {
+            DeleteTaskFromPopup();
+        }
     }
-
+        // If you click on the title of a board, allow title renaming of said board.
     if (target.hasClass("boardDivTitle")) {
         EnableBoardTitleRename(e.target);
     }
-
+        // If you click on the "Create New Board" button, then, if you have 10 or fewer boards, create a new board and create a new button.
     else if (target.hasClass("addNewBoardDiv")) {
         CreateNewBoardOnScreenWithEvent(e);
     }
@@ -46,6 +77,18 @@ $(document).on("click", function(e) {
 
     else if (target.hasClass("createTaskButton")) {
         CreateNewTaskOnScreenWithEvent(e);
+    }
+
+    else if (target.hasClass("deleteBoardImg")) {
+        let img = target;
+        let boardDiv = target.parent(".boardDiv");
+
+        DeleteBoardDivFromScreen(boardDiv);
+    }
+    else if (target.hasClass("taskInfoPopupImportanceOption")) {
+        let importance = target.data("importance");
+
+        SetPopupTaskColor(importance);
     }
 
         // The following two ifs are there to see if the 'textarea' is active or not. 
@@ -85,6 +128,8 @@ $(document).on("keydown", function(e) {
 })
 
 function CreateAddNewBoardButton() {
+
+    if ($(".addNewBoardDiv").length !== 0) return;
     let newBoardButtonDiv = document.createElement("div");
     let jqNewBoardButtonDiv = $(newBoardButtonDiv).addClass("addNewBoardDiv");
     jqNewBoardButtonDiv.appendTo(container);
@@ -104,11 +149,11 @@ function CreateNewBoardOnScreenWithEvent(e) {
     else if (jqTarget.parent().hasClass("addNewBoardDiv")) {
         buttonDiv = jqTarget.parent();
     }
-
     
     let newlyCreatedBoard = CreateAndPushBoard("Board #" + currentIndexForIDGenerator);
     CreateNewBoardOnScreen(newlyCreatedBoard, buttonDiv);
 
+    if (boards.length >= finalMaxBoards) return;
     CreateAddNewBoardButton();
 }
 
@@ -126,11 +171,8 @@ function CreateNewtaskOnScreen(task, boardDiv, beforeElement) {
     newTaskDiv.id = "task" + task.id;
 
     let jqNewTaskDiv = $(newTaskDiv).addClass("taskDiv");
-    jqNewTaskDiv.data("taskid", task.id);
-
+    jqNewTaskDiv.data("taskID", task.id);
     jqNewTaskDiv.attr("draggable", true);
-
-
 
     if (beforeElement === undefined) {
         jqNewTaskDiv.appendTo(boardDiv);
@@ -150,6 +192,10 @@ function CreateNewtaskOnScreen(task, boardDiv, beforeElement) {
         $(newTaskTitle).appendTo(jqNewTaskDiv);
     }
 
+    let colorIndex = task.importance
+    let color = importanceColours[colorIndex];
+
+    jqNewTaskDiv.css("background-color", color);
 
     let board = GetBoardFromBoardDiv(boardDiv);
 
@@ -174,10 +220,11 @@ function CreateNewBoardOnScreen(board, elementToReplace) {
 
     let newBoardDiv = document.createElement("div");
     newBoardDiv.id = "board" + board.id;
-    // newBoardDiv.setAttribute("boardid", board.id);
     let jqNewBoardDiv = $(newBoardDiv).addClass("boardDiv");
     jqNewBoardDiv.addClass("dropzone");
     jqNewBoardDiv.data("boardid", board.id);
+
+
     if (elementToReplace !== undefined) {
         $(elementToReplace).replaceWith(jqNewBoardDiv);
     }
@@ -199,6 +246,8 @@ function CreateNewBoardOnScreen(board, elementToReplace) {
             }
         }
     }
+
+    AddDeleteBoardButtonToBoardDiv(newBoardDiv);
         // Create a new title [p] and append it to the div (First element)
     jqNewBoardDiv.append(NewBoardTitle(newBoardDiv));
 
@@ -247,6 +296,15 @@ function AddCreateTaskButtonToBoardDiv(boardDiv) {
     jqCreateTaskButton.appendTo(boardDiv);
 }
 
+function AddDeleteBoardButtonToBoardDiv(boardDiv) {
+    let newDeleteBoardImg = document.createElement("img");
+
+    newDeleteBoardImg.src ='../Images/trashCan-white-withCap-widee.png';
+   
+    let jqNewDeleteBoardImg = $(newDeleteBoardImg).addClass("deleteBoardImg");
+    jqNewDeleteBoardImg.appendTo(boardDiv);
+}
+
 function EnableBoardTitleRename(boardTitle) {
 
     let replaceTitleInputField = document.createElement("input");
@@ -259,8 +317,13 @@ function EnableBoardTitleRename(boardTitle) {
 }
 
 function CompletedBoardTitleRename(inputField) {
-    let newTitle = inputField.value;
     let boardDiv = $(inputField).parent();
+
+    let board = GetBoardFromBoardDiv(boardDiv);
+
+    
+    let newTitle = (inputField.value.length > 0 ? inputField.value : board.name);
+
     $(inputField).replaceWith(NewBoardTitle(boardDiv, newTitle));
 }
 
@@ -288,7 +351,7 @@ function GetBoardFromBoardDiv(boardDiv) {
 
 function GetTaskFromTaskDiv(taskDiv) {
     var task = tasks.find(function(e) {
-        taskID = $(taskDiv).data("taskid");
+        taskID = $(taskDiv).data("taskID");
         return e.id === taskID;
     })
     return task;
@@ -325,40 +388,44 @@ function ShowTaskInfoPopup(taskDiv) {
     taskPopupActive = true;
 
     let task = GetTaskFromTaskDiv(taskDiv);
-    taskPopupDiv.data("currentTask", task.id);
+    taskPopupTitle.text(task.name);
+    taskPopupDescription.text(task.description);
 
-    taskPopUpTitle.text(task.name);
-    taskPopUpDescription.text(task.description);
+    taskPopupDiv.data("taskID", task.id);
 
     
-    taskPopUpDescription.css("display", "block");
-    taskPopUpDescriptionEditor.css("display", "none");
-    taskPopUpTitle.css("display", "block");
-    taskPopUpTitleEditor.css("display", "none");
+    taskPopupDescription.css("display", "block");
+    taskPopupDescriptionEditor.css("display", "none");
+    taskPopupTitle.css("display", "block");
+    taskPopupitleEditor.css("display", "none");
+
+    SelectApplicableUser();
 
 }
 function HideTaskInfoPopup() {
     taskPopupDiv.css("display", "none");
     taskPopupBackground.css("display", "none");
     taskPopupActive = false;
+    taskPopupDiv.removeData("taskID");
 
+    DeselectAllUsers();
 }
 
 function EnablePopupTitleRename() {
     
-    taskPopUpTitle.css("display", "none");
-    taskPopUpTitleEditor.css("display", "block");
-    taskPopUpTitleEditor.text(taskPopUpTitle.text());
+    taskPopupTitle.css("display", "none");
+    taskPopupitleEditor.css("display", "block");
+    taskPopupitleEditor.text(taskPopupTitle.text());
 
-    taskPopUpTitleEditor.focus();
+    taskPopupitleEditor.focus();
 }
 
 function CompletedPopupTitleRename(inputField) {
 
-    taskPopUpTitle.css("display", "block");
-    taskPopUpTitleEditor.css("display", "none");
+    taskPopupTitle.css("display", "block");
+    taskPopupitleEditor.css("display", "none");
     
-    let taskID = taskPopupDiv.data("currentTask");
+    let taskID = taskPopupDiv.data("taskID");
     let taskDiv = GetTaskDivFromTaskID(taskID);
     let task = GetTaskFromID(taskID);
 
@@ -369,32 +436,189 @@ function CompletedPopupTitleRename(inputField) {
     
     taskDiv.children(".taskDivTitle").text(newTitle);
 
-    taskPopUpTitle.text(newTitle);
+    taskPopupTitle.text(newTitle);
 }
 
 function EnablePopupDescriptionRename() {
     
-    taskPopUpDescription.css("display", "none");
-    taskPopUpDescriptionEditor.css("display", "block");
-    taskPopUpDescriptionEditor.text(taskPopUpDescription.text());
-
-    taskPopUpDescriptionEditor.focus();
+    taskPopupDescription.css("display", "none");
+    taskPopupDescriptionEditor.css("display", "block");
+    taskPopupDescriptionEditor.val(taskPopupDescription.text());
+    taskPopupDescriptionEditor.focus();
 }
 
 function CompletedPopUpDescriptionRename(inputField) {
-    taskPopUpDescription.css("display", "block");
-    taskPopUpDescriptionEditor.css("display", "none");
+    taskPopupDescription.css("display", "block");
+    taskPopupDescriptionEditor.css("display", "none");
 
-    let taskID = taskPopupDiv.data("currentTask");
+    let taskID = taskPopupDiv.data("taskID");
     let taskDiv = GetTaskDivFromTaskID(taskID);
     let task = GetTaskFromID(taskID);
 
     let newDescription = (inputField.value.length > 0 ? inputField.value : task.description );
 
-    taskPopUpDescription.text(newDescription);
+    taskPopupDescription.text(newDescription);
 
     task.description = newDescription;
 }
+
+function PopulateMemberSelect() {
+
+    for (let i = 0; i < users.length; i++) {
+        const user = users[i];
+
+        let newOption = document.createElement("option");
+        newOption.value = "elem_" + user.id;
+        newOption.id = "elem_" + user.id;
+        $(newOption).data("userID", user.id);
+        let jqNewOption = $(newOption);
+        jqNewOption.text(user.name);
+        jqNewOption.appendTo(memberSelect);
+    }
+}
+
+function PopulateImportanceDropDown() {
+    for (var key in importanceColours) {
+        if (importanceColours.hasOwnProperty(key)) {
+            let newOption = document.createElement("p");
+
+            let jqNewOption = $(newOption).addClass("taskInfoPopupImportanceOption")
+
+            let color = importanceColours[key];
+            jqNewOption.text("Importance: " + key);
+            jqNewOption.css("color", color)
+
+            jqNewOption.data("importance", key);
+            
+            jqNewOption.appendTo(taskInfoPopupImportanceDropdownContainer);
+            console.log(jqNewOption);
+        }
+    }
+}
+
+function SelectApplicableUser() {
+    let taskID = $(taskPopupDiv).data("taskID");
+    let task = GetTaskFromID(taskID);
+
+    let applicableUsers = [];
+
+    for (let i = 0; i < task.users.length; i++) {
+        const user = task.users[i];
+
+        let userOptionID = "elem_" + user;
+        applicableUsers.push(userOptionID);
+    }
+    $("#memberSelect").multiSelect('select', applicableUsers);
+}
+
+function DeselectAllUsers() {
+    $("#memberSelect").multiSelect('deselect_all');
+}
+
+
+
+    // http://loudev.com/
+$("#memberSelect").multiSelect({
+    selectableHeader: "<div class='custom-header'>Unassigned users</div>",
+    selectionHeader: "<div class='custom-header'>Assigned user</div>",
+    keepOrder: true,
+    dblClick: true,
+    afterSelect: AddUserToTaskPopup,
+    afterDeselect: RemoveUserFromTaskPopup
+});
+
+function AddUserToTaskPopup(elem) {
+    let jqElem = $("#" + elem);
+    let userID = jqElem.data("userID");
+
+    let parents = jqElem.parents(".taskInfoPopupDiv");
+
+    let taskID = parents.data("taskID");
+
+    let task = GetTaskFromID(taskID);
+
+    AddUserIDToTask(userID, task);
+}
+
+function RemoveUserFromTaskPopup(elem) {
+    if (!taskPopupDiv.data("taskID") ) return;
+
+    let jqElem = $("#" + elem);
+    let userID = jqElem.data("userID");
+
+    let parents = jqElem.parents(".taskInfoPopupDiv");
+
+    let taskID = parents.data("taskID");
+
+    let task = GetTaskFromID(taskID);
+
+    RemoveUserFromTask(userID, task);
+}
+
+
+
+function DeleteBoardDivFromScreen(boardDiv) {
+    
+    let board = GetBoardFromBoardDiv(boardDiv);
+
+    for (let i = 0; i < board.tasks.length; i++) {
+        const taskID = board.tasks[i];
+        let task = GetTaskFromID(taskID);
+        RemoveTaskFromScreen(board, task);
+    }
+    DeleteBoard(board,  "Clicked on 'Delete Board'");
+    
+    boardDiv.remove();
+
+    if (boards.length < finalMaxBoards) {
+        CreateAddNewBoardButton();
+    }
+}
+
+function DeleteTaskFromPopup() {
+    let taskID = taskPopupDiv.data("taskID");
+
+    let task = GetTaskFromID(taskID);
+    let taskDiv = GetTaskDivFromTaskID(taskID);
+
+    let boardDiv = GetBoardDivFromTaskDiv(taskDiv);
+    let board = GetBoardFromBoardDiv(boardDiv);
+
+    RemoveTaskFromScreen(board, task);
+
+    HideTaskInfoPopup();
+}
+
+function RemoveTaskFromScreen(board, task) {
+    RemoveTaskFromBoard(board, task);
+    DeleteTask(task, "clicked on 'Delete Task'");
+
+    var taskDiv = GetTaskDivFromTaskID(task.id);
+    taskDiv.remove();
+}
+
+function GetBoardDivFromTaskDiv(taskDiv) {
+    return $(taskDiv).parent();
+}
+
+function SetPopupTaskColor(importance) {
+    let taskID = taskPopupDiv.data("taskID");
+    taskID.importance = importance;
+    let task = GetTaskFromID(taskID);
+    
+    let colorIndex = importance;
+    let color = importanceColours[colorIndex];
+    let taskDiv = GetTaskDivFromTaskID(taskID);
+    $(taskDiv).css("background-color", color);
+
+    task.importance = importance;
+
+}
+
+
+
+
+// Drag & Drop
 
 let jsContainer = document.getElementById("container");
 
@@ -408,47 +632,45 @@ jsContainer.addEventListener("dragover", e =>{
 });
 
 jsContainer.addEventListener("drop", e => {
-    console.log($(e.target))
-    if ($(e.target).hasClass("boardDiv")){
-        var data = e.dataTransfer.getData("text");
-        var target = e.target;
-        var dataMoved = document.getElementById(data)
 
-        //$(target).children(".createTaskButton").before($(dataMoved));
-        target.appendChild(dataMoved);
-        let jqTarget = $(target);
-        let jqButton = jqTarget.children(".createTaskButton");
-        jqButton.before($(dataMoved));
+    let target, jqTarget, relativeElement, newBoardDiv;
+    var data = e.dataTransfer.getData("text");
+    if ($(e.target).hasClass("boardDiv")) {
+        target = e.target;
+        jqTarget = $(target);
+        relativeElement = jqTarget.children(".createTaskButton");
+        newBoardDiv = target;
     }
     else if ($(e.target).hasClass("boardDivTitle")) {
         var data = e.dataTransfer.getData("text");
-        var target = e.target.parentNode;
-        var dataMoved = document.getElementById(data)
-
-        //$(target).children(".createTaskButton").before($(dataMoved));
-        target.appendChild(dataMoved);
-        let jqTarget = $(target);
-        let jqButton = jqTarget.children(".createTaskButton");
-        jqButton.before($(dataMoved));
+        target = e.target.parentNode;
+        jqTarget = $(target);
+        relativeElement = jqTarget.children(".createTaskButton");
+        newBoardDiv = target;
+    }
+    else if ($(e.target).hasClass("createTaskButton")) {
+        target = e.target.parentNode;
+        jqTarget = $(target);
+        relativeElement = jqTarget.children(".createTaskButton");
+        newBoardDiv = target;
     }
     else if ($(e.target).hasClass("taskDiv")) {
-        var data = e.dataTransfer.getData("text");
-        var target = e.target.parentNode;
-        var dataMoved = document.getElementById(data)
-
-        //$(target).children(".createTaskButton").before($(dataMoved));
-        target.appendChild(dataMoved);
-        let jqTarget = $(target);
-        let jqButton = jqTarget.children(".createTaskButton");
-        jqButton.before($(dataMoved));
+        target = e.target;
+        jqTarget = $(target);
+        relativeElement = jqTarget;
+        newBoardDiv = target.parentNode;
     }
-    else{
-        e.preventDefault;
+    else {
+        e.preventDefault();
+        return;
     }
 
-        // index = tasks.findIndex(x => x.id=dataMoved.id);
-        // tasks[index].parentID = target.id;
+    let newBoard = GetBoardFromBoardDiv(newBoardDiv);
 
-    // } else{
-    //     e.preventDefault();
+    let taskDiv = document.getElementById(data);
+    let task = GetTaskFromTaskDiv(taskDiv);
+    let oldBoardDiv = GetBoardDivFromTaskDiv(taskDiv);
+    let oldBoard = GetBoardFromBoardDiv(oldBoardDiv);
+    MoveTaskFromOneBoardToAnother(oldBoard, newBoard, task.id);
+    relativeElement.before(taskDiv);
 });

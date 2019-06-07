@@ -111,8 +111,9 @@ li a{
     transition: ease-out .35s;
     left: 40px;
     max-height: 50vh;
-    max-width: 10vw;
-    overflow: scroll;
+    max-width: 25vw;
+    overflow-y: scroll;
+    overflow-x: none;
 }
 /*----------- First Level------------*/
     /*!important overrides any other declartion*/
