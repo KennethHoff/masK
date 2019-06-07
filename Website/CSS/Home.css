@@ -21,6 +21,7 @@ body{
 .deleteBoardImg {
     width: 25px;
     height: auto;
+    filter: invert(100%);
 }
 .createTaskButton{
     display:block;
@@ -197,6 +198,12 @@ body{
     background-color: rgb(248, 246, 246);
 }
 
+#taskInfoPopupDeleteButton {
+    color: #a3644d;
+    width: 200px;
+    height: auto;
+    filter: invert(100%);
+}
 #deleteCard{
     margin-top:20px;
     margin-left: 50px;

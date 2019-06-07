@@ -620,5 +620,5 @@ jsContainer.addEventListener("drop", e => {
     let oldBoardDiv = GetBoardDivFromTaskDiv(taskDiv);
     let oldBoard = GetBoardFromBoardDiv(oldBoardDiv);
     MoveTaskFromOneBoardToAnother(oldBoard, newBoard, task.id);
-    relativeElement.before($(taskDiv));
+    relativeElement.before(taskDiv);
 });
