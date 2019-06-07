@@ -510,13 +510,11 @@ function RemoveGenericElementFromArray(arr, ele, reason) {
 
     if (typeof(arr[0]) === typeof(1)) {
         index = arr.findIndex(function (eId) {
-            console.log("Looking for ID: " + id + ". Found: " + eId);
             return eId === id;
         });
     }
     else {
         index = arr.findIndex(function (e) {
-            console.log("Looking for ID: " + id + ". Found: " + e.id);
             return e.id === id;
         });
     }
@@ -627,7 +625,6 @@ function SaveAllToCookies(duration) {
  * Loads all cookies related to this website, and parse them as JSON.Parse would (ie. turn them back into Arrays)
  */
 function LoadFromCookies() {
-    // console.log(Cookies.get("Boards"));
     let tempBoards = Cookies.getJSON("Boards");
     let tempTasks = Cookies.getJSON("Tasks");
     let tempUsers = Cookies.getJSON("Users");

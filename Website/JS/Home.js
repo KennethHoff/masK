@@ -14,6 +14,9 @@ let activeDragElement;
 
 let taskPopupActive = false;
 
+let maxBoards = 10; // incubator + x
+let finalMaxBoards = 1 + maxBoards;
+
 
 PlaceAllBoardsOnPage();
 
@@ -70,6 +73,13 @@ $(document).on("click", function(e) {
         CreateNewTaskOnScreenWithEvent(e);
     }
 
+    else if (target.hasClass("deleteBoardImg")) {
+        let img = target;
+        let boardDiv = target.parent(".boardDiv");
+
+        DeleteBoardDivFromScreen(boardDiv);
+    }
+
         // The following two ifs are there to see if the 'textarea' is active or not. 
         // If it is active, return. Otherwise, open the popup.
     else if ( target.parent().hasClass("taskDiv") ) {
@@ -107,6 +117,8 @@ $(document).on("keydown", function(e) {
 })
 
 function CreateAddNewBoardButton() {
+
+    // if ((".addNewBoardDiv").length !== 0) return;
     let newBoardButtonDiv = document.createElement("div");
     let jqNewBoardButtonDiv = $(newBoardButtonDiv).addClass("addNewBoardDiv");
     jqNewBoardButtonDiv.appendTo(container);
@@ -130,7 +142,7 @@ function CreateNewBoardOnScreenWithEvent(e) {
     let newlyCreatedBoard = CreateAndPushBoard("Board #" + currentIndexForIDGenerator);
     CreateNewBoardOnScreen(newlyCreatedBoard, buttonDiv);
 
-    if (boards.length >= 11) return;
+    if (boards.length >= finalMaxBoards) return;
     CreateAddNewBoardButton();
 }
 
@@ -218,6 +230,8 @@ function CreateNewBoardOnScreen(board, elementToReplace) {
             }
         }
     }
+
+    AddDeleteBoardButtonToBoardDiv(newBoardDiv);
         // Create a new title [p] and append it to the div (First element)
     jqNewBoardDiv.append(NewBoardTitle(newBoardDiv));
 
@@ -226,8 +240,6 @@ function CreateNewBoardOnScreen(board, elementToReplace) {
     AddAllTasksToBoardDiv(newBoardDiv);
 
     AddCreateTaskButtonToBoardDiv(newBoardDiv);
-
-    AddDeleteBoardButtonToBoardDiv(newBoardDiv);
 }
 
 function NewBoardTitle(boardDiv, title) {
@@ -269,7 +281,12 @@ function AddCreateTaskButtonToBoardDiv(boardDiv) {
 }
 
 function AddDeleteBoardButtonToBoardDiv(boardDiv) {
+    let newDeleteBoardImg = document.createElement("img");
 
+    newDeleteBoardImg.src ='../Images/trashCan-white-withCap-widee.png';
+   
+    let jqNewDeleteBoardImg = $(newDeleteBoardImg).addClass("deleteBoardImg");
+    jqNewDeleteBoardImg.appendTo(boardDiv);
 }
 
 function EnableBoardTitleRename(boardTitle) {
@@ -506,6 +523,24 @@ function RemoveUserFromTaskPopup(elem) {
 
 
 
+function DeleteBoardDivFromScreen(boardDiv) {
+    
+    let board = GetBoardFromBoardDiv(boardDiv);
+
+    for (let i = 0; i < board.tasks.length; i++) {
+        const taskID = board.tasks[i];
+        let task = GetTaskFromID(taskID);
+        RemoveTaskFromScreen(board, task);
+    }
+    DeleteBoard(board,  "Clicked on 'Delete Board'");
+    
+    boardDiv.remove();
+
+    if (boards.length < finalMaxBoards) {
+        CreateAddNewBoardButton();
+    }
+}
+
 function DeleteTaskFromPopup() {
     let taskID = taskPopupDiv.data("taskID");
 
@@ -515,17 +550,15 @@ function DeleteTaskFromPopup() {
     let boardDiv = GetBoardDivFromTaskDiv(taskDiv);
     let board = GetBoardFromBoardDiv(boardDiv);
 
-
-
-    RemoveTaskFromBoard(board, task);
-    DeleteTask(task, "clicked on the 'Delete Task' button");
-
-    RemoveTaskFromScreen(task);
+    RemoveTaskFromScreen(board, task);
 
     HideTaskInfoPopup();
 }
 
-function RemoveTaskFromScreen(task) {
+function RemoveTaskFromScreen(board, task) {
+    RemoveTaskFromBoard(board, task);
+    DeleteTask(task, "clicked on 'Delete Task'");
+
     var taskDiv = GetTaskDivFromTaskID(task.id);
     taskDiv.remove();
 }
